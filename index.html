@@ -1,191 +1,217 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>ستوشي</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      direction: rtl;
-    }
+<meta charset="UTF-8">
+<title>ستوشي</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    /* ===== تسجيل الدخول ===== */
-    .login-container {
-      background: #020617;
-      padding: 30px 25px;
-      border-radius: 12px;
-      width: 320px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.5);
-      margin: 20px auto;
-      text-align: center;
-    }
-    .login-container h1 { color: #38bdf8; }
-    .login-container p { font-size: 14px; color: #94a3b8; }
-    .login-container input {
-      width: 100%; padding: 10px; margin-bottom: 15px;
-      border-radius: 6px; border: 1px solid #1e293b;
-      background: #0f172a; color: #e5e7eb;
-    }
-    .login-container label {
-      font-size: 12px; color: #94a3b8;
-      display: block; text-align: right;
-    }
-    .login-container button {
-      width: 100%; padding: 10px;
-      background: #1e40af; border: none;
-      border-radius: 6px; color: #fff;
-      font-size: 16px; cursor: pointer;
-      margin-bottom: 12px;
-    }
-    .alt-login button { background: #334155; }
-    .signup { font-size: 13px; color: #94a3b8; }
+<style>
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#0f172a;
+  color:#e5e7eb;
+  direction:rtl;
+}
 
-    /* ===== Dashboard ===== */
-    .dashboard {
-      max-width: 1000px;
-      margin: 20px auto;
-      padding: 20px;
-    }
-    header {
-      background: #020617;
-      padding: 20px;
-      text-align: center;
-      border-radius: 12px;
-    }
-    header h1 { color: #38bdf8; margin: 0; }
-    .logo { font-size: 40px; }
+/* ===== تسجيل الدخول ===== */
+.login-container{
+  background:#020617;
+  padding:30px 25px;
+  border-radius:12px;
+  width:320px;
+  box-shadow:0 0 15px rgba(0,0,0,.5);
+  margin:20px auto;
+  text-align:center;
+}
+.login-container h1{color:#38bdf8}
+.login-container p{color:#94a3b8;font-size:14px}
+.login-container input{
+  width:100%;
+  padding:10px;
+  margin-bottom:12px;
+  border-radius:6px;
+  border:1px solid #1e293b;
+  background:#0f172a;
+  color:#fff;
+}
+.login-container button{
+  width:100%;
+  padding:10px;
+  background:#1e40af;
+  border:none;
+  border-radius:6px;
+  color:#fff;
+  font-size:16px;
+  margin-bottom:10px;
+  cursor:pointer;
+}
+.alt-login button{background:#334155}
 
-    .container {
-      margin-top: 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-    }
-    .card {
-      background: #020617;
-      border: 1px solid #1e293b;
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .card:hover {
-      transform: scale(1.05);
-      border-color: #38bdf8;
-    }
-    .card h3 { color: #38bdf8; }
-    .card p { font-size: 13px; color: #cbd5f5; }
+/* ===== لوحة التحكم ===== */
+.dashboard{max-width:1000px;margin:20px auto;padding:20px}
+header{
+  background:#020617;
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+  border-bottom:1px solid #1e293b;
+}
+header h1{color:#38bdf8;margin:0}
+header p{color:#94a3b8;font-size:14px}
 
-    footer {
-      background: #020617;
-      padding: 15px;
-      text-align: center;
-      font-size: 12px;
-      color: #94a3b8;
-      border-radius: 12px;
-      max-width: 1000px;
-      margin: 20px auto;
-    }
+.container{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+  margin-top:20px;
+}
 
-    /* ===== Modal الخزائن ===== */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: #020617;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-    }
-    .vault {
-      background: #0f172a;
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      font-size: 13px;
-    }
-    .close {
-      text-align: center;
-      margin-top: 10px;
-      cursor: pointer;
-      color: #38bdf8;
-    }
-  </style>
+.card{
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:10px;
+  padding:20px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s;
+}
+.card:hover{
+  transform:scale(1.05);
+  border-color:#38bdf8;
+}
+.card h3{color:#38bdf8}
+
+/* ===== الخزائن ===== */
+.vaults{
+  display:none;
+  margin-top:20px;
+}
+.vault{
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:10px;
+  padding:15px;
+  margin-bottom:10px;
+  cursor:pointer;
+}
+.vault h3{margin:0;color:#38bdf8}
+.vault small{color:#94a3b8}
+
+.wallets{
+  display:none;
+  margin-top:10px;
+  padding-right:15px;
+}
+.wallet{
+  background:#0f172a;
+  border:1px dashed #1e293b;
+  padding:10px;
+  border-radius:6px;
+  margin-bottom:6px;
+  font-size:13px;
+}
+
+.back{
+  margin-top:10px;
+  color:#38bdf8;
+  cursor:pointer;
+  font-size:14px;
+}
+
+footer{
+  background:#020617;
+  padding:15px;
+  text-align:center;
+  font-size:12px;
+  color:#94a3b8;
+  border-radius:12px;
+  max-width:1000px;
+  margin:20px auto;
+}
+</style>
 </head>
+
 <body>
 
 <!-- تسجيل الدخول -->
 <div class="login-container">
-  <h1>ستوشي</h1>
-  <p>منصة تمنع الاحتيال في تبادل USDT والكاش</p>
-  <input placeholder="البريد أو الهاتف">
-  <input type="password" placeholder="كلمة المرور">
-  <button>تسجيل الدخول</button>
-  <div class="alt-login">
-    <button>Google</button>
-    <button>Apple</button>
-  </div>
-  <div class="signup">إنشاء حساب جديد</div>
+<h1>ستوشي</h1>
+<p>منصة وسيطة تمنع الاحتيال</p>
+<input placeholder="البريد / الهاتف">
+<input type="password" placeholder="كلمة المرور">
+<button>تسجيل الدخول</button>
+<div class="alt-login">
+<button>Google</button>
+<button>Apple</button>
+</div>
 </div>
 
-<!-- Dashboard -->
-<div class="dashboard">
-  <header>
-    <div class="logo">🪙💼</div>
-    <h1>ستوشي</h1>
-    <p>الوسيط الآمن للتبادل</p>
-  </header>
+<!-- لوحة التحكم -->
+<div class="dashboard" id="dashboard">
+<header>
+<h1>ستوشي</h1>
+<p>لوحة التحكم</p>
+</header>
 
-  <div class="container">
-    <div class="card"><h3>🏦 إنشاء صفقة</h3></div>
-    <div class="card"><h3>🔒 USDT محجوز</h3></div>
-    <div class="card"><h3>💵 كاش قيد التحويل</h3></div>
-    <div class="card"><h3>⚖️ نزاع / طعن</h3></div>
-    <div class="card"><h3>🪪 كشف الهوية</h3></div>
+<div class="container" id="cards">
+  <div class="card"><h3>🏦 إنشاء صفقة</h3></div>
+  <div class="card"><h3>🔒 USDT محجوز</h3></div>
+  <div class="card"><h3>💵 كاش قيد التحويل</h3></div>
+  <div class="card"><h3>⚖️ نزاع / طعن</h3></div>
+  <div class="card" onclick="openVaults()"><h3>🏦 الخزائن</h3></div>
+</div>
 
-    <!-- الخزائن -->
-    <div class="card" onclick="openVaults()">
-      <h3>🧰 الخزائن</h3>
-      <p>عرض جميع الخزائن المشفّرة</p>
+<!-- الخزائن -->
+<div class="vaults" id="vaults">
+  <div class="back" onclick="back()">← رجوع</div>
+
+  <div class="vault" onclick="toggleWallets('eth')">
+    <h3>Ethereum</h3>
+    <small>عدد الخزائن: 124</small>
+    <div class="wallets" id="eth">
+      <div class="wallet">0xA9F3...9D2 — 3.45 ETH</div>
+      <div class="wallet">0x91B2...F77 — 0.88 ETH</div>
     </div>
   </div>
+
+  <div class="vault" onclick="toggleWallets('tron')">
+    <h3>TRON</h3>
+    <small>عدد الخزائن: 87</small>
+    <div class="wallets" id="tron">
+      <div class="wallet">TX9d...A12 — 1200 USDT</div>
+      <div class="wallet">TB3F...88C — 340 USDT</div>
+    </div>
+  </div>
+
+  <div class="vault" onclick="toggleWallets('bsc')">
+    <h3>BSC</h3>
+    <small>عدد الخزائن: 64</small>
+    <div class="wallets" id="bsc">
+      <div class="wallet">0xB9A...77F — 2.1 BNB</div>
+    </div>
+  </div>
+
+</div>
 </div>
 
 <footer>
-  كشف الهوية يتم فقط عند النزاع
+جميع الخزائن مشفرة – لا تظهر أي هوية
 </footer>
 
-<!-- Modal -->
-<div class="modal" id="vaultModal">
-  <div class="modal-content">
-    <h3>🧰 خزائن مشفّرة</h3>
-
-    <div class="vault">0xA3F9•••8C2 | 🟢 حر</div>
-    <div class="vault">0x91B2•••E44 | 🔒 محجوز</div>
-    <div class="vault">0xFF02•••1AA | 🟢 حر</div>
-
-    <div class="close" onclick="closeVaults()">إغلاق</div>
-  </div>
-</div>
-
 <script>
-  function openVaults() {
-    document.getElementById("vaultModal").style.display = "flex";
-  }
-  function closeVaults() {
-    document.getElementById("vaultModal").style.display = "none";
-  }
+function openVaults(){
+  document.getElementById("cards").style.display="none";
+  document.getElementById("vaults").style.display="block";
+}
+function back(){
+  document.getElementById("vaults").style.display="none";
+  document.getElementById("cards").style.display="grid";
+}
+function toggleWallets(id){
+  const w=document.getElementById(id);
+  w.style.display = w.style.display==="block"?"none":"block";
+}
 </script>
 
 </body>
