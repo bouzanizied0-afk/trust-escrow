@@ -1,118 +1,143 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>Trust Escrow</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trust Escrow - منصة التجريبية</title>
+<style>
+    /* ===== تصميم عام ===== */
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      direction: rtl;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f5f6fa;
+        color: #333;
+        direction: rtl;
     }
+
     header {
-      background: #020617;
-      padding: 20px;
-      text-align: center;
-      border-bottom: 1px solid #1e293b;
+        background: #1e90ff;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 1.5em;
+        font-weight: bold;
     }
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      color: #38bdf8;
+
+    main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 50px 20px;
+        min-height: 80vh;
     }
-    header p {
-      margin-top: 8px;
-      font-size: 14px;
-      color: #94a3b8;
+
+    .button {
+        background: #1e90ff;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        margin: 10px;
+        font-size: 1em;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: 0.3s;
     }
-    .container {
-      padding: 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
+
+    .button:hover {
+        background: #0f5bb5;
     }
-    .card {
-      background: #020617;
-      border: 1px solid #1e293b;
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
+
+    .section {
+        background: white;
+        padding: 30px;
+        margin: 20px 0;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        width: 90%;
+        max-width: 500px;
+        text-align: center;
     }
-    .card h3 {
-      margin: 10px 0;
-      color: #38bdf8;
+
+    input {
+        width: 80%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 1em;
     }
-    .card p {
-      font-size: 13px;
-      color: #cbd5f5;
-      margin-bottom: 15px;
+
+    .hidden {
+        display: none;
     }
-    .card button {
-      background: #1e40af;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 6px;
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-    footer {
-      background: #020617;
-      padding: 15px;
-      text-align: center;
-      font-size: 12px;
-      color: #94a3b8;
-      border-top: 1px solid #1e293b;
-    }
-  </style>
+
+</style>
 </head>
 <body>
 
 <header>
-  <h1>Trust Escrow</h1>
-  <p>منصة وسيطة تمنع الاحتيال في تبادل USDT والكاش</p>
+    Trust Escrow - منصة التداول الآمن
 </header>
 
-<div class="container">
+<main>
+    <!-- ===== الصفحة الرئيسية ===== -->
+    <div id="landing" class="section">
+        <h2>مرحبًا بك في منصة Trust Escrow</h2>
+        <p>بيع وشراء USDT بأمان بدون تحايل</p>
+        <button class="button" onclick="showSection('login')">تسجيل الدخول</button>
+        <button class="button" onclick="showSection('signup')">إنشاء حساب</button>
+    </div>
 
-  <div class="card">
-    <h3>🏦 إنشاء صفقة</h3>
-    <p>ابدأ صفقة جديدة وحدد الطرفين والمبلغ.</p>
-    <button>قريبًا</button>
-  </div>
+    <!-- ===== نموذج تسجيل الدخول ===== -->
+    <div id="login" class="section hidden">
+        <h2>تسجيل الدخول</h2>
+        <input type="email" placeholder="البريد الإلكتروني"><br>
+        <input type="password" placeholder="كلمة المرور"><br>
+        <button class="button" onclick="showSection('dashboard')">تسجيل الدخول</button>
+        <button class="button" onclick="showSection('landing')">العودة</button>
+    </div>
 
-  <div class="card">
-    <h3>🔒 USDT محجوز</h3>
-    <p>يتم حجز USDT حتى اكتمال الصفقة.</p>
-    <button>غير مفعل</button>
-  </div>
+    <!-- ===== نموذج إنشاء حساب ===== -->
+    <div id="signup" class="section hidden">
+        <h2>إنشاء حساب جديد</h2>
+        <input type="text" placeholder="الاسم الكامل"><br>
+        <input type="email" placeholder="البريد الإلكتروني"><br>
+        <input type="password" placeholder="كلمة المرور"><br>
+        <button class="button" onclick="showSection('verification')">إنشاء الحساب</button>
+        <button class="button" onclick="showSection('landing')">العودة</button>
+    </div>
 
-  <div class="card">
-    <h3>💵 كاش قيد التحويل</h3>
-    <p>بانتظار تأكيد استلام الكاش.</p>
-    <button>غير مفعل</button>
-  </div>
+    <!-- ===== التوثيق ===== -->
+    <div id="verification" class="section hidden">
+        <h2>توثيق الحساب</h2>
+        <p>يرجى رفع صورة بطاقة الهوية للموافقة على الشروط</p>
+        <input type="file"><br>
+        <button class="button" onclick="showSection('dashboard')">توثيق والانطلاق</button>
+    </div>
 
-  <div class="card">
-    <h3>⚖️ نزاع / طعن</h3>
-    <p>في حال وجود مشكلة بين الطرفين.</p>
-    <button>مغلق</button>
-  </div>
+    <!-- ===== لوحة التحكم ===== -->
+    <div id="dashboard" class="section hidden">
+        <h2>لوحة التحكم</h2>
+        <button class="button">شراء USDT</button>
+        <button class="button">بيع USDT</button>
+        <button class="button">الدردشة</button>
+        <button class="button">حجز/طعن</button>
+        <button class="button" onclick="showSection('landing')">تسجيل الخروج</button>
+    </div>
 
-  <div class="card">
-    <h3>🪪 كشف الهوية</h3>
-    <p>يتم كشف الهوية فقط عند النزاع.</p>
-    <button>محمي</button>
-  </div>
+</main>
 
-</div>
-
-<footer>
-  باستخدامك هذه المنصة أنت توافق على كشف هويتك للطرف الآخر عند النزاع وفق الشروط.
-</footer>
+<script>
+    function showSection(id) {
+        const sections = ['landing','login','signup','verification','dashboard'];
+        sections.forEach(sec => {
+            document.getElementById(sec).classList.add('hidden');
+        });
+        document.getElementById(id).classList.remove('hidden');
+    }
+</script>
 
 </body>
 </html>
