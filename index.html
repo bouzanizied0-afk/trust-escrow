@@ -23,99 +23,44 @@
       margin: 20px auto;
       text-align: center;
     }
-    .login-container h1 {
-      color: #38bdf8;
-      margin-bottom: 8px;
-    }
-    .login-container p {
-      font-size: 14px;
-      color: #94a3b8;
-      margin-bottom: 20px;
-    }
-    .login-container input[type="text"],
-    .login-container input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #1e293b;
-      background: #0f172a;
-      color: #e5e7eb;
+    .login-container h1 { color: #38bdf8; }
+    .login-container p { font-size: 14px; color: #94a3b8; }
+    .login-container input {
+      width: 100%; padding: 10px; margin-bottom: 15px;
+      border-radius: 6px; border: 1px solid #1e293b;
+      background: #0f172a; color: #e5e7eb;
     }
     .login-container label {
-      font-size: 12px;
-      color: #94a3b8;
-      display: block;
-      text-align: right;
-      margin-bottom: 5px;
-    }
-    .login-container input[type="checkbox"] {
-      margin-left: 5px;
+      font-size: 12px; color: #94a3b8;
+      display: block; text-align: right;
     }
     .login-container button {
-      width: 100%;
-      padding: 10px;
-      background: #1e40af;
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      font-size: 16px;
-      cursor: pointer;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      width: 100%; padding: 10px;
+      background: #1e40af; border: none;
+      border-radius: 6px; color: #fff;
+      font-size: 16px; cursor: pointer;
+      margin-bottom: 12px;
     }
-    .login-container .alt-login button {
-      background: #334155;
-      cursor: pointer;
-    }
-    .login-container .signup {
-      font-size: 13px;
-      color: #94a3b8;
-    }
-    .login-container .signup a {
-      color: #38bdf8;
-      text-decoration: none;
-      font-weight: bold;
-      margin-right: 5px;
-      cursor: pointer;
-    }
-    .login-container img {
-      display: inline-block;
-      vertical-align: middle;
-    }
+    .alt-login button { background: #334155; }
+    .signup { font-size: 13px; color: #94a3b8; }
 
-    /* ===== واجهة البطاقات ===== */
+    /* ===== Dashboard ===== */
     .dashboard {
-      padding: 20px;
       max-width: 1000px;
       margin: 20px auto;
+      padding: 20px;
     }
     header {
       background: #020617;
       padding: 20px;
       text-align: center;
-      border-bottom: 1px solid #1e293b;
       border-radius: 12px;
     }
-    header h1 {
-      margin: 0;
-      font-size: 32px;
-      color: #38bdf8;
-    }
-    header p {
-      margin-top: 5px;
-      font-size: 14px;
-      color: #94a3b8;
-    }
-    .logo {
-      font-size: 40px;
-      margin-bottom: 5px;
-    }
+    header h1 { color: #38bdf8; margin: 0; }
+    .logo { font-size: 40px; }
+
     .container {
-      padding: 20px 0;
+      margin-top: 20px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 15px;
@@ -126,155 +71,121 @@
       border-radius: 10px;
       padding: 20px;
       text-align: center;
-      transition: transform 0.2s;
+      cursor: pointer;
+      transition: 0.2s;
     }
     .card:hover {
       transform: scale(1.05);
       border-color: #38bdf8;
     }
-    .card h3 {
-      margin: 10px 0;
-      color: #38bdf8;
-    }
-    .card p {
-      font-size: 13px;
-      color: #cbd5f5;
-      margin-bottom: 15px;
-    }
-    .card button {
-      background: #1e40af;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 6px;
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
+    .card h3 { color: #38bdf8; }
+    .card p { font-size: 13px; color: #cbd5f5; }
+
     footer {
       background: #020617;
       padding: 15px;
       text-align: center;
       font-size: 12px;
       color: #94a3b8;
-      border-top: 1px solid #1e293b;
-      max-width: 1000px;
-      margin: 0 auto 20px auto;
       border-radius: 12px;
+      max-width: 1000px;
+      margin: 20px auto;
+    }
+
+    /* ===== Modal الخزائن ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #020617;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+    }
+    .vault {
+      background: #0f172a;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+    .close {
+      text-align: center;
+      margin-top: 10px;
+      cursor: pointer;
+      color: #38bdf8;
     }
   </style>
 </head>
 <body>
 
-<!-- ===== تسجيل الدخول ===== -->
+<!-- تسجيل الدخول -->
 <div class="login-container">
   <h1>ستوشي</h1>
-  <p>مرحبًا بك في منصة وسيطة تمنع الاحتيال في تبادل USDT والكاش</p>
-
-  <label for="email">البريد الإلكتروني / رقم الهاتف</label>
-  <input type="text" id="email" placeholder="أدخل بريدك أو رقم الهاتف">
-
-  <label for="password">كلمة المرور</label>
-  <input type="password" id="password" placeholder="أدخل كلمة المرور">
-
-  <label>
-    <input type="checkbox" id="agree">
-    أوافق على الشروط والأحكام
-  </label>
-
-  <button id="loginBtn">تسجيل الدخول</button>
-
+  <p>منصة تمنع الاحتيال في تبادل USDT والكاش</p>
+  <input placeholder="البريد أو الهاتف">
+  <input type="password" placeholder="كلمة المرور">
+  <button>تسجيل الدخول</button>
   <div class="alt-login">
-    <button id="googleBtn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.png" alt="Google" width="20" height="20">
-      تسجيل الدخول عبر Google
-    </button>
-    <button id="appleBtn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" width="20" height="20">
-      تسجيل الدخول عبر Apple
-    </button>
+    <button>Google</button>
+    <button>Apple</button>
   </div>
-
-  <div class="signup">
-    ليس لديك حساب؟
-    <a id="signupLink">إنشاء حساب جديد</a>
-  </div>
+  <div class="signup">إنشاء حساب جديد</div>
 </div>
 
-<!-- ===== واجهة البطاقات ===== -->
+<!-- Dashboard -->
 <div class="dashboard">
   <header>
     <div class="logo">🪙💼</div>
     <h1>ستوشي</h1>
-    <p>منصة وسيطة تمنع الاحتيال في تبادل USDT والكاش</p>
+    <p>الوسيط الآمن للتبادل</p>
   </header>
 
   <div class="container">
+    <div class="card"><h3>🏦 إنشاء صفقة</h3></div>
+    <div class="card"><h3>🔒 USDT محجوز</h3></div>
+    <div class="card"><h3>💵 كاش قيد التحويل</h3></div>
+    <div class="card"><h3>⚖️ نزاع / طعن</h3></div>
+    <div class="card"><h3>🪪 كشف الهوية</h3></div>
 
-    <div class="card">
-      <h3>🏦 إنشاء صفقة</h3>
-      <p>ابدأ صفقة جديدة وحدد الطرفين والمبلغ.</p>
-      <button>قريبًا</button>
+    <!-- الخزائن -->
+    <div class="card" onclick="openVaults()">
+      <h3>🧰 الخزائن</h3>
+      <p>عرض جميع الخزائن المشفّرة</p>
     </div>
-
-    <div class="card">
-      <h3>🔒 USDT محجوز</h3>
-      <p>يتم حجز USDT حتى اكتمال الصفقة.</p>
-      <button>غير مفعل</button>
-    </div>
-
-    <div class="card">
-      <h3>💵 كاش قيد التحويل</h3>
-      <p>بانتظار تأكيد استلام الكاش.</p>
-      <button>غير مفعل</button>
-    </div>
-
-    <div class="card">
-      <h3>⚖️ نزاع / طعن</h3>
-      <p>في حال وجود مشكلة بين الطرفين.</p>
-      <button>مغلق</button>
-    </div>
-
-    <div class="card">
-      <h3>🪪 كشف الهوية</h3>
-      <p>يتم كشف الهوية فقط عند النزاع.</p>
-      <button>محمي</button>
-    </div>
-
   </div>
 </div>
 
 <footer>
-  باستخدامك هذه المنصة أنت توافق على كشف هويتك للطرف الآخر عند النزاع وفق الشروط.
+  كشف الهوية يتم فقط عند النزاع
 </footer>
 
+<!-- Modal -->
+<div class="modal" id="vaultModal">
+  <div class="modal-content">
+    <h3>🧰 خزائن مشفّرة</h3>
+
+    <div class="vault">0xA3F9•••8C2 | 🟢 حر</div>
+    <div class="vault">0x91B2•••E44 | 🔒 محجوز</div>
+    <div class="vault">0xFF02•••1AA | 🟢 حر</div>
+
+    <div class="close" onclick="closeVaults()">إغلاق</div>
+  </div>
+</div>
+
 <script>
-  document.getElementById("loginBtn").addEventListener("click", function(){
-    const email = document.getElementById("email").value;
-    const pass = document.getElementById("password").value;
-    const agree = document.getElementById("agree").checked;
-
-    if(!agree){
-      alert("يجب الموافقة على الشروط قبل تسجيل الدخول!");
-      return;
-    }
-    if(email === "" || pass === ""){
-      alert("يرجى إدخال البريد الإلكتروني وكلمة المرور");
-    } else {
-      alert("تسجيل الدخول جارٍ… (نسخة تجريبية)");
-    }
-  });
-
-  document.getElementById("googleBtn").addEventListener("click", function(){
-    alert("تسجيل الدخول عبر Google… (نسخة تجريبية)");
-  });
-
-  document.getElementById("appleBtn").addEventListener("click", function(){
-    alert("تسجيل الدخول عبر Apple… (نسخة تجريبية)");
-  });
-
-  document.getElementById("signupLink").addEventListener("click", function(){
-    alert("فتح صفحة إنشاء الحساب… (نسخة تجريبية)");
-  });
+  function openVaults() {
+    document.getElementById("vaultModal").style.display = "flex";
+  }
+  function closeVaults() {
+    document.getElementById("vaultModal").style.display = "none";
+  }
 </script>
 
 </body>
