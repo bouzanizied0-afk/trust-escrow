@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>خزائن ستوشي</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: #e5e7eb;
+  direction: rtl;
+}
+header {
+  background: #020617;
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #1e293b;
+}
+header h1 { color: #38bdf8; }
+
+.container {
+  padding: 15px;
+}
+.chain {
+  background: #020617;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #1e293b;
+  cursor: pointer;
+}
+.chain:hover {
+  border-color: #38bdf8;
+}
+.vault {
+  background: #0f172a;
+  padding: 8px;
+  border-radius: 6px;
+  margin: 5px 0;
+  font-size: 13px;
+  display: none;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧰 خزائن البلوك تشاين</h1>
+  <p>عرض جميع الخزائن المشفرة بدون هوية</p>
+</header>
+
+<div class="container">
+
+<div class="chain" onclick="toggleVaults('eth')">
+  Ethereum - عدد الخزائن: 3
+</div>
+<div id="eth" class="vault">0xA3F9•••8C2 | 🟢 حر</div>
+<div id="eth" class="vault">0x91B2•••E44 | 🔒 محجوز</div>
+<div id="eth" class="vault">0xFF02•••1AA | 🟢 حر</div>
+
+<div class="chain" onclick="toggleVaults('tron')">
+  TRON - عدد الخزائن: 2
+</div>
+<div id="tron" class="vault">T9F3•••K2A | 🟢 حر</div>
+<div id="tron" class="vault">T8B1•••Z44 | 🔒 محجوز</div>
+
+<div class="chain" onclick="toggleVaults('bsc')">
+  BSC - عدد الخزائن: 1
+</div>
+<div id="bsc" class="vault">0x77A9•••9DD | 🟢 حر</div>
+
+</div>
+
+<script>
+function toggleVaults(chain) {
+  let elements = document.querySelectorAll("#" + chain);
+  elements.forEach(e => {
+    e.style.display = (e.style.display === "block") ? "none" : "block";
+  });
+}
+</script>
+
+</body>
+</html>
