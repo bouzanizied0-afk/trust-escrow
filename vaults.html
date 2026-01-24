@@ -1,191 +1,74 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>خزائن البلوك تشين - ستوشي</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      direction: rtl;
-    }
-
-    header {
-      background: #020617;
-      padding: 20px;
-      text-align: center;
-      border-bottom: 1px solid #1e293b;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      color: #38bdf8;
-    }
-    header p {
-      margin-top: 5px;
-      font-size: 14px;
-      color: #94a3b8;
-    }
-
-    .search-box {
-      margin: 20px auto;
-      max-width: 500px;
-      display: flex;
-    }
-    .search-box input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 6px 0 0 6px;
-      border: 1px solid #1e293b;
-      background: #0f172a;
-      color: #e5e7eb;
-      font-size: 14px;
-    }
-    .search-box button {
-      padding: 10px 15px;
-      border: none;
-      background: #1e40af;
-      color: #fff;
-      border-radius: 0 6px 6px 0;
-      cursor: pointer;
-    }
-
-    .networks {
-      max-width: 600px;
-      margin: 0 auto 20px auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-    .network {
-      background: #020617;
-      padding: 10px 15px;
-      border-radius: 8px;
-      border: 1px solid #1e293b;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: transform 0.2s, border-color 0.2s;
-    }
-    .network:hover {
-      transform: scale(1.05);
-      border-color: #38bdf8;
-    }
-
-    .wallets {
-      max-width: 600px;
-      margin: 0 auto 40px auto;
-    }
-    .wallet {
-      background: #0f172a;
-      padding: 10px 15px;
-      border-radius: 6px;
-      border: 1px solid #1e293b;
-      margin-bottom: 8px;
-      font-size: 14px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    footer {
-      background: #020617;
-      padding: 15px;
-      text-align: center;
-      font-size: 12px;
-      color: #94a3b8;
-      border-top: 1px solid #1e293b;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>خزائن البلوك تشين - Ethereum</title>
+<style>
+body {
+  font-family: Arial;
+  background: #0b0f1a;
+  color: #fff;
+}
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: none;
+}
+.wallet {
+  background: #141a2e;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  word-break: break-all;
+}
+</style>
 </head>
 <body>
 
-<header>
-  <h1>🧰 خزائن البلوك تشين - ستوشي</h1>
-  <p>استعرض المحافظ حسب الشبكة أو ابحث مباشرة عن محفظة</p>
-</header>
-
-<!-- شريط البحث -->
-<div class="search-box">
-  <input type="text" id="searchInput" placeholder="ابحث عن عنوان المحفظة...">
-  <button onclick="searchWallet()">🔍</button>
+<div class="container">
+  <h2>خزائن Ethereum</h2>
+  <input type="text" id="search" placeholder="ابحث عن عنوان محفظة">
+  <div id="wallets"></div>
 </div>
-
-<!-- قائمة الشبكات -->
-<div class="networks" id="networksContainer">
-  <div class="network" onclick="showWallets('Ethereum')">⚡ Ethereum</div>
-  <div class="network" onclick="showWallets('BSC')">🟡 BSC</div>
-  <div class="network" onclick="showWallets('Polygon')">🔷 Polygon</div>
-  <div class="network" onclick="showWallets('Solana')">🟢 Solana</div>
-</div>
-
-<!-- المحافظ -->
-<div class="wallets" id="walletsContainer">
-  <p style="text-align:center; color:#94a3b8;">اضغط على الشبكة لعرض المحافظ</p>
-</div>
-
-<footer>
-  جميع المحافظ المعروضة وهمية لأغراض تجريبية
-</footer>
 
 <script>
-  // بيانات المحافظ لكل شبكة
-  const blockchainWallets = {
-    Ethereum: [
-      "0xA3F9•••8C2",
-      "0xB1D2•••7F4",
-      "0xC3E1•••9A5"
-    ],
-    BSC: [
-      "0xD4F5•••3B6",
-      "0xE6G7•••1C8"
-    ],
-    Polygon: [
-      "0xF8H9•••2D1",
-      "0xG0J1•••4E3"
-    ],
-    Solana: [
-      "0xH2K3•••5F7"
-    ]
-  };
+const walletsDiv = document.getElementById("wallets");
+const searchInput = document.getElementById("search");
+let wallets = [];
 
-  function showWallets(network) {
-    const container = document.getElementById("walletsContainer");
-    container.innerHTML = `<h3 style="text-align:center; color:#38bdf8;">محافظ شبكة ${network}</h3>`;
-    blockchainWallets[network].forEach(addr => {
-      const div = document.createElement("div");
-      div.className = "wallet";
-      div.textContent = addr;
-      container.appendChild(div);
-    });
-  }
+async function loadWallets() {
+  const res = await fetch(
+    "https://api.ethplorer.io/getTop?apiKey=freekey&criteria=mostETH"
+  );
+  const data = await res.json();
+  wallets = data.holders.map(w => w.address);
+  render(wallets);
+}
 
-  function searchWallet() {
-    const query = document.getElementById("searchInput").value.toLowerCase();
-    const container = document.getElementById("walletsContainer");
-    container.innerHTML = "<h3 style='text-align:center; color:#38bdf8;'>نتائج البحث</h3>";
-    let found = false;
+function render(list) {
+  walletsDiv.innerHTML = "";
+  list.forEach(addr => {
+    walletsDiv.innerHTML += `
+      <div class="wallet">${addr}</div>
+    `;
+  });
+}
 
-    for (let network in blockchainWallets) {
-      blockchainWallets[network].forEach(addr => {
-        if(addr.toLowerCase().includes(query)) {
-          const div = document.createElement("div");
-          div.className = "wallet";
-          div.textContent = `${addr} | ${network}`;
-          container.appendChild(div);
-          found = true;
-        }
-      });
-    }
+searchInput.addEventListener("input", e => {
+  const val = e.target.value.toLowerCase();
+  const filtered = wallets.filter(w => w.toLowerCase().includes(val));
+  render(filtered);
+});
 
-    if(!found){
-      container.innerHTML += "<p style='text-align:center; color:#94a3b8;'>لم يتم العثور على محفظة مطابقة</p>";
-    }
-  }
+loadWallets();
 </script>
 
 </body>
