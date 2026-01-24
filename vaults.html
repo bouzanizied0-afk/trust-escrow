@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>ستوشي - خزائن البلوك تشين</title>
+  <title>ستوشي - الخزائن</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -18,175 +18,56 @@
       padding: 20px;
       text-align: center;
       border-bottom: 1px solid #1e293b;
+      border-radius: 12px;
     }
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      color: #38bdf8;
-    }
-    header p {
-      font-size: 14px;
-      color: #94a3b8;
-      margin-top: 5px;
-    }
+    header h1 { color: #38bdf8; margin: 0; }
+    header p { color: #94a3b8; margin-top: 5px; font-size: 14px; }
+    .logo { font-size: 40px; }
 
-    .networks {
+    .vault-container {
+      max-width: 500px;
+      margin: 20px auto;
       display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-    }
-    .networks button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 6px;
-      background: #1e40af;
-      color: #fff;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .networks button:hover {
-      background: #38bdf8;
-      color: #020617;
+      flex-direction: column;
+      gap: 20px;
     }
 
-    .search-container {
-      text-align: center;
-      margin: 10px 0 20px 0;
-    }
-    .search-container input {
-      width: 80%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #1e293b;
-      background: #0f172a;
-      color: #e5e7eb;
-    }
-
-    .vaults-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      max-width: 1000px;
-      margin: 0 auto 30px auto;
-      padding: 0 15px;
-    }
     .vault-card {
       background: #020617;
       border: 1px solid #1e293b;
-      border-radius: 10px;
-      padding: 15px;
+      border-radius: 12px;
+      padding: 20px;
       text-align: center;
       cursor: pointer;
       transition: 0.2s;
     }
-    .vault-card:hover {
-      transform: scale(1.05);
-      border-color: #38bdf8;
-    }
-    .vault-card h3 {
-      color: #38bdf8;
-      margin: 5px 0;
-    }
-    .vault-card p {
-      font-size: 13px;
-      color: #cbd5f5;
-    }
+    .vault-card:hover { border-color: #38bdf8; transform: scale(1.03); }
+    .vault-card h2 { color: #38bdf8; margin: 0 0 10px 0; }
+    .vault-card p { font-size: 14px; color: #cbd5f5; margin: 0; }
 
-    footer {
-      background: #020617;
-      padding: 15px;
-      text-align: center;
-      font-size: 12px;
-      color: #94a3b8;
-      border-top: 1px solid #1e293b;
-      border-radius: 12px;
-      max-width: 1000px;
-      margin: 0 auto 20px auto;
-    }
   </style>
 </head>
 <body>
 
 <header>
   <div class="logo">🪙💼</div>
-  <h1>محفظة ساتوشي ناكاموتو</h1>
-  <p>جميع خزائن البلوك تشين المشفّرة</p>
+  <h1>ستوشي</h1>
+  <p>الخزائن المشفّرة</p>
 </header>
 
-<!-- الشبكات -->
-<div class="networks">
-  <button onclick="showNetwork('ethereum')">Ethereum</button>
-  <button onclick="showNetwork('bnb')">BNB Chain</button>
-  <button onclick="showNetwork('tron')">Tron</button>
-  <button onclick="showNetwork('bitcoin')">Bitcoin</button>
+<div class="vault-container">
+  <!-- الخزنة العليا -->
+  <div class="vault-card" onclick="alert('فتح خزائن منصة ستوشي (مشفر)');">
+    <h2>🏛️ خزائن منصة ستوشي</h2>
+    <p>عرض خزائن المنصة المشفّرة فقط</p>
+  </div>
+
+  <!-- الخزنة السفلى -->
+  <div class="vault-card" onclick="alert('فتح خزائن البلوك تشين');">
+    <h2>🌐 خزائن البلوك تشين</h2>
+    <p>عرض جميع الشبكات والمحافظ المرتبطة بها</p>
+  </div>
 </div>
-
-<!-- محرك البحث -->
-<div class="search-container">
-  <input type="text" id="searchInput" placeholder="ابحث عن عنوان محفظة..." onkeyup="searchVaults()">
-</div>
-
-<!-- خزائن الشبكات -->
-<div class="vaults-container" id="vaultsContainer">
-  <!-- محتوى الخزائن يتم تغييره ديناميكيًا -->
-</div>
-
-<footer>
-  جميع المحافظ عامة وشفافة على البلوك تشين. لا تشارك مفتاحك الخاص.
-</footer>
-
-<script>
-  const vaultsData = {
-    ethereum: [
-      {address: '0xA3F9•••8C2', status: '🟢 حر'},
-      {address: '0x91B2•••E44', status: '🔒 محجوز'},
-      {address: '0xFF02•••1AA', status: '🟢 حر'}
-    ],
-    bnb: [
-      {address: '0xB1F3•••9D5', status: '🟢 حر'},
-      {address: '0xC2A4•••4F7', status: '🔒 محجوز'}
-    ],
-    tron: [
-      {address: 'TQ2F•••8M1', status: '🟢 حر'},
-      {address: 'TQ1A•••2B3', status: '🔒 محجوز'}
-    ],
-    bitcoin: [
-      {address: '1A1z•••1aa', status: '🟢 حر'},
-      {address: '1Bv3•••3cc', status: '🔒 محجوز'}
-    ]
-  };
-
-  let currentNetwork = 'ethereum';
-
-  function showNetwork(network) {
-    currentNetwork = network;
-    renderVaults(vaultsData[network]);
-  }
-
-  function renderVaults(vaults) {
-    const container = document.getElementById('vaultsContainer');
-    container.innerHTML = '';
-    vaults.forEach(vault => {
-      const card = document.createElement('div');
-      card.className = 'vault-card';
-      card.innerHTML = `<h3>${vault.address}</h3><p>${vault.status}</p>`;
-      container.appendChild(card);
-    });
-  }
-
-  function searchVaults() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = vaultsData[currentNetwork].filter(v => v.address.toLowerCase().includes(query));
-    renderVaults(filtered);
-  }
-
-  // عرض الشبكة الافتراضية عند تحميل الصفحة
-  window.onload = () => {
-    showNetwork(currentNetwork);
-  };
-</script>
 
 </body>
 </html>
