@@ -1,75 +1,73 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>خزائن البلوك تشين - Ethereum</title>
-<style>
-body {
-  font-family: Arial;
-  background: #0b0f1a;
-  color: #fff;
-}
-.container {
-  max-width: 800px;
-  margin: auto;
-  padding: 20px;
-}
-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  border: none;
-}
-.wallet {
-  background: #141a2e;
-  padding: 10px;
-  margin-bottom: 8px;
-  border-radius: 6px;
-  font-size: 14px;
-  word-break: break-all;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>ستوشي - الخزائن</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      direction: rtl;
+    }
+
+    header {
+      background: #020617;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #1e293b;
+      border-radius: 12px;
+    }
+    header h1 { color: #38bdf8; margin: 0; }
+    header p { color: #94a3b8; margin-top: 5px; font-size: 14px; }
+    .logo { font-size: 40px; }
+
+    .vault-container {
+      max-width: 500px;
+      margin: 20px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .vault-card {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .vault-card:hover { border-color: #38bdf8; transform: scale(1.03); }
+    .vault-card h2 { color: #38bdf8; margin: 0 0 10px 0; }
+    .vault-card p { font-size: 14px; color: #cbd5f5; margin: 0; }
+
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>خزائن Ethereum</h2>
-  <input type="text" id="search" placeholder="ابحث عن عنوان محفظة">
-  <div id="wallets"></div>
+<header>
+  <div class="logo">🪙💼</div>
+  <h1>ستوشي</h1>
+  <p>الخزائن المشفّرة</p>
+</header>
+
+<div class="vault-container">
+  <!-- الخزنة العليا -->
+  <div class="vault-card" onclick="alert('فتح خزائن منصة ستوشي (مشفر)');">
+    <h2>🏛️ خزائن منصة ستوشي</h2>
+    <p>عرض خزائن المنصة المشفّرة فقط</p>
+  </div>
+
+  <!-- الخزنة السفلى -->
+  <div class="vault-card" onclick="alert('فتح خزائن البلوك تشين');">
+    <h2>🌐 خزائن البلوك تشين</h2>
+    <p>عرض جميع الشبكات والمحافظ المرتبطة بها</p>
+  </div>
 </div>
-
-<script>
-const walletsDiv = document.getElementById("wallets");
-const searchInput = document.getElementById("search");
-let wallets = [];
-
-async function loadWallets() {
-  const res = await fetch(
-    "https://api.ethplorer.io/getTop?apiKey=freekey&criteria=mostETH"
-  );
-  const data = await res.json();
-  wallets = data.holders.map(w => w.address);
-  render(wallets);
-}
-
-function render(list) {
-  walletsDiv.innerHTML = "";
-  list.forEach(addr => {
-    walletsDiv.innerHTML += `
-      <div class="wallet">${addr}</div>
-    `;
-  });
-}
-
-searchInput.addEventListener("input", e => {
-  const val = e.target.value.toLowerCase();
-  const filtered = wallets.filter(w => w.toLowerCase().includes(val));
-  render(filtered);
-});
-
-loadWallets();
-</script>
 
 </body>
 </html>
