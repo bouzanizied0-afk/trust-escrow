@@ -26,19 +26,23 @@
     .login-container h1 { color: #38bdf8; }
     .login-container p { font-size: 14px; color: #94a3b8; }
     .login-container input {
-      width: 100%; padding: 10px; margin-bottom: 15px;
-      border-radius: 6px; border: 1px solid #1e293b;
-      background: #0f172a; color: #e5e7eb;
-    }
-    .login-container label {
-      font-size: 12px; color: #94a3b8;
-      display: block; text-align: right;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #1e293b;
+      background: #0f172a;
+      color: #e5e7eb;
     }
     .login-container button {
-      width: 100%; padding: 10px;
-      background: #1e40af; border: none;
-      border-radius: 6px; color: #fff;
-      font-size: 16px; cursor: pointer;
+      width: 100%;
+      padding: 10px;
+      background: #1e40af;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
       margin-bottom: 12px;
     }
     .alt-login button { background: #334155; }
@@ -57,6 +61,7 @@
       border-radius: 12px;
     }
     header h1 { color: #38bdf8; margin: 0; }
+    header p { color: #94a3b8; font-size: 14px; }
     .logo { font-size: 40px; }
 
     .container {
@@ -91,36 +96,6 @@
       max-width: 1000px;
       margin: 20px auto;
     }
-
-    /* ===== Modal الخزائن ===== */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: #020617;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-    }
-    .vault {
-      background: #0f172a;
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      font-size: 13px;
-    }
-    .close {
-      text-align: center;
-      margin-top: 10px;
-      cursor: pointer;
-      color: #38bdf8;
-    }
   </style>
 </head>
 <body>
@@ -148,45 +123,36 @@
   </header>
 
   <div class="container">
-    <div class="card"><h3>🏦 إنشاء صفقة</h3></div>
-    <div class="card"><h3>🔒 USDT محجوز</h3></div>
-    <div class="card"><h3>💵 كاش قيد التحويل</h3></div>
-    <div class="card"><h3>⚖️ نزاع / طعن</h3></div>
-    <div class="card"><h3>🪪 كشف الهوية</h3></div>
+    <div class="card">
+      <h3>🏦 إنشاء صفقة</h3>
+      <p>ابدأ صفقة جديدة وحدد الطرفين والمبلغ</p>
+    </div>
 
-    <!-- الخزائن -->
-    <div class="card" onclick="openVaults()">
-      <h3>🧰 الخزائن</h3>
-      <p>عرض جميع الخزائن المشفّرة</p>
+    <div class="card">
+      <h3>🔒 USDT محجوز</h3>
+      <p>يتم حجز العملة حتى اكتمال الصفقة</p>
+    </div>
+
+    <div class="card">
+      <h3>💵 كاش قيد التحويل</h3>
+      <p>بانتظار تأكيد الاستلام</p>
+    </div>
+
+    <div class="card">
+      <h3>⚖️ نزاع / طعن</h3>
+      <p>في حال وجود مشكلة بين الطرفين</p>
+    </div>
+
+    <div class="card">
+      <h3>🪪 كشف الهوية</h3>
+      <p>يتم الكشف فقط عند النزاع</p>
     </div>
   </div>
 </div>
 
 <footer>
-  كشف الهوية يتم فقط عند النزاع
+  باستخدامك هذه المنصة أنت توافق على الشروط والأحكام
 </footer>
-
-<!-- Modal -->
-<div class="modal" id="vaultModal">
-  <div class="modal-content">
-    <h3>🧰 خزائن مشفّرة</h3>
-
-    <div class="vault">0xA3F9•••8C2 | 🟢 حر</div>
-    <div class="vault">0x91B2•••E44 | 🔒 محجوز</div>
-    <div class="vault">0xFF02•••1AA | 🟢 حر</div>
-
-    <div class="close" onclick="closeVaults()">إغلاق</div>
-  </div>
-</div>
-
-<script>
-  function openVaults() {
-    document.getElementById("vaultModal").style.display = "flex";
-  }
-  function closeVaults() {
-    document.getElementById("vaultModal").style.display = "none";
-  }
-</script>
 
 </body>
 </html>
