@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>ستوشي - تسجيل الدخول</title>
+  <title>ستوشي</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -11,27 +11,26 @@
       background: #0f172a;
       color: #e5e7eb;
       direction: rtl;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
     }
+
+    /* ===== تسجيل الدخول ===== */
     .login-container {
       background: #020617;
-      padding: 40px 30px;
+      padding: 30px 25px;
       border-radius: 12px;
       width: 320px;
       box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      margin: 20px auto;
       text-align: center;
     }
     .login-container h1 {
       color: #38bdf8;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     .login-container p {
       font-size: 14px;
       color: #94a3b8;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
     .login-container input[type="text"],
     .login-container input[type="password"] {
@@ -87,10 +86,86 @@
       display: inline-block;
       vertical-align: middle;
     }
+
+    /* ===== واجهة البطاقات ===== */
+    .dashboard {
+      padding: 20px;
+      max-width: 1000px;
+      margin: 20px auto;
+    }
+    header {
+      background: #020617;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #1e293b;
+      border-radius: 12px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 32px;
+      color: #38bdf8;
+    }
+    header p {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #94a3b8;
+    }
+    .logo {
+      font-size: 40px;
+      margin-bottom: 5px;
+    }
+    .container {
+      padding: 20px 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+    .card {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: scale(1.05);
+      border-color: #38bdf8;
+    }
+    .card h3 {
+      margin: 10px 0;
+      color: #38bdf8;
+    }
+    .card p {
+      font-size: 13px;
+      color: #cbd5f5;
+      margin-bottom: 15px;
+    }
+    .card button {
+      background: #1e40af;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    footer {
+      background: #020617;
+      padding: 15px;
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+      border-top: 1px solid #1e293b;
+      max-width: 1000px;
+      margin: 0 auto 20px auto;
+      border-radius: 12px;
+    }
   </style>
 </head>
 <body>
 
+<!-- ===== تسجيل الدخول ===== -->
 <div class="login-container">
   <h1>ستوشي</h1>
   <p>مرحبًا بك في منصة وسيطة تمنع الاحتيال في تبادل USDT والكاش</p>
@@ -124,6 +199,53 @@
     <a id="signupLink">إنشاء حساب جديد</a>
   </div>
 </div>
+
+<!-- ===== واجهة البطاقات ===== -->
+<div class="dashboard">
+  <header>
+    <div class="logo">🪙💼</div>
+    <h1>ستوشي</h1>
+    <p>منصة وسيطة تمنع الاحتيال في تبادل USDT والكاش</p>
+  </header>
+
+  <div class="container">
+
+    <div class="card">
+      <h3>🏦 إنشاء صفقة</h3>
+      <p>ابدأ صفقة جديدة وحدد الطرفين والمبلغ.</p>
+      <button>قريبًا</button>
+    </div>
+
+    <div class="card">
+      <h3>🔒 USDT محجوز</h3>
+      <p>يتم حجز USDT حتى اكتمال الصفقة.</p>
+      <button>غير مفعل</button>
+    </div>
+
+    <div class="card">
+      <h3>💵 كاش قيد التحويل</h3>
+      <p>بانتظار تأكيد استلام الكاش.</p>
+      <button>غير مفعل</button>
+    </div>
+
+    <div class="card">
+      <h3>⚖️ نزاع / طعن</h3>
+      <p>في حال وجود مشكلة بين الطرفين.</p>
+      <button>مغلق</button>
+    </div>
+
+    <div class="card">
+      <h3>🪪 كشف الهوية</h3>
+      <p>يتم كشف الهوية فقط عند النزاع.</p>
+      <button>محمي</button>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  باستخدامك هذه المنصة أنت توافق على كشف هويتك للطرف الآخر عند النزاع وفق الشروط.
+</footer>
 
 <script>
   document.getElementById("loginBtn").addEventListener("click", function(){
