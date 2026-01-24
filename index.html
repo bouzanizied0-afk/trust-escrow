@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <title>ستوشي - تسجيل الدخول</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- مكتبة Font Awesome للأيقونات -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
     body {
       margin: 0;
@@ -68,6 +72,12 @@
       justify-content: center;
       gap: 8px;
     }
+    .login-container .alt-login {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
     .login-container .alt-login button {
       background: #334155;
       cursor: pointer;
@@ -83,9 +93,11 @@
       margin-right: 5px;
       cursor: pointer;
     }
-    .login-container img {
-      display: inline-block;
-      vertical-align: middle;
+    .fa-google {
+      color: #4285F4; /* لون شعار Google */
+    }
+    .fa-apple {
+      color: #fff; /* لون شعار Apple */
     }
   </style>
 </head>
@@ -109,14 +121,8 @@
   <button id="loginBtn">تسجيل الدخول</button>
 
   <div class="alt-login">
-    <button id="googleBtn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.png" alt="Google" width="20" height="20">
-      تسجيل الدخول عبر Google
-    </button>
-    <button id="appleBtn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" width="20" height="20">
-      تسجيل الدخول عبر Apple
-    </button>
+    <button id="googleBtn"><i class="fab fa-google"></i> تسجيل الدخول عبر Google</button>
+    <button id="appleBtn"><i class="fab fa-apple"></i> تسجيل الدخول عبر Apple</button>
   </div>
 
   <div class="signup">
