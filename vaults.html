@@ -1,85 +1,191 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>خزائن ستوشي</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: #e5e7eb;
-  direction: rtl;
-}
-header {
-  background: #020617;
-  padding: 15px;
-  text-align: center;
-  border-bottom: 1px solid #1e293b;
-}
-header h1 { color: #38bdf8; }
+  <meta charset="UTF-8">
+  <title>ستوشي - خزائن البلوك تشين</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      direction: rtl;
+    }
 
-.container {
-  padding: 15px;
-}
-.chain {
-  background: #020617;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #1e293b;
-  cursor: pointer;
-}
-.chain:hover {
-  border-color: #38bdf8;
-}
-.vault {
-  background: #0f172a;
-  padding: 8px;
-  border-radius: 6px;
-  margin: 5px 0;
-  font-size: 13px;
-  display: none;
-}
-</style>
+    header {
+      background: #020617;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #1e293b;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #38bdf8;
+    }
+    header p {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-top: 5px;
+    }
+
+    .networks {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    .networks button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      background: #1e40af;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .networks button:hover {
+      background: #38bdf8;
+      color: #020617;
+    }
+
+    .search-container {
+      text-align: center;
+      margin: 10px 0 20px 0;
+    }
+    .search-container input {
+      width: 80%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #1e293b;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    .vaults-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      max-width: 1000px;
+      margin: 0 auto 30px auto;
+      padding: 0 15px;
+    }
+    .vault-card {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .vault-card:hover {
+      transform: scale(1.05);
+      border-color: #38bdf8;
+    }
+    .vault-card h3 {
+      color: #38bdf8;
+      margin: 5px 0;
+    }
+    .vault-card p {
+      font-size: 13px;
+      color: #cbd5f5;
+    }
+
+    footer {
+      background: #020617;
+      padding: 15px;
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+      border-top: 1px solid #1e293b;
+      border-radius: 12px;
+      max-width: 1000px;
+      margin: 0 auto 20px auto;
+    }
+  </style>
 </head>
 <body>
 
 <header>
-  <h1>🧰 خزائن البلوك تشاين</h1>
-  <p>عرض جميع الخزائن المشفرة بدون هوية</p>
+  <div class="logo">🪙💼</div>
+  <h1>محفظة ساتوشي ناكاموتو</h1>
+  <p>جميع خزائن البلوك تشين المشفّرة</p>
 </header>
 
-<div class="container">
-
-<div class="chain" onclick="toggleVaults('eth')">
-  Ethereum - عدد الخزائن: 3
+<!-- الشبكات -->
+<div class="networks">
+  <button onclick="showNetwork('ethereum')">Ethereum</button>
+  <button onclick="showNetwork('bnb')">BNB Chain</button>
+  <button onclick="showNetwork('tron')">Tron</button>
+  <button onclick="showNetwork('bitcoin')">Bitcoin</button>
 </div>
-<div id="eth" class="vault">0xA3F9•••8C2 | 🟢 حر</div>
-<div id="eth" class="vault">0x91B2•••E44 | 🔒 محجوز</div>
-<div id="eth" class="vault">0xFF02•••1AA | 🟢 حر</div>
 
-<div class="chain" onclick="toggleVaults('tron')">
-  TRON - عدد الخزائن: 2
+<!-- محرك البحث -->
+<div class="search-container">
+  <input type="text" id="searchInput" placeholder="ابحث عن عنوان محفظة..." onkeyup="searchVaults()">
 </div>
-<div id="tron" class="vault">T9F3•••K2A | 🟢 حر</div>
-<div id="tron" class="vault">T8B1•••Z44 | 🔒 محجوز</div>
 
-<div class="chain" onclick="toggleVaults('bsc')">
-  BSC - عدد الخزائن: 1
+<!-- خزائن الشبكات -->
+<div class="vaults-container" id="vaultsContainer">
+  <!-- محتوى الخزائن يتم تغييره ديناميكيًا -->
 </div>
-<div id="bsc" class="vault">0x77A9•••9DD | 🟢 حر</div>
 
-</div>
+<footer>
+  جميع المحافظ عامة وشفافة على البلوك تشين. لا تشارك مفتاحك الخاص.
+</footer>
 
 <script>
-function toggleVaults(chain) {
-  let elements = document.querySelectorAll("#" + chain);
-  elements.forEach(e => {
-    e.style.display = (e.style.display === "block") ? "none" : "block";
-  });
-}
+  const vaultsData = {
+    ethereum: [
+      {address: '0xA3F9•••8C2', status: '🟢 حر'},
+      {address: '0x91B2•••E44', status: '🔒 محجوز'},
+      {address: '0xFF02•••1AA', status: '🟢 حر'}
+    ],
+    bnb: [
+      {address: '0xB1F3•••9D5', status: '🟢 حر'},
+      {address: '0xC2A4•••4F7', status: '🔒 محجوز'}
+    ],
+    tron: [
+      {address: 'TQ2F•••8M1', status: '🟢 حر'},
+      {address: 'TQ1A•••2B3', status: '🔒 محجوز'}
+    ],
+    bitcoin: [
+      {address: '1A1z•••1aa', status: '🟢 حر'},
+      {address: '1Bv3•••3cc', status: '🔒 محجوز'}
+    ]
+  };
+
+  let currentNetwork = 'ethereum';
+
+  function showNetwork(network) {
+    currentNetwork = network;
+    renderVaults(vaultsData[network]);
+  }
+
+  function renderVaults(vaults) {
+    const container = document.getElementById('vaultsContainer');
+    container.innerHTML = '';
+    vaults.forEach(vault => {
+      const card = document.createElement('div');
+      card.className = 'vault-card';
+      card.innerHTML = `<h3>${vault.address}</h3><p>${vault.status}</p>`;
+      container.appendChild(card);
+    });
+  }
+
+  function searchVaults() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = vaultsData[currentNetwork].filter(v => v.address.toLowerCase().includes(query));
+    renderVaults(filtered);
+  }
+
+  // عرض الشبكة الافتراضية عند تحميل الصفحة
+  window.onload = () => {
+    showNetwork(currentNetwork);
+  };
 </script>
 
 </body>
