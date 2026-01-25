@@ -17,7 +17,6 @@
       direction: rtl;
     }
 
-    /* ===== تسجيل الدخول ===== */
     .login-container {
       background: #020617;
       padding: 30px 25px;
@@ -49,30 +48,61 @@
       font-size: 14px;
     }
 
-    .login-container input:focus {
-      outline: none;
-      border-color: #38bdf8;
-    }
-
     .login-container button {
       width: 100%;
       padding: 10px;
-      background: #1e40af;
       border: none;
       border-radius: 6px;
-      color: #fff;
-      font-size: 16px;
+      font-size: 15px;
       cursor: pointer;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
 
-    .login-container button:hover {
+    .login-btn {
+      background: #1e40af;
+      color: #fff;
+    }
+
+    .login-btn:hover {
       background: #1d4ed8;
     }
 
-    .alt-login button {
-      background: #334155;
-      margin-bottom: 8px;
+    /* ===== Google ===== */
+    .google-btn {
+      background: #ffffff;
+      color: #111;
+    }
+
+    .google-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: conic-gradient(
+        #ea4335 0deg 90deg,
+        #fbbc05 90deg 180deg,
+        #34a853 180deg 270deg,
+        #4285f4 270deg 360deg
+      );
+      color: white;
+      font-size: 14px;
+    }
+
+    /* ===== Apple ===== */
+    .apple-btn {
+      background: #000;
+      color: #fff;
+    }
+
+    .apple-icon {
+      font-size: 20px;
     }
 
     .signup {
@@ -96,12 +126,17 @@
     <input type="text" placeholder="البريد الإلكتروني أو رقم الهاتف">
     <input type="password" placeholder="كلمة المرور">
 
-    <button>تسجيل الدخول</button>
+    <button class="login-btn">تسجيل الدخول</button>
 
-    <div class="alt-login">
-      <button>الدخول عبر Google</button>
-      <button>الدخول عبر Apple</button>
-    </div>
+    <button class="google-btn">
+      <div class="google-icon">G</div>
+      الدخول عبر Google
+    </button>
+
+    <button class="apple-btn">
+      <div class="apple-icon"></div>
+      الدخول عبر Apple
+    </button>
 
     <div class="signup">إنشاء حساب جديد</div>
   </div>
