@@ -44,14 +44,21 @@
                             '50%': { opacity: '0.7' }
                         },
                         slideIn: {
-                            '0%': { transform: 'translateX(-20px)', opacity: '0' },
-                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                            '0%':100%': { transform: 'translateX(0)', opacity: '1' }
                         }
                     }
                 }
             }
         }
     </script>
+
+    <!-- سكربت لتسجيل الدخول مباشرة -->
+    <script>
+        function goToApp() {
+            window.location.href = "app.html";
+        }
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body class="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 text-gray-100 font-sans">
@@ -267,17 +274,13 @@
                                     </div>
                                 </div>
 
-                                <!-- Login Button -->
-                                <button 
-                                    type="submit"
-                                    id="globalLoginButton"
-                                    class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white py-3.5 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-cyan-500/25 flex items-center justify-center group"
-                                >
-                                    <span id="globalButtonText" class="flex items-center">
-                                        <span>Sign In</span>
-                                        <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
-                                    </span>
-                                </button>
+<button 
+    type="button"
+    onclick="goToApp()"
+    class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white py-3.5 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-cyan-500/25 flex items-center justify-center group"
+>
+    تسجيل الدخول
+</button>
 
                                 <!-- Divider -->
                                 <div class="relative">
