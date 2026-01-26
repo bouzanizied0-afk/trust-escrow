@@ -1,90 +1,853 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crypto Trading Platform</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-<style>
-    body { transition: background-color 0.3s ease, color 0.3s ease; }
-    .hidden { display: none; }
-</style>
+    <base target="_self">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Crypto Trading Platform</title>
+    <meta name="description" content="Mobile-first cryptocurrency trading platform with dark/light mode">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: "#0ea5e9",
+                            light: "#0284c7",
+                            dark: "#0369a1"
+                        },
+                        secondary: {
+                            DEFAULT: "#8b5cf6",
+                            light: "#7c3aed",
+                            dark: "#6d28d9"
+                        },
+                        light: {
+                            50: "#fafafa",
+                            100: "#f4f4f5",
+                            200: "#e4e4e7",
+                            300: "#d4d4d8",
+                            400: "#a1a1aa",
+                            500: "#71717a",
+                            600: "#52525b",
+                            700: "#3f3f46",
+                            800: "#27272a",
+                            900: "#18181b"
+                        }
+                    },
+                    animation: {
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'slide-out': 'slideOut 0.3s ease-in',
+                        'fade-in': 'fadeIn 0.2s ease-out'
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(0)' }
+                        },
+                        slideOut: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-100%)' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            overscroll-behavior: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .sidebar-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s ease;
+        }
+        
+        .bottom-nav-shadow {
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .content-transition {
+            transition: opacity 0.2s ease;
+        }
+        
+        .theme-transition {
+            transition: all 0.3s ease;
+        }
+        
+        /* Light mode specific styles */
+        .light .bottom-nav-shadow {
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .light .sidebar-overlay {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-light-50 text-light-900 dark:bg-light-900 dark:text-light-50">
-
-<!-- Sidebar -->
-<aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-light-50 dark:bg-light-800 z-50 transform -translate-x-full transition-transform">
-    <div class="p-6 border-b border-light-200 dark:border-light-700">
-        <h2 class="font-bold text-lg">Trading Pro</h2>
-    </div>
-    <nav class="p-4">
-        <ul class="space-y-2">
-            <li><button onclick="switchMainSection('home')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg hover:bg-light-200 dark:hover:bg-light-700 flex items-center space-x-3"><i class="fas fa-home w-6 text-primary"></i><span>Home</span></button></li>
-            <li><button onclick="switchMainSection('p2p')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg hover:bg-light-200 dark:hover:bg-light-700 flex items-center space-x-3"><i class="fas fa-exchange-alt w-6 text-secondary"></i><span>P2P</span></button></li>
-            <li><button onclick="switchMainSection('wallet')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg hover:bg-light-200 dark:hover:bg-light-700 flex items-center space-x-3"><i class="fas fa-wallet w-6 text-green-500"></i><span>Wallet</span></button></li>
-        </ul>
-    </nav>
-</aside>
-
-<!-- Main Content -->
-<div class="min-h-screen pl-64 p-4">
-    <header class="sticky top-0 bg-light-50 dark:bg-light-800 border-b border-light-200 dark:border-light-700 p-4 flex justify-between items-center">
-        <button onclick="toggleSidebar()"><i class="fas fa-bars text-xl"></i></button>
-        <h1 id="currentSection" class="font-bold text-lg">Home</h1>
-        <button onclick="toggleTheme()"><i id="themeIcon" class="fas fa-moon"></i></button>
-    </header>
-
-    <main id="mainContent" class="mt-4">
-        <div id="homeContent">
-            <h2 class="font-bold text-xl">Welcome to Home</h2>
-            <p>This is the home section content.</p>
+<body class="min-h-screen bg-light-50 text-light-900 dark:bg-light-900 dark:text-light-50 theme-transition">
+    <!-- Sidebar Overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 z-40 sidebar-overlay hidden" onclick="closeSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-light-50 dark:bg-light-800 z-50 transform -translate-x-full transition-transform duration-300 theme-transition">
+        <div class="p-6 border-b border-light-200 dark:border-light-700">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
+                        <i class="fas fa-coins text-white"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-lg">Trading Pro</h2>
+                        <p class="text-light-500 dark:text-light-400 text-sm">v1.0.0</p>
+                    </div>
+                </div>
+                <button onclick="closeSidebar()" class="text-light-500 dark:text-light-400 hover:text-light-900 dark:hover:text-light-50">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
         </div>
-    </main>
-</div>
+        
+        <nav class="p-4">
+            <ul class="space-y-2">
+                <li>
+                    <button onclick="switchMainSection('home')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg hover:bg-light-200 dark:hover:bg-light-700 transition-colors flex items-center space-x-3 theme-transition">
+                        <i class="fas fa-home w-6 text-primary"></i>
+                        <span>Home</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="switchMainSection('p2p')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg hover:bg-light-200 dark:hover:bg-light-700 transition-colors flex items-center space-x-3 theme-transition">
+                        <i class="fas fa-exchange-alt w-6 text-secondary"></i>
+                        <span>P2P</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="switchMainSection('wallet')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg hover:bg-light-200 dark:hover:bg-light-700 transition-colors flex items-center space-x-3 theme-transition">
+                        <i class="fas fa-wallet w-6 text-green-500"></i>
+                        <span>Wallet</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="switchMainSection('market')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg hover:bg-light-200 dark:hover:bg-light-700 transition-colors flex items-center space-x-3 theme-transition">
+                        <i class="fas fa-chart-line w-6 text-yellow-500"></i>
+                        <span>Market</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="switchMainSection('transactions')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg hover:bg-light-200 dark:hover:bg-light-700 transition-colors flex items-center space-x-3 theme-transition">
+                        <i class="fas fa-history w-6 text-purple-500"></i>
+                        <span>Transactions</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="switchMainSection('account')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg hover:bg-light-200 dark:hover:bg-light-700 transition-colors flex items-center space-x-3 theme-transition">
+                        <i class="fas fa-user-cog w-6 text-blue-500"></i>
+                        <span>Account / Settings</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-light-200 dark:border-light-700">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-light-200 dark:bg-light-700 rounded-full overflow-hidden">
+                        <img src="https://picsum.photos/32?random=100" alt="User avatar" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">User123</p>
+                        <p class="text-xs text-light-500 dark:text-light-400">Verified</p>
+                    </div>
+                </div>
+                <button class="text-light-500 dark:text-light-400 hover:text-light-900 dark:hover:text-light-50">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
 
-<script>
-const appState = { currentSection: 'home', darkMode: true, sidebarOpen: false };
+    <!-- Main Content -->
+    <div class="min-h-screen pb-20">
+        <!-- Top Header -->
+        <header class="sticky top-0 z-30 bg-light-50 dark:bg-light-800 border-b border-light-200 dark:border-light-700 theme-transition">
+            <div class="px-4 py-3 flex items-center justify-between">
+                <button onclick="toggleSidebar()" class="p-2 hover:bg-light-200 dark:hover:bg-light-700 rounded-lg theme-transition">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="text-center">
+                        <h1 id="currentSection" class="font-bold text-lg">Home</h1>
+                        <p id="currentSubSection" class="text-xs text-light-500 dark:text-light-400">Overview</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <!-- Theme Toggle Button -->
+                    <button id="themeToggle" onclick="toggleTheme()" class="p-2 hover:bg-light-200 dark:hover:bg-light-700 rounded-lg theme-transition">
+                        <i id="themeIcon" class="fas fa-moon"></i>
+                    </button>
+                    <button class="p-2 hover:bg-light-200 dark:hover:bg-light-700 rounded-lg theme-transition">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="p-2 hover:bg-light-200 dark:hover:bg-light-700 rounded-lg theme-transition">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
 
-// Toggle Sidebar
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('-translate-x-full');
-    appState.sidebarOpen = !appState.sidebarOpen;
-}
+        <!-- Main Content Area -->
+        <main id="mainContent" class="p-4 content-transition">
+            <!-- Home Content (Default) -->
+            <div id="homeContent" class="space-y-6">
+                <!-- Balance Card -->
+                <div class="bg-gradient-to-r from-light-100 to-light-50 dark:from-light-800 dark:to-light-900 rounded-2xl p-6 border border-light-200 dark:border-light-700 theme-transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-light-500 dark:text-light-400 text-sm">Total Balance</p>
+                            <h2 class="text-3xl font-bold mt-1">$12,458.75</h2>
+                            <p class="text-green-500 text-sm mt-2">+2.4% today</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-primary hover:bg-primary-light dark:hover:bg-primary-dark px-4 py-2 rounded-lg text-sm font-medium text-white theme-transition">Deposit</button>
+                            <button class="bg-light-200 dark:bg-light-700 hover:bg-light-300 dark:hover:bg-light-600 px-4 py-2 rounded-lg text-sm font-medium theme-transition">Withdraw</button>
+                        </div>
+                    </div>
+                </div>
 
-// Toggle Theme
-function toggleTheme() {
-    appState.darkMode = !appState.darkMode;
-    document.documentElement.classList.toggle('dark', appState.darkMode);
-    document.getElementById('themeIcon').classList.toggle('fa-sun', appState.darkMode);
-    document.getElementById('themeIcon').classList.toggle('fa-moon', !appState.darkMode);
-}
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-4 gap-3">
+                    <button class="bg-light-100 dark:bg-light-800 hover:bg-light-200 dark:hover:bg-light-700 p-4 rounded-xl flex flex-col items-center justify-center space-y-2 theme-transition">
+                        <i class="fas fa-bolt text-primary text-xl"></i>
+                        <span class="text-xs">Trade</span>
+                    </button>
+                    <button class="bg-light-100 dark:bg-light-800 hover:bg-light-200 dark:hover:bg-light-700 p-4 rounded-xl flex flex-col items-center justify-center space-y-2 theme-transition">
+                        <i class="fas fa-exchange-alt text-secondary text-xl"></i>
+                        <span class="text-xs">Convert</span>
+                    </button>
+                    <button class="bg-light-100 dark:bg-light-800 hover:bg-light-200 dark:hover:bg-light-700 p-4 rounded-xl flex flex-col items-center justify-center space-y-2 theme-transition">
+                        <i class="fas fa-chart-pie text-green-500 text-xl"></i>
+                        <span class="text-xs">Earn</span>
+                    </button>
+                    <button class="bg-light-100 dark:bg-light-800 hover:bg-light-200 dark:hover:bg-light-700 p-4 rounded-xl flex flex-col items-center justify-center space-y-2 theme-transition">
+                        <i class="fas fa-gift text-yellow-500 text-xl"></i>
+                        <span class="text-xs">Rewards</span>
+                    </button>
+                </div>
 
-// Switch Main Section
-function switchMainSection(section) {
-    appState.currentSection = section;
-    document.getElementById('currentSection').textContent = section.charAt(0).toUpperCase() + section.slice(1);
+                <!-- Market Overview -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg">Market Overview</h3>
+                        <button class="text-primary text-sm">See All</button>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-light-100 dark:bg-light-800 hover:bg-light-200 dark:hover:bg-light-700 rounded-xl p-4 flex items-center justify-between theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fab fa-bitcoin text-yellow-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">BTC/USDT</p>
+                                    <p class="text-light-500 dark:text-light-400 text-sm">Bitcoin</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">$43,256.12</p>
+                                <p class="text-green-500 text-sm">+1.8%</p>
+                            </div>
+                        </div>
+                        <div class="bg-light-100 dark:bg-light-800 hover:bg-light-200 dark:hover:bg-light-700 rounded-xl p-4 flex items-center justify-between theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fab fa-ethereum text-purple-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">ETH/USDT</p>
+                                    <p class="text-light-500 dark:text-light-400 text-sm">Ethereum</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">$2,345.67</p>
+                                <p class="text-green-500 text-sm">+0.9%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    if(section === 'p2p') {
-        fetch('p2p.html')
-            .then(res => res.text())
-            .then(html => { document.getElementById('mainContent').innerHTML = html; });
-    } else if(section === 'home') {
-        document.getElementById('mainContent').innerHTML = `
-            <div id="homeContent">
-                <h2 class="font-bold text-xl">Welcome to Home</h2>
-                <p>This is the home section content.</p>
-            </div>`;
-    } else if(section === 'wallet') {
-        document.getElementById('mainContent').innerHTML = `
-            <div id="walletContent">
-                <h2 class="font-bold text-xl">Wallet Section</h2>
-                <p>Wallet content goes here.</p>
-            </div>`;
-    }
-}
-</script>
+            <!-- P2P Content (Hidden by default) -->
+            <div id="p2pContent" class="space-y-6 hidden">
+                <div class="bg-light-100 dark:bg-light-800 rounded-2xl p-6 theme-transition">
+                    <h3 class="font-bold text-xl mb-4">P2P Trading</h3>
+                    <p class="text-light-500 dark:text-light-400 mb-6">Trade directly with other users at your preferred rates</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-light-50 dark:bg-light-900 p-4 rounded-xl theme-transition">
+                            <p class="text-sm text-light-500 dark:text-light-400">Best Buy Price</p>
+                            <p class="text-2xl font-bold mt-1">$43,200</p>
+                        </div>
+                        <div class="bg-light-50 dark:bg-light-900 p-4 rounded-xl theme-transition">
+                            <p class="text-sm text-light-500 dark:text-light-400">Best Sell Price</p>
+                            <p class="text-2xl font-bold mt-1">$43,300</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-light-200 dark:bg-light-700 rounded-lg theme-transition">
+                            <div>
+                                <p class="font-medium">BTC/USDT</p>
+                                <p class="text-sm text-light-500 dark:text-light-400">Available: 2.5 BTC</p>
+                            </div>
+                            <span class="text-primary font-medium">Trade Now</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-light-200 dark:bg-light-700 rounded-lg theme-transition">
+                            <div>
+                                <p class="font-medium">ETH/USDT</p>
+                                <p class="text-sm text-light-500 dark:text-light-400">Available: 15.8 ETH</p>
+                            </div>
+                            <span class="text-primary font-medium">Trade Now</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Wallet Content (Hidden by default) -->
+            <div id="walletContent" class="space-y-6 hidden">
+                <div class="bg-light-100 dark:bg-light-800 rounded-2xl p-6 theme-transition">
+                    <h3 class="font-bold text-xl mb-6">Wallet Balance</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fab fa-bitcoin text-yellow-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Bitcoin (BTC)</p>
+                                    <p class="text-sm text-light-500 dark:text-light-400">0.2548 BTC</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">$11,024.56</p>
+                                <p class="text-green-500 text-sm">+2.1%</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fab fa-ethereum text-purple-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Ethereum (ETH)</p>
+                                    <p class="text-sm text-light-500 dark:text-light-400">3.567 ETH</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">$8,345.12</p>
+                                <p class="text-green-500 text-sm">+1.4%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Content (Hidden by default) -->
+            <div id="marketContent" class="space-y-6 hidden">
+                <div class="bg-light-100 dark:bg-light-800 rounded-2xl p-6 theme-transition">
+                    <h3 class="font-bold text-xl mb-4">Market Prices</h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left text-light-500 dark:text-light-400 text-sm border-b border-light-200 dark:border-light-700">
+                                    <th class="pb-3">Asset</th>
+                                    <th class="pb-3">Price</th>
+                                    <th class="pb-3">24h Change</th>
+                                    <th class="pb-3">Volume</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm">
+                                <tr class="border-b border-light-200/50 dark:border-light-700/50">
+                                    <td class="py-3">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fab fa-bitcoin text-yellow-500"></i>
+                                            <span>BTC</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">$43,256.12</td>
+                                    <td class="py-3 text-green-500">+1.8%</td>
+                                    <td class="py-3">$24.5B</td>
+                                </tr>
+                                <tr class="border-b border-light-200/50 dark:border-light-700/50">
+                                    <td class="py-3">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fab fa-ethereum text-purple-500"></i>
+                                            <span>ETH</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">$2,345.67</td>
+                                    <td class="py-3 text-green-500">+0.9%</td>
+                                    <td class="py-3">$12.3B</td>
+                                </tr>
+                                <tr class="border-b border-light-200/50 dark:border-light-700/50">
+                                    <td class="py-3">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fab fa-btc text-blue-500"></i>
+                                            <span>BNB</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">$312.45</td>
+                                    <td class="py-3 text-red-500">-0.5%</td>
+                                    <td class="py-3">$2.1B</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Content (Hidden by default) -->
+            <div id="transactionsContent" class="space-y-6 hidden">
+                <div class="bg-light-100 dark:bg-light-800 rounded-2xl p-6 theme-transition">
+                    <h3 class="font-bold text-xl mb-6">Recent Transactions</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-arrow-down text-green-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">BTC Purchase</p>
+                                    <p class="text-sm text-light-500 dark:text-light-400">2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">+0.025 BTC</p>
+                                <p class="text-green-500 text-sm">$1,081.40</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-arrow-up text-red-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">ETH Withdrawal</p>
+                                    <p class="text-sm text-light-500 dark:text-light-400">1 day ago</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">-0.5 ETH</p>
+                                <p class="text-red-500 text-sm">$1,172.84</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Content (Hidden by default) -->
+            <div id="accountContent" class="space-y-6 hidden">
+                <div class="bg-light-100 dark:bg-light-800 rounded-2xl p-6 theme-transition">
+                    <h3 class="font-bold text-xl mb-6">Account Settings</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl hover:bg-light-200 dark:hover:bg-light-700 cursor-pointer theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-blue-500"></i>
+                                </div>
+                                <span>Profile Information</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-light-400 dark:text-light-500"></i>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl hover:bg-light-200 dark:hover:bg-light-700 cursor-pointer theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-shield-alt text-green-500"></i>
+                                </div>
+                                <span>Security</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-light-400 dark:text-light-500"></i>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl hover:bg-light-200 dark:hover:bg-light-700 cursor-pointer theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-bell text-purple-500"></i>
+                                </div>
+                                <span>Notifications</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-light-400 dark:text-light-500"></i>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl hover:bg-light-200 dark:hover:bg-light-700 cursor-pointer theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-moon text-yellow-500"></i>
+                                </div>
+                                <span>Appearance</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-light-400 dark:text-light-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav id="bottomNav" class="fixed bottom-0 left-0 right-0 bg-light-50 dark:bg-light-800 border-t border-light-200 dark:border-light-700 bottom-nav-shadow z-40 theme-transition">
+        <div class="px-4 py-3">
+            <!-- Home Bottom Nav -->
+            <div id="homeBottomNav" class="flex justify-between items-center">
+                <button onclick="switchSubSection('overview')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="overview">
+                    <i class="fas fa-chart-pie text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Overview</span>
+                </button>
+                <button onclick="switchSubSection('market')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="market">
+                    <i class="fas fa-chart-line text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Market</span>
+                </button>
+                <button onclick="switchSubSection('news')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="news">
+                    <i class="fas fa-newspaper text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">News</span>
+                </button>
+                <button onclick="switchSubSection('notifications')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="notifications">
+                    <i class="fas fa-bell text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Notifications</span>
+                </button>
+            </div>
+
+            <!-- P2P Bottom Nav -->
+            <div id="p2pBottomNav" class="hidden flex justify-between items-center">
+                <button onclick="switchSubSection('buy')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="buy">
+                    <i class="fas fa-shopping-cart text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Buy</span>
+                </button>
+                <button onclick="switchSubSection('sell')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="sell">
+                    <i class="fas fa-dollar-sign text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Sell</span>
+                </button>
+                <button onclick="switchSubSection('my-orders')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="my-orders">
+                    <i class="fas fa-list text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">My Orders</span>
+                </button>
+                <button onclick="switchSubSection('ads')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="ads">
+                    <i class="fas fa-ad text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Ads</span>
+                </button>
+                <button onclick="switchSubSection('disputes')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="disputes">
+                    <i class="fas fa-gavel text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Disputes</span>
+                </button>
+            </div>
+
+            <!-- Wallet Bottom Nav -->
+            <div id="walletBottomNav" class="hidden flex justify-between items-center">
+                <button onclick="switchSubSection('balance')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="balance">
+                    <i class="fas fa-wallet text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Balance</span>
+                </button>
+                <button onclick="switchSubSection('deposit')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="deposit">
+                    <i class="fas fa-arrow-down text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Deposit</span>
+                </button>
+                <button onclick="switchSubSection('withdraw')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="withdraw">
+                    <i class="fas fa-arrow-up text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Withdraw</span>
+                </button>
+                <button onclick="switchSubSection('transfer')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="transfer">
+                    <i class="fas fa-exchange-alt text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Transfer</span>
+                </button>
+                <button onclick="switchSubSection('history')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="history">
+                    <i class="fas fa-history text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">History</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        // Define application state
+        const appState = {
+            currentSection: "home",
+            currentSubSection: "overview",
+            sidebarOpen: false,
+            darkMode: true // Default to dark mode
+        };
+
+        // Define bottom navigation configurations
+        const bottomNavConfig = {
+            "home": {
+                "id": "homeBottomNav",
+                "items": [
+                    { "id": "overview", "icon": "fas fa-chart-pie", "label": "Overview" },
+                    { "id": "market", "icon": "fas fa-chart-line", "label": "Market" },
+                    { "id": "news", "icon": "fas fa-newspaper", "label": "News" },
+                    { "id": "notifications", "icon": "fas fa-bell", "label": "Notifications" }
+                ]
+            },
+            "p2p": {
+                "id": "p2pBottomNav",
+                "items": [
+                    { "id": "buy", "icon": "fas fa-shopping-cart", "label": "Buy" },
+                    { "id": "sell", "icon": "fas fa-dollar-sign", "label": "Sell" },
+                    { "id": "my-orders", "icon": "fas fa-list", "label": "My Orders" },
+                    { "id": "ads", "icon": "fas fa-ad", "label": "Ads" },
+                    { "id": "disputes", "icon": "fas fa-gavel", "label": "Disputes" }
+                ]
+            },
+            "wallet": {
+                "id": "walletBottomNav",
+                "items": [
+                    { "id": "balance", "icon": "fas fa-wallet", "label": "Balance" },
+                    { "id": "deposit", "icon": "fas fa-arrow-down", "label": "Deposit" },
+                    { "id": "withdraw", "icon": "fas fa-arrow-up", "label": "Withdraw" },
+                    { "id": "transfer", "icon": "fas fa-exchange-alt", "label": "Transfer" },
+                    { "id": "history", "icon": "fas fa-history", "label": "History" }
+                ]
+            },
+            "market": {
+                "id": "homeBottomNav",
+                "items": [
+                    { "id": "overview", "icon": "fas fa-chart-pie", "label": "Overview" },
+                    { "id": "market", "icon": "fas fa-chart-line", "label": "Market" },
+                    { "id": "news", "icon": "fas fa-newspaper", "label": "News" },
+                    { "id": "notifications", "icon": "fas fa-bell", "label": "Notifications" }
+                ]
+            },
+            "transactions": {
+                "id": "homeBottomNav",
+                "items": [
+                    { "id": "overview", "icon": "fas fa-chart-pie", "label": "Overview" },
+                    { "id": "market", "icon": "fas fa-chart-line", "label": "Market" },
+                    { "id": "news", "icon": "fas fa-newspaper", "label": "News" },
+                    { "id": "notifications", "icon": "fas fa-bell", "label": "Notifications" }
+                ]
+            },
+            "account": {
+                "id": "homeBottomNav",
+                "items": [
+                    { "id": "overview", "icon": "fas fa-chart-pie", "label": "Overview" },
+                    { "id": "market", "icon": "fas fa-chart-line", "label": "Market" },
+                    { "id": "news", "icon": "fas fa-newspaper", "label": "News" },
+                    { "id": "notifications", "icon": "fas fa-bell", "label": "Notifications" }
+                ]
+            }
+        };
+
+        // Define section titles
+        const sectionTitles = {
+            "home": "Home",
+            "p2p": "P2P Trading",
+            "wallet": "Wallet",
+            "market": "Market",
+            "transactions": "Transactions",
+            "account": "Account"
+        };
+
+        // Initialize the application
+        function initApp() {
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme === "light") {
+                appState.darkMode = false;
+                document.documentElement.classList.remove("dark");
+                updateThemeIcon();
+            } else {
+                appState.darkMode = true;
+                document.documentElement.classList.add("dark");
+                updateThemeIcon();
+            }
+            
+            // Set initial active states
+            updateBottomNavigation("home");
+            updateActiveContent("home");
+            updateActiveBottomNavItem("overview");
+            
+            // Add click handlers to sidebar items
+            document.querySelectorAll(".sidebar-item").forEach(item => {
+                item.addEventListener("click", function() {
+                    closeSidebar();
+                });
+            });
+            
+            // Add click handlers to bottom nav items
+            document.querySelectorAll(".bottom-nav-item").forEach(item => {
+                item.addEventListener("click", function() {
+                    updateActiveBottomNavItem(this.dataset.section || "overview");
+                });
+            });
+        }
+
+        // Toggle theme between dark and light
+        function toggleTheme() {
+            appState.darkMode = !appState.darkMode;
+            
+            if (appState.darkMode) {
+                document.documentElement.classList.add("dark");
+                localStorage.setItem("theme", "dark");
+            } else {
+                document.documentElement.classList.remove("dark");
+                localStorage.setItem("theme", "light");
+            }
+            
+            updateThemeIcon();
+        }
+
+        // Update theme icon based on current mode
+        function updateThemeIcon() {
+            const themeIcon = document.getElementById("themeIcon");
+            if (appState.darkMode) {
+                themeIcon.classList.remove("fa-moon");
+                themeIcon.classList.add("fa-sun");
+            } else {
+                themeIcon.classList.remove("fa-sun");
+                themeIcon.classList.add("fa-moon");
+            }
+        }
+
+        // Toggle sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("sidebarOverlay");
+            
+            if (appState.sidebarOpen) {
+                sidebar.classList.remove("translate-x-0");
+                sidebar.classList.add("-translate-x-full");
+                overlay.classList.add("hidden");
+            } else {
+                sidebar.classList.remove("-translate-x-full");
+                sidebar.classList.add("translate-x-0");
+                overlay.classList.remove("hidden");
+            }
+            
+            appState.sidebarOpen = !appState.sidebarOpen;
+        }
+
+        // Close sidebar
+        function closeSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("sidebarOverlay");
+            
+            sidebar.classList.remove("translate-x-0");
+            sidebar.classList.add("-translate-x-full");
+            overlay.classList.add("hidden");
+            
+            appState.sidebarOpen = false;
+        }
+
+        // Switch main section
+        function switchMainSection(section) {
+            appState.currentSection = section;
+            appState.currentSubSection = bottomNavConfig[section].items[0].id;
+            
+            // Update UI
+            updateBottomNavigation(section);
+            updateActiveContent(section);
+            updateActiveBottomNavItem(appState.currentSubSection);
+            
+            // Update header
+            document.getElementById("currentSection").textContent = sectionTitles[section];
+            document.getElementById("currentSubSection").textContent = 
+                bottomNavConfig[section].items.find(item => item.id === appState.currentSubSection)?.label || "Overview";
+        }
+
+        // Switch sub-section
+        function switchSubSection(subSection) {
+            appState.currentSubSection = subSection;
+            updateActiveBottomNavItem(subSection);
+            
+            // Update header sub-section
+            document.getElementById("currentSubSection").textContent = 
+                bottomNavConfig[appState.currentSection].items.find(item => item.id === subSection)?.label || "Overview";
+            
+            // Here you would typically update the main content based on the sub-section
+            console.log(`Switched to ${appState.currentSection} > ${subSection}`);
+        }
+
+        // Update bottom navigation
+        function updateBottomNavigation(section) {
+            // Hide all bottom navs
+            document.querySelectorAll("#bottomNav > div > div").forEach(nav => {
+                nav.classList.add("hidden");
+            });
+            
+            // Show the active bottom nav
+            const activeNavId = bottomNavConfig[section].id;
+            document.getElementById(activeNavId).classList.remove("hidden");
+        }
+
+        // Update active content
+        function updateActiveContent(section) {
+            // Hide all content sections
+            document.querySelectorAll("#mainContent > div").forEach(content => {
+                content.classList.add("hidden");
+            });
+            
+            // Show the active content section
+            document.getElementById(`${section}Content`).classList.remove("hidden");
+            
+            // Add fade animation
+            const mainContent = document.getElementById("mainContent");
+            mainContent.style.opacity = "0";
+            setTimeout(() => {
+                mainContent.style.opacity = "1";
+            }, 50);
+        }
+
+        // Update active bottom nav item
+        function updateActiveBottomNavItem(subSection) {
+            // Remove active class from all bottom nav items
+            document.querySelectorAll(".bottom-nav-item").forEach(item => {
+                item.classList.remove("bg-primary/20", "text-primary", "dark:bg-primary/20", "dark:text-primary");
+                item.classList.add("text-light-500", "dark:text-light-400");
+                
+                // Reset icons
+                const icon = item.querySelector("i");
+                if (icon) {
+                    icon.classList.remove("text-primary", "dark:text-primary");
+                    icon.classList.add("text-light-500", "dark:text-light-400");
+                }
+            });
+            
+            // Add active class to current item
+            const activeNav = document.querySelector(`[data-section="${subSection}"]`);
+            if (activeNav) {
+                activeNav.classList.add("bg-primary/20", "text-primary", "dark:bg-primary/20", "dark:text-primary");
+                activeNav.classList.remove("text-light-500", "dark:text-light-400");
+                
+                // Update icon color
+                const icon = activeNav.querySelector("i");
+                if (icon) {
+                    icon.classList.add("text-primary", "dark:text-primary");
+                    icon.classList.remove("text-light-500", "dark:text-light-400");
+                }
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener("DOMContentLoaded", initApp);
+    </script>
 </body>
 </html>
