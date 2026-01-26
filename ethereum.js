@@ -1,23 +1,754 @@
-// ethereum.js
-import { ethers } from "ethers";
+    <!-- Main Container -->
+    <div class="flex flex-col min-h-screen max-w-md mx-auto bg-dark-900">
+        <!-- Top Header -->
+        <header class="sticky top-0 z-10 bg-dark-900 border-b border-dark-800 px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <button id="sidebarToggle" class="p-2 rounded-lg hover:bg-dark-800">
+                        <i class="fas fa-bars text-lg"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-lg font-bold">P2P Trading</h1>
+                        <p class="text-xs text-dark-400">Secure Peer-to-Peer Exchange</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button class="p-2 rounded-lg hover:bg-dark-800">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="p-2 rounded-lg hover:bg-dark-800">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
 
-// 1️⃣ نضع رابط شبكة Ethereum (عام)
-const RPC_URL = "https://cloudflare-eth.com";
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed inset-y-0 left-0 z-20 w-64 bg-dark-900 border-r border-dark-800 sidebar-transition transform -translate-x-full">
+            <div class="p-4 border-b border-dark-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold">User Account</h3>
+                        <p class="text-sm text-dark-400">Verified Trader</p>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-800">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 p-3 rounded-lg bg-dark-800">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>P2P Trading</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-800">
+                            <i class="fas fa-wallet"></i>
+                            <span>Wallet</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-800">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Spot Trading</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-800">
+                            <i class="fas fa-history"></i>
+                            <span>History</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-800">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Support</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
 
-// 2️⃣ نُنشئ اتصال بالشبكة
-const provider = new ethers.JsonRpcProvider(RPC_URL);
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto scrollbar-hide" id="mainContent">
+            <!-- Market Page (Default) -->
+            <div id="marketPage" class="p-4">
+                <!-- Market Tabs -->
+                <div class="flex border-b border-dark-800 mb-6">
+                    <button class="flex-1 py-3 font-semibold border-b-2 border-primary text-primary">
+                        Buy
+                    </button>
+                    <button class="flex-1 py-3 font-semibold text-dark-400 hover:text-white">
+                        Sell
+                    </button>
+                </div>
 
-// 3️⃣ دالة تجيب رصيد عنوان
-async function getEthBalance(address) {
-  const balance = await provider.getBalance(address);
-  return ethers.formatEther(balance);
-}
+                <!-- Filters -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold">Available Offers</h2>
+                        <button class="text-primary text-sm font-semibold">
+                            <i class="fas fa-filter mr-1"></i> Filter
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <select class="bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm">
+                            <option>All Cryptocurrencies</option>
+                            <option>Bitcoin (BTC)</option>
+                            <option>Ethereum (ETH)</option>
+                            <option>USDT</option>
+                        </select>
+                        <select class="bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm">
+                            <option>All Payment Methods</option>
+                            <option>Bank Transfer</option>
+                            <option>Credit Card</option>
+                            <option>PayPal</option>
+                        </select>
+                    </div>
+                </div>
 
-// 4️⃣ نجرب على عنوان حقيقي (عام)
-async function run() {
-  const address = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e";
-  const balance = await getEthBalance(address);
-  console.log("الرصيد:", balance, "ETH");
-}
+                <!-- Offers List -->
+                <div class="space-y-4">
+                    <!-- Offer Card 1 -->
+                    <div class="bg-dark-800 rounded-xl p-4 border border-dark-700">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-dark-700 flex items-center justify-center">
+                                    <i class="fas fa-user text-primary"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">CryptoTrader88</h3>
+                                    <div class="flex items-center text-sm">
+                                        <span class="text-success">98%</span>
+                                        <span class="mx-1">•</span>
+                                        <span class="text-dark-400">500+ trades</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="bg-dark-700 text-primary text-xs font-semibold px-2 py-1 rounded">
+                                Verified
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Price</p>
+                                <p class="font-bold">$54,320.50</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Available</p>
+                                <p class="font-bold">2.5 BTC</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Limit</p>
+                                <p class="font-bold">$500 - $5,000</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Payment</p>
+                                <div class="flex items-center">
+                                    <i class="fas fa-university text-sm mr-1"></i>
+                                    <span class="font-semibold text-sm">Bank Transfer</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-lg transition">
+                            Buy Now
+                        </button>
+                    </div>
 
-run();
+                    <!-- Offer Card 2 -->
+                    <div class="bg-dark-800 rounded-xl p-4 border border-dark-700">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-dark-700 flex items-center justify-center">
+                                    <i class="fas fa-user text-warning"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">BitcoinPro</h3>
+                                    <div class="flex items-center text-sm">
+                                        <span class="text-success">99%</span>
+                                        <span class="mx-1">•</span>
+                                        <span class="text-dark-400">1200+ trades</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="bg-dark-700 text-primary text-xs font-semibold px-2 py-1 rounded">
+                                Fast Trader
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Price</p>
+                                <p class="font-bold">$54,315.75</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Available</p>
+                                <p class="font-bold">1.8 BTC</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Limit</p>
+                                <p class="font-bold">$100 - $10,000</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Payment</p>
+                                <div class="flex items-center">
+                                    <i class="fab fa-cc-visa text-sm mr-1"></i>
+                                    <span class="font-semibold text-sm">Credit Card</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-dark-700 hover:bg-dark-600 text-white font-semibold py-3 rounded-lg transition">
+                            Buy Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Page (Hidden by default) -->
+            <div id="messagesPage" class="hidden p-0 h-full flex flex-col">
+                <!-- Conversations List -->
+                <div class="border-b border-dark-800 p-4">
+                    <h2 class="text-lg font-bold mb-4">Messages</h2>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3 p-3 rounded-lg bg-dark-800 cursor-pointer">
+                            <div class="relative">
+                                <div class="w-12 h-12 rounded-full bg-dark-700 flex items-center justify-center">
+                                    <i class="fas fa-user text-primary text-xl"></i>
+                                </div>
+                                <div class="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-dark-800"></div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between">
+                                    <h3 class="font-semibold">CryptoTrader88</h3>
+                                    <span class="text-xs text-dark-400">2 min ago</span>
+                                </div>
+                                <p class="text-sm text-dark-400 truncate">Payment confirmed, please release...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-800 cursor-pointer">
+                            <div class="relative">
+                                <div class="w-12 h-12 rounded-full bg-dark-700 flex items-center justify-center">
+                                    <i class="fas fa-user text-warning text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between">
+                                    <h3 class="font-semibold">BitcoinPro</h3>
+                                    <span class="text-xs text-dark-400">1 hour ago</span>
+                                </div>
+                                <p class="text-sm text-dark-400 truncate">Transaction completed successfully</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Area -->
+                <div class="flex-1 flex flex-col">
+                    <!-- Chat Header -->
+                    <div class="border-b border-dark-800 p-4">
+                        <div class="flex items-center space-x-3">
+                            <button id="backToConversations" class="p-2">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                            <div class="w-10 h-10 rounded-full bg-dark-700 flex items-center justify-center">
+                                <i class="fas fa-user text-primary"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">CryptoTrader88</h3>
+                                <p class="text-xs text-success">Online</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Messages -->
+                    <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                        <!-- Received Message -->
+                        <div class="flex">
+                            <div class="message-bubble bg-dark-800 rounded-2xl rounded-tl-none p-4">
+                                <p>Hello, I've sent the payment via bank transfer. Please check your account and release the BTC.</p>
+                                <span class="text-xs text-dark-400 mt-2 block">10:30 AM</span>
+                            </div>
+                        </div>
+
+                        <!-- Sent Message -->
+                        <div class="flex justify-end">
+                            <div class="message-bubble bg-primary rounded-2xl rounded-tr-none p-4">
+                                <p>Payment received, I"m releasing the Bitcoin now. Please confirm once you receive it.</p>
+                                <span class="text-xs text-dark-300 mt-2 block">10:32 AM</span>
+                            </div>
+                        </div>
+
+                        <!-- Received Message -->
+                        <div class="flex">
+                            <div class="message-bubble bg-dark-800 rounded-2xl rounded-tl-none p-4">
+                                <p>Perfect! Transaction completed successfully. Thank you for the smooth trade.</p>
+                                <span class="text-xs text-dark-400 mt-2 block">10:35 AM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message Input -->
+                    <div class="border-t border-dark-800 p-4">
+                        <div class="flex items-center space-x-2">
+                            <button class="p-3 rounded-full hover:bg-dark-800">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <div class="flex-1 bg-dark-800 rounded-full">
+                                <input type="text" placeholder="Type your message..." class="w-full bg-transparent px-4 py-3 focus:outline-none">
+                            </div>
+                            <button class="p-3 rounded-full bg-primary hover:bg-primary/90">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="flex justify-center space-x-4 mt-3 text-sm">
+                            <button class="flex items-center space-x-2 text-dark-400 hover:text-white">
+                                <i class="fas fa-image"></i>
+                                <span>Photo</span>
+                            </button>
+                            <button class="flex items-center space-x-2 text-dark-400 hover:text-white">
+                                <i class="fas fa-microphone"></i>
+                                <span>Voice</span>
+                            </button>
+                            <button class="flex items-center space-x-2 text-dark-400 hover:text-white">
+                                <i class="fas fa-file"></i>
+                                <span>Document</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Orders Page (Hidden by default) -->
+            <div id="ordersPage" class="hidden p-4">
+                <h2 class="text-lg font-bold mb-6">My Orders</h2>
+                
+                <!-- Order Tabs -->
+                <div class="flex border-b border-dark-800 mb-6">
+                    <button class="flex-1 py-3 font-semibold border-b-2 border-primary text-primary">
+                        Pending
+                    </button>
+                    <button class="flex-1 py-3 font-semibold text-dark-400 hover:text-white">
+                        Completed
+                    </button>
+                    <button class="flex-1 py-3 font-semibold text-dark-400 hover:text-white">
+                        Cancelled
+                    </button>
+                </div>
+
+                <!-- Orders List -->
+                <div class="space-y-4">
+                    <!-- Pending Order -->
+                    <div class="bg-dark-800 rounded-xl p-4 border border-warning/30">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-semibold">Buy 0.5 BTC</h3>
+                                <p class="text-sm text-dark-400">Order #TRX-789012</p>
+                            </div>
+                            <span class="order-status-badge bg-warning/20 text-warning">
+                                Pending
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Amount</p>
+                                <p class="font-bold">0.5 BTC</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Price</p>
+                                <p class="font-bold">$27,160.25</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Counterparty</p>
+                                <p class="font-semibold">CryptoTrader88</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Time Left</p>
+                                <p class="font-bold text-warning">14:59</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-success hover:bg-success/90 text-white font-semibold py-2 rounded-lg">
+                                Release
+                            </button>
+                            <button class="flex-1 bg-dark-700 hover:bg-dark-600 text-white font-semibold py-2 rounded-lg">
+                                Chat
+                            </button>
+                            <button class="flex-1 bg-danger hover:bg-danger/90 text-white font-semibold py-2 rounded-lg">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Completed Order -->
+                    <div class="bg-dark-800 rounded-xl p-4 border border-success/30">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-semibold">Sell 1.2 BTC</h3>
+                                <p class="text-sm text-dark-400">Order #TRX-789011</p>
+                            </div>
+                            <span class="order-status-badge bg-success/20 text-success">
+                                Completed
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Amount</p>
+                                <p class="font-bold">1.2 BTC</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Total</p>
+                                <p class="font-bold">$65,178.60</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Counterparty</p>
+                                <p class="font-semibold">BitcoinPro</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Completed</p>
+                                <p class="font-bold">2 hours ago</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disputes Page (Hidden by default) -->
+            <div id="disputesPage" class="hidden p-4">
+                <h2 class="text-lg font-bold mb-6">Disputes</h2>
+                
+                <!-- Open Dispute Button -->
+                <div class="bg-dark-800 rounded-xl p-6 mb-6 text-center border border-dark-700">
+                    <i class="fas fa-exclamation-triangle text-3xl text-warning mb-4"></i>
+                    <h3 class="font-bold text-lg mb-2">Need Help with a Trade?</h3>
+                    <p class="text-dark-400 mb-4">Open a dispute if you encounter issues with a transaction</p>
+                    <button class="bg-warning hover:bg-warning/90 text-dark-900 font-bold py-3 px-6 rounded-lg">
+                        Open New Dispute
+                    </button>
+                </div>
+
+                <!-- Active Disputes -->
+                <h3 class="font-bold mb-4">Active Disputes</h3>
+                <div class="space-y-4">
+                    <!-- Dispute Card -->
+                    <div class="bg-dark-800 rounded-xl p-4 border border-warning/30">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-semibold">Dispute #DPT-456789</h3>
+                                <p class="text-sm text-dark-400">Order #TRX-789010</p>
+                            </div>
+                            <span class="order-status-badge bg-warning/20 text-warning">
+                                Under Review
+                            </span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm text-dark-400 mb-2">Issue Description</p>
+                            <p class="text-sm">Buyer claims payment was sent but seller hasn't released cryptocurrency. Waiting for bank statement proof.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Amount</p>
+                                <p class="font-bold">0.8 BTC</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Opened</p>
+                                <p class="font-bold">1 day ago</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-dark-700">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-dark-400">Admin assigned</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 rounded-full bg-dark-700 flex items-center justify-center">
+                                        <i class="fas fa-user-shield text-xs"></i>
+                                    </div>
+                                    <span class="text-sm font-semibold">Support_Admin</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resolved Dispute -->
+                    <div class="bg-dark-800 rounded-xl p-4 border border-success/30">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-semibold">Dispute #DPT-456788</h3>
+                                <p class="text-sm text-dark-400">Order #TRX-789009</p>
+                            </div>
+                            <span class="order-status-badge bg-success/20 text-success">
+                                Resolved
+                            </span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm text-dark-400 mb-2">Resolution</p>
+                            <p class="text-sm">Payment proof verified. Cryptocurrency released to buyer. Case closed in favor of buyer.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Amount</p>
+                                <p class="font-bold">0.3 BTC</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-dark-400 mb-1">Resolved</p>
+                                <p class="font-bold">3 days ago</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="sticky bottom-0 bg-dark-900 border-t border-dark-800">
+            <div class="flex">
+                <button data-page="market" class="flex-1 flex flex-col items-center justify-center py-3 text-primary">
+                    <i class="fas fa-chart-line text-lg mb-1"></i>
+                    <span class="text-xs font-semibold">Market</span>
+                </button>
+                <button data-page="messages" class="flex-1 flex flex-col items-center justify-center py-3 text-dark-400 hover:text-white">
+                    <i class="fas fa-comments text-lg mb-1"></i>
+                    <span class="text-xs font-semibold">Messages</span>
+                </button>
+                <button data-page="orders" class="flex-1 flex flex-col items-center justify-center py-3 text-dark-400 hover:text-white">
+                    <i class="fas fa-clipboard-list text-lg mb-1"></i>
+                    <span class="text-xs font-semibold">My Orders</span>
+                </button>
+                <button data-page="disputes" class="flex-1 flex flex-col items-center justify-center py-3 text-dark-400 hover:text-white">
+                    <i class="fas fa-gavel text-lg mb-1"></i>
+                    <span class="text-xs font-semibold">Disputes</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // Define application data
+        const appData = {
+            "currentPage": "market",
+            "sidebarOpen": false,
+            "activeChat": null,
+            "orders": [
+                {
+                    "id": "TRX-789012",
+                    "type": "buy",
+                    "amount": "0.5 BTC",
+                    "price": "$27,160.25",
+                    "counterparty": "CryptoTrader88",
+                    "status": "pending",
+                    "timeLeft": "14:59"
+                },
+                {
+                    "id": "TRX-789011",
+                    "type": "sell",
+                    "amount": "1.2 BTC",
+                    "total": "$65,178.60",
+                    "counterparty": "BitcoinPro",
+                    "status": "completed",
+                    "completed": "2 hours ago"
+                }
+            ],
+            "disputes": [
+                {
+                    "id": "DPT-456789",
+                    "orderId": "TRX-789010",
+                    "status": "under_review",
+                    "description": "Buyer claims payment was sent but seller hasn't released cryptocurrency.",
+                    "amount": "0.8 BTC",
+                    "opened": "1 day ago",
+                    "admin": "Support_Admin"
+                },
+                {
+                    "id": "DPT-456788",
+                    "orderId": "TRX-789009",
+                    "status": "resolved",
+                    "description": "Payment proof verified. Cryptocurrency released to buyer.",
+                    "amount": "0.3 BTC",
+                    "resolved": "3 days ago"
+                }
+            ]
+        };
+
+        // DOM Elements
+        const sidebar = document.getElementById("sidebar");
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const mainContent = document.getElementById("mainContent");
+        const bottomNavButtons = document.querySelectorAll("nav button[data-page]");
+        const pages = {
+            "market": document.getElementById("marketPage"),
+            "messages": document.getElementById("messagesPage"),
+            "orders": document.getElementById("ordersPage"),
+            "disputes": document.getElementById("disputesPage")
+        };
+        const backToConversations = document.getElementById("backToConversations");
+
+        // Sidebar Toggle
+        sidebarToggle.addEventListener("click", function() {
+            appData.sidebarOpen = !appData.sidebarOpen;
+            if (appData.sidebarOpen) {
+                sidebar.classList.remove("-translate-x-full");
+            } else {
+                sidebar.classList.add("-translate-x-full");
+            }
+        });
+
+        // Close sidebar when clicking outside
+        document.addEventListener("click", function(event) {
+            if (appData.sidebarOpen && 
+                !sidebar.contains(event.target) && 
+                !sidebarToggle.contains(event.target)) {
+                appData.sidebarOpen = false;
+                sidebar.classList.add("-translate-x-full");
+            }
+        });
+
+        // Page Navigation
+        function navigateToPage(pageId) {
+            // Hide all pages
+            Object.values(pages).forEach(page => {
+                if (page) page.classList.add("hidden");
+            });
+            
+            // Show selected page
+            if (pages[pageId]) {
+                pages[pageId].classList.remove("hidden");
+            }
+            
+            // Update bottom navigation active state
+            bottomNavButtons.forEach(button => {
+                if (button.getAttribute("data-page") === pageId) {
+                    button.classList.remove("text-dark-400");
+                    button.classList.add("text-primary");
+                } else {
+                    button.classList.remove("text-primary");
+                    button.classList.add("text-dark-400");
+                }
+            });
+            
+            // Update app state
+            appData.currentPage = pageId;
+        }
+
+        // Bottom Navigation Click Handlers
+        bottomNavButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                const pageId = this.getAttribute("data-page");
+                navigateToPage(pageId);
+            });
+        });
+
+        // Back to conversations list
+        if (backToConversations) {
+            backToConversations.addEventListener("click", function() {
+                navigateToPage("messages");
+            });
+        }
+
+        // Buy/Sell Tab Switching
+        const marketTabs = document.querySelectorAll("#marketPage button");
+        marketTabs.forEach(tab => {
+            tab.addEventListener("click", function() {
+                marketTabs.forEach(t => {
+                    t.classList.remove("border-b-2", "border-primary", "text-primary");
+                    t.classList.add("text-dark-400");
+                });
+                this.classList.add("border-b-2", "border-primary", "text-primary");
+                this.classList.remove("text-dark-400");
+            });
+        });
+
+        // Order Tabs Switching
+        const orderTabs = document.querySelectorAll("#ordersPage button");
+        orderTabs.forEach(tab => {
+            tab.addEventListener("click", function() {
+                orderTabs.forEach(t => {
+                    t.classList.remove("border-b-2", "border-primary", "text-primary");
+                    t.classList.add("text-dark-400");
+                });
+                this.classList.add("border-b-2", "border-primary", "text-primary");
+                this.classList.remove("text-dark-400");
+            });
+        });
+
+        // Initialize the application
+        document.addEventListener("DOMContentLoaded", function() {
+            navigateToPage("market");
+            
+            // Add click handlers for offer cards
+            document.querySelectorAll("#marketPage .bg-dark-800").forEach(card => {
+                card.addEventListener("click", function() {
+                    navigateToPage("messages");
+                });
+            });
+            
+            // Add click handlers for conversation items
+            document.querySelectorAll("#messagesPage .cursor-pointer").forEach(item => {
+                item.addEventListener("click", function() {
+                    const chatArea = document.querySelector("#messagesPage > .flex-1");
+                    if (chatArea) {
+                        document.querySelector("#messagesPage > div:first-child").classList.add("hidden");
+                        chatArea.classList.remove("hidden");
+                    }
+                });
+            });
+        });
+
+        // Simulate trade actions
+        function simulateTradeAction(action, orderId) {
+            const actions = {
+                "release": "Cryptocurrency released successfully",
+                "cancel": "Order cancelled",
+                "dispute": "Dispute opened successfully"
+            };
+            
+            if (actions[action]) {
+                alert(actions[action]);
+                if (action === "release" || action === "cancel") {
+                    navigateToPage("orders");
+                } else if (action === "dispute") {
+                    navigateToPage("disputes");
+                }
+            }
+        }
+
+        // Add event listeners for action buttons
+        document.addEventListener("click", function(event) {
+            if (event.target.closest("button")) {
+                const button = event.target.closest("button");
+                const buttonText = button.textContent.trim();
+                
+                if (buttonText === "Release") {
+                    simulateTradeAction("release");
+                } else if (buttonText === "Cancel") {
+                    if (confirm("Are you sure you want to cancel this order?")) {
+                        simulateTradeAction("cancel");
+                    }
+                } else if (buttonText === "Open New Dispute") {
+                    simulateTradeAction("dispute");
+                }
+            }
+        });
+    </script>
+</body>
+</html>
