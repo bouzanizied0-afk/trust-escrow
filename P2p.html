@@ -1,32 +1,272 @@
-<div id="p2pContent">
-    <h2 class="font-bold text-xl mb-4">P2P Trading</h2>
-    <p class="mb-6">Trade directly with other users at your preferred rates.</p>
+<!-- P2P Content -->
+<div id="p2pContent" class="space-y-6">
+  <!-- P2P Content (Hidden by default) -->
+            <div id="p2pContent" class="space-y-6 hidden">
+                <div class="bg-light-100 dark:bg-light-800 rounded-2xl p-6 theme-transition">
+                    <h3 class="font-bold text-xl mb-4">P2P Trading</h3>
+                    <p class="text-light-500 dark:text-light-400 mb-6">Trade directly with other users at your preferred rates</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-light-50 dark:bg-light-900 p-4 rounded-xl theme-transition">
+                            <p class="text-sm text-light-500 dark:text-light-400">Best Buy Price</p>
+                            <p class="text-2xl font-bold mt-1">$43,200</p>
+                        </div>
+                        <div class="bg-light-50 dark:bg-light-900 p-4 rounded-xl theme-transition">
+                            <p class="text-sm text-light-500 dark:text-light-400">Best Sell Price</p>
+                            <p class="text-2xl font-bold mt-1">$43,300</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-light-200 dark:bg-light-700 rounded-lg theme-transition">
+                            <div>
+                                <p class="font-medium">BTC/USDT</p>
+                                <p class="text-sm text-light-500 dark:text-light-400">Available: 2.5 BTC</p>
+                            </div>
+                            <span class="text-primary font-medium">Trade Now</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-light-200 dark:bg-light-700 rounded-lg theme-transition">
+                            <div>
+                                <p class="font-medium">ETH/USDT</p>
+                                <p class="text-sm text-light-500 dark:text-light-400">Available: 15.8 ETH</p>
+                            </div>
+                            <span class="text-primary font-medium">Trade Now</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <div class="grid grid-cols-2 gap-4 mb-6">
-        <div class="p-4 bg-light-50 dark:bg-light-900 rounded-xl">
-            <p class="text-sm text-light-500 dark:text-light-400">Best Buy Price</p>
-            <p class="text-2xl font-bold mt-1">$43,200</p>
-        </div>
-        <div class="p-4 bg-light-50 dark:bg-light-900 rounded-xl">
-            <p class="text-sm text-light-500 dark:text-light-400">Best Sell Price</p>
-            <p class="text-2xl font-bold mt-1">$43,300</p>
-        </div>
+            <!-- Wallet Content (Hidden by default) -->
+            <div id="walletContent" class="space-y-6 hidden">
+                <div class="bg-light-100 dark:bg-light-800 rounded-2xl p-6 theme-transition">
+                    <h3 class="font-bold text-xl mb-6">Wallet Balance</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fab fa-bitcoin text-yellow-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Bitcoin (BTC)</p>
+                                    <p class="text-sm text-light-500 dark:text-light-400">0.2548 BTC</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">$11,024.56</p>
+                                <p class="text-green-500 text-sm">+2.1%</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fab fa-ethereum text-purple-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Ethereum (ETH)</p>
+                                    <p class="text-sm text-light-500 dark:text-light-400">3.567 ETH</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">$8,345.12</p>
+                                <p class="text-green-500 text-sm">+1.4%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Content (Hidden by default) -->
+            <div id="marketContent" class="space-y-6 hidden">
+                <div class="bg-light-100 dark:bg-light-800 rounded-2xl p-6 theme-transition">
+                    <h3 class="font-bold text-xl mb-4">Market Prices</h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left text-light-500 dark:text-light-400 text-sm border-b border-light-200 dark:border-light-700">
+                                    <th class="pb-3">Asset</th>
+                                    <th class="pb-3">Price</th>
+                                    <th class="pb-3">24h Change</th>
+                                    <th class="pb-3">Volume</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm">
+                                <tr class="border-b border-light-200/50 dark:border-light-700/50">
+                                    <td class="py-3">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fab fa-bitcoin text-yellow-500"></i>
+                                            <span>BTC</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">$43,256.12</td>
+                                    <td class="py-3 text-green-500">+1.8%</td>
+                                    <td class="py-3">$24.5B</td>
+                                </tr>
+                                <tr class="border-b border-light-200/50 dark:border-light-700/50">
+                                    <td class="py-3">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fab fa-ethereum text-purple-500"></i>
+                                            <span>ETH</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">$2,345.67</td>
+                                    <td class="py-3 text-green-500">+0.9%</td>
+                                    <td class="py-3">$12.3B</td>
+                                </tr>
+                                <tr class="border-b border-light-200/50 dark:border-light-700/50">
+                                    <td class="py-3">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fab fa-btc text-blue-500"></i>
+                                            <span>BNB</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">$312.45</td>
+                                    <td class="py-3 text-red-500">-0.5%</td>
+                                    <td class="py-3">$2.1B</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Content (Hidden by default) -->
+            <div id="transactionsContent" class="space-y-6 hidden">
+                <div class="bg-light-100 dark:bg-light-800 rounded-2xl p-6 theme-transition">
+                    <h3 class="font-bold text-xl mb-6">Recent Transactions</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-arrow-down text-green-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">BTC Purchase</p>
+                                    <p class="text-sm text-light-500 dark:text-light-400">2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">+0.025 BTC</p>
+                                <p class="text-green-500 text-sm">$1,081.40</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-arrow-up text-red-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">ETH Withdrawal</p>
+                                    <p class="text-sm text-light-500 dark:text-light-400">1 day ago</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium">-0.5 ETH</p>
+                                <p class="text-red-500 text-sm">$1,172.84</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Content (Hidden by default) -->
+            <div id="accountContent" class="space-y-6 hidden">
+                <div class="bg-light-100 dark:bg-light-800 rounded-2xl p-6 theme-transition">
+                    <h3 class="font-bold text-xl mb-6">Account Settings</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl hover:bg-light-200 dark:hover:bg-light-700 cursor-pointer theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-blue-500"></i>
+                                </div>
+                                <span>Profile Information</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-light-400 dark:text-light-500"></i>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl hover:bg-light-200 dark:hover:bg-light-700 cursor-pointer theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-shield-alt text-green-500"></i>
+                                </div>
+                                <span>Security</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-light-400 dark:text-light-500"></i>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl hover:bg-light-200 dark:hover:bg-light-700 cursor-pointer theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-bell text-purple-500"></i>
+                                </div>
+                                <span>Notifications</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-light-400 dark:text-light-500"></i>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-light-50 dark:bg-light-900 rounded-xl hover:bg-light-200 dark:hover:bg-light-700 cursor-pointer theme-transition">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-moon text-yellow-500"></i>
+                                </div>
+                                <span>Appearance</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-light-400 dark:text-light-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <div class="space-y-4">
-        <div class="flex items-center justify-between p-3 bg-light-200 dark:bg-light-700 rounded-lg">
-            <div>
-                <p class="font-medium">BTC/USDT</p>
-                <p class="text-sm text-light-500 dark:text-light-400">Available: 2.5 BTC</p>
+    <!-- Bottom Navigation -->
+    <nav id="bottomNav" class="fixed bottom-0 left-0 right-0 bg-light-50 dark:bg-light-800 border-t border-light-200 dark:border-light-700 bottom-nav-shadow z-40 theme-transition">
+        <div class="px-4 py-3">
+            <!-- Home Bottom Nav -->
+            <div id="homeBottomNav" class="flex justify-between items-center">
+                <button onclick="switchSubSection('overview')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="overview">
+                    <i class="fas fa-chart-pie text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Overview</span>
+                </button>
+                <button onclick="switchSubSection('market')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="market">
+                    <i class="fas fa-chart-line text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Market</span>
+                </button>
+                <button onclick="switchSubSection('news')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="news">
+                    <i class="fas fa-newspaper text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">News</span>
+                </button>
+                <button onclick="switchSubSection('notifications')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="notifications">
+                    <i class="fas fa-bell text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Notifications</span>
+                </button>
             </div>
-            <span class="text-primary font-medium">Trade Now</span>
-        </div>
-        <div class="flex items-center justify-between p-3 bg-light-200 dark:bg-light-700 rounded-lg">
-            <div>
-                <p class="font-medium">ETH/USDT</p>
-                <p class="text-sm text-light-500 dark:text-light-400">Available: 15.8 ETH</p>
-            </div>
-            <span class="text-primary font-medium">Trade Now</span>
-        </div>
-    </div>
-</div>
+
+            <!-- P2P Bottom Nav -->
+            <div id="p2pBottomNav" class="hidden flex justify-between items-center">
+                <button onclick="switchSubSection('buy')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="buy">
+                    <i class="fas fa-shopping-cart text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Buy</span>
+                </button>
+                <button onclick="switchSubSection('sell')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="sell">
+                    <i class="fas fa-dollar-sign text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Sell</span>
+                </button>
+                <button onclick="switchSubSection('my-orders')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="my-orders">
+                    <i class="fas fa-list text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">My Orders</span>
+                </button>
+                <button onclick="switchSubSection('ads')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="ads">
+                    <i class="fas fa-ad text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Ads</span>
+                </button>
+                <button onclick="switchSubSection('disputes')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="disputes">
+                    <i class="fas fa-gavel text-lg text-light-500 dark:text-light-400"></i>
+                    <span class="text-xs text-light-500 dark:text-light-400">Disputes</span>
+                </button>
+            </div
