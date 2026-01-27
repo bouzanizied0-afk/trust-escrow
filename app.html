@@ -129,12 +129,6 @@
                     </button>
                 </li>
                 <li>
-                    <button onclick="switchMainSection('p2p')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg hover:bg-light-200 dark:hover:bg-light-700 transition-colors flex items-center space-x-3 theme-transition">
-                        <i class="fas fa-exchange-alt w-6 text-secondary"></i>
-                        <span>P2P</span>
-                    </button>
-                </li>
-                <li>
                     <button onclick="switchMainSection('wallet')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg hover:bg-light-200 dark:hover:bg-light-700 transition-colors flex items-center space-x-3 theme-transition">
                         <i class="fas fa-wallet w-6 text-green-500"></i>
                         <span>Wallet</span>
@@ -513,27 +507,7 @@
             </div>
         </main>
     </div>
-<!-- Bottom Navigation الجديد -->
-<nav id="p2pBottomNavNew" class="sticky bottom-0 bg-dark-900 border-t border-dark-800 hidden">
-    <div class="flex">
-        <button data-page="market" class="flex-1 flex flex-col items-center justify-center py-3 text-primary">
-            <i class="fas fa-chart-line text-lg mb-1"></i>
-            <span class="text-xs font-semibold">Market</span>
-        </button>
-        <button data-page="messages" class="flex-1 flex flex-col items-center justify-center py-3 text-dark-400 hover:text-white">
-            <i class="fas fa-comments text-lg mb-1"></i>
-            <span class="text-xs font-semibold">Messages</span>
-        </button>
-        <button data-page="orders" class="flex-1 flex flex-col items-center justify-center py-3 text-dark-400 hover:text-white">
-            <i class="fas fa-clipboard-list text-lg mb-1"></i>
-            <span class="text-xs font-semibold">My Orders</span>
-        </button>
-        <button data-page="disputes" class="flex-1 flex flex-col items-center justify-center py-3 text-dark-400 hover:text-white">
-            <i class="fas fa-gavel text-lg mb-1"></i>
-            <span class="text-xs font-semibold">Disputes</span>
-        </button>
-    </div>
-</nav>
+
     <!-- Bottom Navigation -->
     <nav id="bottomNav" class="fixed bottom-0 left-0 right-0 bg-light-50 dark:bg-light-800 border-t border-light-200 dark:border-light-700 bottom-nav-shadow z-40 theme-transition">
         <div class="px-4 py-3">
@@ -556,7 +530,7 @@
                     <span class="text-xs text-light-500 dark:text-light-400">Notifications</span>
                 </button>
             </div>
-            
+
             <!-- Wallet Bottom Nav -->
             <div id="walletBottomNav" class="hidden flex justify-between items-center">
                 <button onclick="switchSubSection('balance')" class="bottom-nav-item flex flex-col items-center space-y-1 px-3 py-2 rounded-lg theme-transition" data-section="balance">
