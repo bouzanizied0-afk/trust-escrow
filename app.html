@@ -290,94 +290,42 @@
                 </div>
             </div>
 
-        <!-- Main Content Area -->
-        <main class="flex-1 overflow-y-auto scrollbar-hide" id="mainContent">
-            <!-- Market Page (Default) -->
-            <div id="marketPage" class="p-4">
-                <!-- Market Tabs -->
-                <div class="flex border-b border-dark-800 mb-6">
-                    <button class="flex-1 py-3 font-semibold border-b-2 border-primary text-primary">
-                        Buy
-                    </button>
-                    <button class="flex-1 py-3 font-semibold text-dark-400 hover:text-white">
-                        Sell
-                    </button>
-                </div>
-
-                <!-- Filters -->
-                <div class="mb-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold">Available Offers</h2>
-                        <button class="text-primary text-sm font-semibold">
-                            <i class="fas fa-filter mr-1"></i> Filter
-                        </button>
+            <!-- P2P Content (Hidden by default) -->
+            <div id="p2pContent" class="space-y-6 hidden">
+                <div class="bg-light-100 dark:bg-light-800 rounded-2xl p-6 theme-transition">
+                    <h3 class="font-bold text-xl mb-4">P2P Trading</h3>
+                    <p class="text-light-500 dark:text-light-400 mb-6">Trade directly with other users at your preferred rates</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-light-50 dark:bg-light-900 p-4 rounded-xl theme-transition">
+                            <p class="text-sm text-light-500 dark:text-light-400">Best Buy Price</p>
+                            <p class="text-2xl font-bold mt-1">$43,200</p>
+                        </div>
+                        <div class="bg-light-50 dark:bg-light-900 p-4 rounded-xl theme-transition">
+                            <p class="text-sm text-light-500 dark:text-light-400">Best Sell Price</p>
+                            <p class="text-2xl font-bold mt-1">$43,300</p>
+                        </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <select class="bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm">
-                            <option>All Cryptocurrencies</option>
-                            <option>Bitcoin (BTC)</option>
-                            <option>Ethereum (ETH)</option>
-                            <option>USDT</option>
-                        </select>
-                        <select class="bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm">
-                            <option>All Payment Methods</option>
-                            <option>Bank Transfer</option>
-                            <option>Credit Card</option>
-                            <option>PayPal</option>
-                        </select>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-light-200 dark:bg-light-700 rounded-lg theme-transition">
+                            <div>
+                                <p class="font-medium">BTC/USDT</p>
+                                <p class="text-sm text-light-500 dark:text-light-400">Available: 2.5 BTC</p>
+                            </div>
+                            <span class="text-primary font-medium">Trade Now</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-light-200 dark:bg-light-700 rounded-lg theme-transition">
+                            <div>
+                                <p class="font-medium">ETH/USDT</p>
+                                <p class="text-sm text-light-500 dark:text-light-400">Available: 15.8 ETH</p>
+                            </div>
+                            <span class="text-primary font-medium">Trade Now</span>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Offers List -->
-                <div class="space-y-4">
-                    <!-- Offer Card 1 -->
-                    <div class="bg-dark-800 rounded-xl p-4 border border-dark-700">
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 rounded-full bg-dark-700 flex items-center justify-center">
-                                    <i class="fas fa-user text-primary"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-semibold">CryptoTrader88</h3>
-                                    <div class="flex items-center text-sm">
-                                        <span class="text-success">98%</span>
-                                        <span class="mx-1">•</span>
-                                        <span class="text-dark-400">500+ trades</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <span class="bg-dark-700 text-primary text-xs font-semibold px-2 py-1 rounded">
-                                Verified
-                            </span>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <p class="text-sm text-dark-400 mb-1">Price</p>
-                                <p class="font-bold">$54,320.50</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-dark-400 mb-1">Available</p>
-                                <p class="font-bold">2.5 BTC</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-dark-400 mb-1">Limit</p>
-                                <p class="font-bold">$500 - $5,000</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-dark-400 mb-1">Payment</p>
-                                <div class="flex items-center">
-                                    <i class="fas fa-university text-sm mr-1"></i>
-                                    <span class="font-semibold text-sm">Bank Transfer</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-lg transition">
-                            Buy Now
-                        </button>
-                    </div>
             <!-- Wallet Content (Hidden by default) -->
             <div id="walletContent" class="space-y-6 hidden">
                 <div class="bg-light-100 dark:bg-light-800 rounded-2xl p-6 theme-transition">
@@ -589,29 +537,127 @@
                 </button>
             </div>
 
-         
-        <!-- Bottom Navigation -->
-        <nav class="sticky bottom-0 bg-dark-900 border-t border-dark-800">
-            <div class="flex">
-                <button data-page="market" class="flex-1 flex flex-col items-center justify-center py-3 text-primary">
-                    <i class="fas fa-chart-line text-lg mb-1"></i>
-                    <span class="text-xs font-semibold">Market</span>
-                </button>
-                <button data-page="messages" class="flex-1 flex flex-col items-center justify-center py-3 text-dark-400 hover:text-white">
-                    <i class="fas fa-comments text-lg mb-1"></i>
-                    <span class="text-xs font-semibold">Messages</span>
-                </button>
-                <button data-page="orders" class="flex-1 flex flex-col items-center justify-center py-3 text-dark-400 hover:text-white">
-                    <i class="fas fa-clipboard-list text-lg mb-1"></i>
-                    <span class="text-xs font-semibold">My Orders</span>
-                </button>
-                <button data-page="disputes" class="flex-1 flex flex-col items-center justify-center py-3 text-dark-400 hover:text-white">
-                    <i class="fas fa-gavel text-lg mb-1"></i>
-                    <span class="text-xs font-semibold">Disputes</span>
+   <!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto scrollbar-hide" id="mainContent">
+
+    <!-- Market Page (Default) -->
+    <div id="marketPage" class="p-4">
+        <!-- Market Tabs -->
+        <div class="flex border-b border-dark-800 mb-6">
+            <button class="flex-1 py-3 font-semibold border-b-2 border-primary text-primary">
+                Buy
+            </button>
+            <button class="flex-1 py-3 font-semibold text-dark-400 hover:text-white">
+                Sell
+            </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold">Available Offers</h2>
+                <button class="text-primary text-sm font-semibold">
+                    <i class="fas fa-filter mr-1"></i> Filter
                 </button>
             </div>
-        </nav>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <select class="bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm">
+                    <option>All Cryptocurrencies</option>
+                    <option>Bitcoin (BTC)</option>
+                    <option>Ethereum (ETH)</option>
+                    <option>USDT</option>
+                </select>
+                <select class="bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-sm">
+                    <option>All Payment Methods</option>
+                    <option>Bank Transfer</option>
+                    <option>Credit Card</option>
+                    <option>PayPal</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Offers List -->
+        <div class="space-y-4">
+            <div class="bg-dark-800 rounded-xl p-4 border border-dark-700">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-dark-700 flex items-center justify-center">
+                            <i class="fas fa-user text-primary"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">CryptoTrader88</h3>
+                            <div class="flex items-center text-sm">
+                                <span class="text-success">98%</span>
+                                <span class="mx-1">•</span>
+                                <span class="text-dark-400">500+ trades</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="bg-dark-700 text-primary text-xs font-semibold px-2 py-1 rounded">
+                        Verified
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm text-dark-400 mb-1">Price</p>
+                        <p class="font-bold">$54,320.50</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-dark-400 mb-1">Available</p>
+                        <p class="font-bold">2.5 BTC</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-dark-400 mb-1">Limit</p>
+                        <p class="font-bold">$500 - $5,000</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-dark-400 mb-1">Payment</p>
+                        <div class="flex items-center">
+                            <i class="fas fa-university text-sm mr-1"></i>
+                            <span class="font-semibold text-sm">Bank Transfer</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-lg transition">
+                    Buy Now
+                </button>
+            </div>
+        </div>
     </div>
+
+    <!-- Pages placeholders -->
+    <div id="messagesPage" class="hidden h-full"></div>
+    <div id="ordersPage" class="hidden"></div>
+    <div id="disputesPage" class="hidden"></div>
+
+</main>
+
+<!-- P2P Bottom Nav -->
+<nav id="p2pBottomNav" class="sticky bottom-0 bg-dark-900 border-t border-dark-800 flex justify-between">
+    <button onclick="switchSubSection('buy')" class="flex-1 flex flex-col items-center justify-center py-3 text-light-500 hover:text-white">
+        <i class="fas fa-shopping-cart text-lg mb-1"></i>
+        <span class="text-xs font-semibold">Buy</span>
+    </button>
+    <button onclick="switchSubSection('sell')" class="flex-1 flex flex-col items-center justify-center py-3 text-light-500 hover:text-white">
+        <i class="fas fa-dollar-sign text-lg mb-1"></i>
+        <span class="text-xs font-semibold">Sell</span>
+    </button>
+    <button onclick="switchSubSection('my-orders')" class="flex-1 flex flex-col items-center justify-center py-3 text-light-500 hover:text-white">
+        <i class="fas fa-list text-lg mb-1"></i>
+        <span class="text-xs font-semibold">My Orders</span>
+    </button>
+    <button onclick="switchSubSection('ads')" class="flex-1 flex flex-col items-center justify-center py-3 text-light-500 hover:text-white">
+        <i class="fas fa-ad text-lg mb-1"></i>
+        <span class="text-xs font-semibold">Ads</span>
+    </button>
+    <button onclick="switchSubSection('disputes')" class="flex-1 flex flex-col items-center justify-center py-3 text-light-500 hover:text-white">
+        <i class="fas fa-gavel text-lg mb-1"></i>
+        <span class="text-xs font-semibold">Disputes</span>
+    </button>
+</nav>
 
             <!-- Wallet Bottom Nav -->
             <div id="walletBottomNav" class="hidden flex justify-between items-center">
