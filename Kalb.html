@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universal Professional Template</title>
-    <meta name="description" content="A universal, professional web template with sidebar navigation and dark/light mode support">
+    <meta name="description" content="A universal, professional web template with enhanced sidebar navigation and dark/light mode support">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script>
@@ -40,7 +40,8 @@
                     },
                     animation: {
                         "fade-in": "fadeIn 0.3s ease-in-out",
-                        "slide-in": "slideIn 0.3s ease-out"
+                        "slide-in": "slideIn 0.3s ease-out",
+                        "slide-right": "slideRight 0.3s ease-out"
                     },
                     keyframes: {
                         fadeIn: {
@@ -50,6 +51,10 @@
                         slideIn: {
                             "0%": { transform: "translateX(-20px)", opacity: "0" },
                             "100%": { transform: "translateX(0)", opacity: "1" }
+                        },
+                        slideRight: {
+                            "0%": { transform: "translateX(-100%)" },
+                            "100%": { transform: "translateX(0)" }
                         }
                     }
                 }
@@ -58,15 +63,37 @@
     </script>
     <style>
         * {
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
         }
         
         .sidebar-transition {
-            transition: width 0.3s ease;
+            transition: width 0.3s ease, transform 0.3s ease;
         }
         
         .content-transition {
             transition: margin-left 0.3s ease;
+        }
+        
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+            border-left: 3px solid #3B82F6;
+        }
+        
+        .sidebar-drag-handle {
+            cursor: ew-resize;
+            user-select: none;
+        }
+        
+        .sidebar-drag-handle:hover {
+            background-color: rgba(59, 130, 246, 0.1);
         }
         
         @media (max-width: 768px) {
@@ -93,26 +120,38 @@
                 display: block;
             }
         }
-                   .nav-item {
-                 display: flex;
-                 align-items: center;
-               gap: 12px;
-               padding: 10px 12px;
-                 border-radius: 8px;
-               color: #6b7280;
-              transition: all 0.2s ease;
-      }
-
-            .nav-item:hover {
-            background-color: rgba(59,130,246,0.1);
-           color: #3b82f6;
-    }
-
-     .nav-item.active {
-     background-color: rgba(59,130,246,0.15);
-    color: #3b82f6;
-     }
-
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+        
+        .dark ::-webkit-scrollbar-track {
+            background: #374151;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb {
+            background: #6B7280;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #9CA3AF;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gray-50 dark:bg-dark-900 text-gray-800 dark:text-gray-200">
@@ -120,7 +159,7 @@
     <div class="overlay" id="mobileOverlay"></div>
     
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar-transition fixed left-0 top-0 h-screen bg-white dark:bg-dark-800 shadow-lg z-50 w-sidebar-collapsed md:w-sidebar overflow-hidden">
+    <aside id="sidebar" class="sidebar-transition fixed left-0 top-0 h-screen bg-white dark:bg-dark-800 shadow-lg z-50 w-sidebar-collapsed lg:w-sidebar overflow-hidden flex flex-col">
         <!-- Logo Area -->
         <div class="p-4 border-b border-gray-200 dark:border-dark-700">
             <div class="flex items-center justify-between">
@@ -128,74 +167,79 @@
                     <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                         <i class="fas fa-cube text-white text-xl"></i>
                     </div>
-                    <span class="text-xl font-bold text-gray-800 dark:text-white hidden md:inline-block">UniversalPro</span>
+                    <span class="text-xl font-bold text-gray-800 dark:text-white hidden lg:inline-block">UniversalPro</span>
                 </div>
-                <button id="sidebarToggle" class="md:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <button id="sidebarToggle" class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
             </div>
         </div>
         
+        <!-- Drag Handle (Desktop only) -->
+        <div class="sidebar-drag-handle hidden lg:block absolute right-0 top-0 bottom-0 w-2 hover:w-3 transition-all" id="dragHandle"></div>
+        
         <!-- Navigation Menu -->
-        <nav class="flex-1 overflow-y-auto py-4">
-            <ul class="space-y-1 px-2">
+        <nav class="flex-1 overflow-y-auto py-6">
+            <ul class="space-y-2 px-4">
                 <li>
-                    <a href="#" data-section="dashboard" class="nav-item active">
-                        <i class="fas fa-home text-lg"></i>
-                        <span class="nav-text">Home</span>
+                    <a href="#" data-section="dashboard" class="nav-item active flex items-center space-x-4 p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-dark-700">
+                        <i class="fas fa-home text-lg w-6 text-center"></i>
+                        <span class="nav-text hidden lg:inline-block font-medium">Home</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-section="messages" class="nav-item">
-                        <i class="fas fa-comments text-lg"></i>
-                        <span class="nav-text">Messages</span>
-                        <span class="badge bg-success text-white text-xs px-2 py-1 rounded-full">3</span>
+                    <a href="#" data-section="messages" class="nav-item flex items-center space-x-4 p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-dark-700">
+                        <i class="fas fa-comments text-lg w-6 text-center"></i>
+                        <span class="nav-text hidden lg:inline-block font-medium">Messages</span>
+                        <span class="badge bg-success text-white text-xs px-2 py-1 rounded-full ml-auto hidden lg:inline-block">3</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-section="p2p" class="nav-item">
-                        <i class="fas fa-exchange-alt text-lg"></i>
-                        <span class="nav-text">P2P</span>
+                    <a href="#" data-section="p2p" class="nav-item flex items-center space-x-4 p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-dark-700">
+                        <i class="fas fa-exchange-alt text-lg w-6 text-center"></i>
+                        <span class="nav-text hidden lg:inline-block font-medium">P2P</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-section="market" class="nav-item">
-                        <i class="fas fa-shopping-cart text-lg"></i>
-                        <span class="nav-text">Market</span>
+                    <a href="#" data-section="market" class="nav-item flex items-center space-x-4 p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-dark-700">
+                        <i class="fas fa-shopping-cart text-lg w-6 text-center"></i>
+                        <span class="nav-text hidden lg:inline-block font-medium">Market</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-section="analytics" class="nav-item">
-                        <i class="fas fa-chart-line text-lg"></i>
-                        <span class="nav-text">Analytics</span>
+                    <a href="#" data-section="analytics" class="nav-item flex items-center space-x-4 p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-dark-700">
+                        <i class="fas fa-chart-line text-lg w-6 text-center"></i>
+                        <span class="nav-text hidden lg:inline-block font-medium">Analytics</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-section="settings" class="nav-item">
-                        <i class="fas fa-cog text-lg"></i>
-                        <span class="nav-text">Settings</span>
+                    <a href="#" data-section="settings" class="nav-item flex items-center space-x-4 p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-dark-700">
+                        <i class="fas fa-cog text-lg w-6 text-center"></i>
+                        <span class="nav-text hidden lg:inline-block font-medium">Settings</span>
                     </a>
                 </li>
-                <li class="pt-4 border-t border-gray-200 dark:border-dark-700 mt-4">
-                    <a href="#" data-section="help" class="nav-item">
-                        <i class="fas fa-question-circle text-lg"></i>
-                        <span class="nav-text">Help & Support</span>
+                
+                <!-- Divider with spacing -->
+                <li class="pt-6 mt-6 border-t border-gray-200 dark:border-dark-700">
+                    <a href="#" data-section="help" class="nav-item flex items-center space-x-4 p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-dark-700">
+                        <i class="fas fa-question-circle text-lg w-6 text-center"></i>
+                        <span class="nav-text hidden lg:inline-block font-medium">Help & Support</span>
                     </a>
                 </li>
             </ul>
         </nav>
         
-        <!-- User Profile -->
-        <div class="border-t border-gray-200 dark:border-dark-700 p-4">
+        <!-- User Profile (Moved to bottom) -->
+        <div class="border-t border-gray-200 dark:border-dark-700 p-4 mt-auto">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full overflow-hidden">
+                <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                     <img src="https://picsum.photos/100?random=1" alt="User profile" class="w-full h-full object-cover" loading="lazy">
                 </div>
-                <div class="hidden md:block flex-1">
-                    <h4 class="font-medium text-gray-800 dark:text-white">John Doe</h4>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Administrator</p>
+                <div class="hidden lg:block flex-1 min-w-0">
+                    <h4 class="font-medium text-gray-800 dark:text-white truncate">John Doe</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 truncate">Administrator</p>
                 </div>
-                <button id="themeToggle" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <button id="themeToggle" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 flex-shrink-0">
                     <i class="fas fa-moon text-lg"></i>
                 </button>
             </div>
@@ -203,12 +247,12 @@
     </aside>
     
     <!-- Main Content -->
-    <main id="mainContent" class="content-transition min-h-screen md:ml-sidebar-collapsed lg:ml-sidebar">
+    <main id="mainContent" class="content-transition min-h-screen lg:ml-sidebar-collapsed xl:ml-sidebar">
         <!-- Top Header -->
         <header class="bg-white dark:bg-dark-800 shadow-sm sticky top-0 z-40">
             <div class="px-4 py-3 flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <button id="mobileMenuToggle" class="md:hidden text-gray-600 dark:text-gray-300">
+                    <button id="mobileMenuToggle" class="lg:hidden text-gray-600 dark:text-gray-300">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
                     <h1 class="text-xl font-bold text-gray-800 dark:text-white" id="pageTitle">Dashboard</h1>
@@ -596,6 +640,40 @@
                 </div>
             </section>
             
+            <!-- Analytics Section -->
+            <section id="analytics" class="content-section hidden animate-fade-in">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Analytics Dashboard</h2>
+                    <p class="text-gray-600 dark:text-gray-400">View detailed analytics and reports for your business.</p>
+                </div>
+                
+                <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-dark-700">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-6">Performance Overview</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-4">Monthly Revenue</h4>
+                            <div class="h-64 flex items-end space-x-2">
+                                <div class="flex-1 bg-primary/20 rounded-t-lg" style="height: 80%"></div>
+                                <div class="flex-1 bg-primary/30 rounded-t-lg" style="height: 60%"></div>
+                                <div class="flex-1 bg-primary/40 rounded-t-lg" style="height: 90%"></div>
+                                <div class="flex-1 bg-primary/50 rounded-t-lg" style="height: 70%"></div>
+                                <div class="flex-1 bg-primary/60 rounded-t-lg" style="height: 85%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-4">User Growth</h4>
+                            <div class="h-64 flex items-end space-x-2">
+                                <div class="flex-1 bg-success/20 rounded-t-lg" style="height: 50%"></div>
+                                <div class="flex-1 bg-success/30 rounded-t-lg" style="height: 65%"></div>
+                                <div class="flex-1 bg-success/40 rounded-t-lg" style="height: 75%"></div>
+                                <div class="flex-1 bg-success/50 rounded-t-lg" style="height: 85%"></div>
+                                <div class="flex-1 bg-success/60 rounded-t-lg" style="height: 95%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
             <!-- Settings Section -->
             <section id="settings" class="content-section hidden animate-fade-in">
                 <div class="mb-6">
@@ -661,6 +739,32 @@
                     </div>
                 </div>
             </section>
+            
+            <!-- Help Section -->
+            <section id="help" class="content-section hidden animate-fade-in">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Help & Support</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Get help and support for any issues you encounter.</p>
+                </div>
+                
+                <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-dark-700">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-6 bg-primary/5 dark:bg-primary/10 rounded-lg">
+                            <i class="fas fa-question-circle text-primary text-3xl mb-4"></i>
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">FAQs</h4>
+                            <p class="text-gray-600 dark:text-gray-400 mb-4">Find answers to frequently asked questions.</p>
+                            <button class="text-primary hover:text-primary/80 font-medium">Browse FAQs</button>
+                        </div>
+                        
+                        <div class="p-6 bg-success/5 dark:bg-success/10 rounded-lg">
+                            <i class="fas fa-comments text-success text-3xl mb-4"></i>
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">Live Chat</h4>
+                            <p class="text-gray-600 dark:text-gray-400 mb-4">Chat with our support team in real-time.</p>
+                            <button class="text-success hover:text-success/80 font-medium">Start Chat</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </main>
     
@@ -676,16 +780,6 @@
             "help": "Help & Support"
         };
         
-        const sectionContents = {
-            "dashboard": "Here's what's happening with your projects today.",
-            "messages": "Manage your conversations and notifications.",
-            "p2p": "Trade directly with other users in a secure environment.",
-            "market": "Browse and purchase products from our marketplace.",
-            "analytics": "View detailed analytics and reports.",
-            "settings": "Manage your account preferences and security settings.",
-            "help": "Get help and support for any issues."
-        };
-        
         // DOM Elements
         const sidebar = document.getElementById("sidebar");
         const mainContent = document.getElementById("mainContent");
@@ -696,20 +790,26 @@
         const pageTitle = document.getElementById("pageTitle");
         const navItems = document.querySelectorAll(".nav-item");
         const contentSections = document.querySelectorAll(".content-section");
+        const dragHandle = document.getElementById("dragHandle");
         
         // State variables
-        let isSidebarExpanded = window.innerWidth >= 768;
+        let isSidebarExpanded = window.innerWidth >= 1024;
         let isDarkMode = localStorage.getItem("darkMode") === "true" || 
                         (!("darkMode" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        let isDragging = false;
+        let startX = 0;
+        let startWidth = 0;
+        const minWidth = 240;
+        const maxWidth = 400;
         
         // Initialize theme
         function initTheme() {
             if (isDarkMode) {
                 document.documentElement.classList.add("dark");
-                themeToggle.innerHTML = '<i class="fas fa-sun text-lg"></i>';
+                themeToggle.innerHTML = "<i class="fas fa-sun text-lg"></i>";
             } else {
                 document.documentElement.classList.remove("dark");
-                themeToggle.innerHTML = '<i class="fas fa-moon text-lg"></i>';
+                themeToggle.innerHTML = "<i class="fas fa-moon text-lg"></i>";
             }
         }
         
@@ -745,7 +845,7 @@
             pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
             
             // Close mobile sidebar if open
-            if (window.innerWidth < 768 && sidebar.classList.contains("open")) {
+            if (window.innerWidth < 1024 && sidebar.classList.contains("open")) {
                 toggleMobileSidebar();
             }
         }
@@ -759,7 +859,7 @@
         
         // Handle window resize
         function handleResize() {
-            if (window.innerWidth >= 768) {
+            if (window.innerWidth >= 1024) {
                 sidebar.classList.remove("sidebar-mobile", "open");
                 mobileOverlay.classList.remove("active");
                 document.body.style.overflow = "";
@@ -777,6 +877,58 @@
             });
         }
         
+        // Sidebar drag functionality
+        function initSidebarDrag() {
+            dragHandle.addEventListener("mousedown", startDrag);
+            document.addEventListener("mousemove", doDrag);
+            document.addEventListener("mouseup", stopDrag);
+            
+            function startDrag(e) {
+                isDragging = true;
+                startX = e.clientX;
+                startWidth = parseInt(getComputedStyle(sidebar).width, 10);
+                sidebar.style.transition = "none";
+                document.body.style.cursor = "ew-resize";
+                e.preventDefault();
+            }
+            
+            function doDrag(e) {
+                if (!isDragging) return;
+                
+                const width = startWidth + e.clientX - startX;
+                if (width >= minWidth && width <= maxWidth) {
+                    sidebar.style.width = width + "px";
+                    mainContent.style.marginLeft = width + "px";
+                }
+            }
+            
+            function stopDrag() {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                sidebar.style.transition = "";
+                document.body.style.cursor = "";
+                
+                // Save sidebar width
+                const currentWidth = parseInt(getComputedStyle(sidebar).width, 10);
+                localStorage.setItem("sidebarWidth", currentWidth);
+            }
+        }
+        
+        // Load saved sidebar width
+        function loadSidebarWidth() {
+            if (window.innerWidth >= 1024) {
+                const savedWidth = localStorage.getItem("sidebarWidth");
+                if (savedWidth) {
+                    const width = parseInt(savedWidth, 10);
+                    if (width >= minWidth && width <= maxWidth) {
+                        sidebar.style.width = width + "px";
+                        mainContent.style.marginLeft = width + "px";
+                    }
+                }
+            }
+        }
+        
         // Event Listeners
         mobileMenuToggle.addEventListener("click", toggleMobileSidebar);
         sidebarToggle.addEventListener("click", toggleMobileSidebar);
@@ -787,10 +939,23 @@
         // Initialize
         initTheme();
         initNavigation();
+        loadSidebarWidth();
+        
+        // Initialize sidebar drag on desktop
+        if (window.innerWidth >= 1024) {
+            initSidebarDrag();
+        }
+        
+        // Reinitialize drag on resize
+        window.addEventListener("resize", function() {
+            if (window.innerWidth >= 1024) {
+                initSidebarDrag();
+            }
+        });
         
         // Close sidebar when clicking outside on mobile
         document.addEventListener("click", function(event) {
-            if (window.innerWidth < 768 && 
+            if (window.innerWidth < 1024 && 
                 !sidebar.contains(event.target) && 
                 !mobileMenuToggle.contains(event.target) &&
                 sidebar.classList.contains("open")) {
@@ -807,6 +972,20 @@
                 });
                 card.addEventListener("mouseleave", function() {
                     this.style.transform = "translateY(0)";
+                });
+            });
+            
+            // Add click effects to buttons
+            const buttons = document.querySelectorAll("button");
+            buttons.forEach(button => {
+                button.addEventListener("mousedown", function() {
+                    this.style.transform = "scale(0.98)";
+                });
+                button.addEventListener("mouseup", function() {
+                    this.style.transform = "scale(1)";
+                });
+                button.addEventListener("mouseleave", function() {
+                    this.style.transform = "scale(1)";
                 });
             });
         });
@@ -826,6 +1005,9 @@
                 alert(`"${productName}" added to cart!`);
             });
         });
+        
+        // Initialize with dashboard section active
+        switchSection("dashboard");
     </script>
 </body>
 </html>
