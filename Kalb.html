@@ -4,555 +4,828 @@
     <base target="_self">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Core Web Template</title>
-    <meta name="description" content="Professional, scalable core web template for long-term projects">
+    <title>Universal Professional Template</title>
+    <meta name="description" content="A universal, professional web template with sidebar navigation and dark/light mode support">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script>
         tailwind.config = {
+            darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        primary: {
-                            light: "#3b82f6",
-                            dark: "#1d4ed8"
-                        },
-                        secondary: {
-                            light: "#6b7280",
-                            dark: "#374151"
-                        },
-                        background: {
-                            light: "#ffffff",
-                            dark: "#111827"
-                        },
-                        surface: {
-                            light: "#f9fafb",
-                            dark: "#1f2937"
-                        },
-                        text: {
-                            light: "#111827",
-                            dark: "#f9fafb"
+                        primary: "#3B82F6",
+                        secondary: "#6B7280",
+                        success: "#10B981",
+                        error: "#EF4444",
+                        warning: "#F59E0B",
+                        accent: "#8B5CF6",
+                        dark: {
+                            50: "#f9fafb",
+                            100: "#f3f4f6",
+                            200: "#e5e7eb",
+                            300: "#d1d5db",
+                            400: "#9ca3af",
+                            500: "#6b7280",
+                            600: "#4b5563",
+                            700: "#374151",
+                            800: "#1f2937",
+                            900: "#111827",
+                            950: "#030712"
                         }
                     },
                     spacing: {
-                        "content": "1200px"
+                        "sidebar": "280px",
+                        "sidebar-collapsed": "80px"
+                    },
+                    animation: {
+                        "fade-in": "fadeIn 0.3s ease-in-out",
+                        "slide-in": "slideIn 0.3s ease-out"
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            "0%": { opacity: "0" },
+                            "100%": { opacity: "1" }
+                        },
+                        slideIn: {
+                            "0%": { transform: "translateX(-20px)", opacity: "0" },
+                            "100%": { transform: "translateX(0)", opacity: "1" }
+                        }
                     }
                 }
             }
         }
     </script>
     <style>
-        :root {
-            --primary-color: #3b82f6;
-            --secondary-color: #6b7280;
-            --background-color: #ffffff;
-            --surface-color: #f9fafb;
-            --text-color: #111827;
-            --border-color: #e5e7eb;
-            --sidebar-width: 16rem;
-            --header-height: 4rem;
-            --content-max-width: 1200px;
-            --font-size-base: 1rem;
-            --font-size-sm: 0.875rem;
-            --font-size-lg: 1.125rem;
-            --font-size-xl: 1.25rem;
-            --font-size-2xl: 1.5rem;
-            --spacing-unit: 1rem;
-            --border-radius: 0.375rem;
-        }
-
-        .dark-theme {
-            --primary-color: #1d4ed8;
-            --secondary-color: #374151;
-            --background-color: #111827;
-            --surface-color: #1f2937;
-            --text-color: #f9fafb;
-            --border-color: #374151;
-        }
-
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
-
-        html {
-            font-size: 16px;
-            scroll-behavior: smooth;
+        
+        .sidebar-transition {
+            transition: width 0.3s ease;
         }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.5;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        
+        .content-transition {
+            transition: margin-left 0.3s ease;
         }
-
-        /* Typography Scale */
-        h1 {
-            font-size: 2.25rem;
-            line-height: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-        }
-
-        h2 {
-            font-size: 1.875rem;
-            line-height: 2.25rem;
-            font-weight: 600;
-            margin-bottom: 1.25rem;
-        }
-
-        h3 {
-            font-size: 1.5rem;
-            line-height: 2rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        p {
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            line-height: 1.625;
-        }
-
-        .text-small {
-            font-size: 0.875rem;
-        }
-
-        .text-large {
-            font-size: 1.125rem;
-        }
-
-        /* Layout Components */
-        .container {
-            width: 100%;
-            max-width: var(--content-max-width);
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        @media (min-width: 640px) {
-            .container {
-                padding: 0 1.5rem;
+        
+        @media (max-width: 768px) {
+            .sidebar-mobile {
+                transform: translateX(-100%);
             }
-        }
-
-        @media (min-width: 1024px) {
-            .container {
-                padding: 0 2rem;
-            }
-        }
-
-        /* Header Styles */
-        .main-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: var(--header-height);
-            background-color: var(--surface-color);
-            border-bottom: 1px solid var(--border-color);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: var(--content-max-width);
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            position: fixed;
-            top: var(--header-height);
-            left: 0;
-            width: var(--sidebar-width);
-            height: calc(100vh - var(--header-height));
-            background-color: var(--surface-color);
-            border-right: 1px solid var(--border-color);
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            z-index: 900;
-            overflow-y: auto;
-            padding: 1.5rem;
-        }
-
-        .sidebar-open {
-            transform: translateX(0);
-        }
-
-        @media (min-width: 768px) {
-            .sidebar {
+            
+            .sidebar-mobile.open {
                 transform: translateX(0);
             }
             
-            .main-content {
-                margin-left: var(--sidebar-width);
-            }
-        }
-
-        /* Main Content Area */
-        .main-content {
-            margin-top: var(--header-height);
-            padding: 2rem 1rem;
-            flex: 1;
-            width: 100%;
-        }
-
-        @media (min-width: 768px) {
-            .main-content {
-                padding: 2rem;
-            }
-        }
-
-        /* Theme Toggle Button */
-        .theme-toggle {
-            background: none;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 0.5rem 1rem;
-            color: var(--text-color);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
-        }
-
-        .theme-toggle:hover {
-            background-color: var(--border-color);
-        }
-
-        /* Sidebar Toggle for Mobile */
-        .sidebar-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 2.5rem;
-            height: 2.5rem;
-            background: none;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            color: var(--text-color);
-            cursor: pointer;
-            font-size: 1.25rem;
-        }
-
-        @media (min-width: 768px) {
-            .sidebar-toggle {
+            .overlay {
                 display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 40;
+            }
+            
+            .overlay.active {
+                display: block;
             }
         }
+                   .nav-item {
+                 display: flex;
+                 align-items: center;
+               gap: 12px;
+               padding: 10px 12px;
+                 border-radius: 8px;
+               color: #6b7280;
+              transition: all 0.2s ease;
+      }
 
-        /* Card Component */
-        .card {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
+            .nav-item:hover {
+            background-color: rgba(59,130,246,0.1);
+           color: #3b82f6;
+    }
 
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-color);
-        }
+     .nav-item.active {
+     background-color: rgba(59,130,246,0.15);
+    color: #3b82f6;
+     }
 
-        /* Grid System */
-        .grid {
-            display: grid;
-            gap: 1.5rem;
-        }
-
-        .grid-cols-1 {
-            grid-template-columns: 1fr;
-        }
-
-        @media (min-width: 768px) {
-            .grid-cols-2 {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .grid-cols-3 {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        /* Utility Classes */
-        .text-center {
-            text-align: center;
-        }
-
-        .mt-1 { margin-top: 0.25rem; }
-        .mt-2 { margin-top: 0.5rem; }
-        .mt-3 { margin-top: 0.75rem; }
-        .mt-4 { margin-top: 1rem; }
-        .mt-6 { margin-top: 1.5rem; }
-        .mt-8 { margin-top: 2rem; }
-
-        .mb-1 { margin-bottom: 0.25rem; }
-        .mb-2 { margin-bottom: 0.5rem; }
-        .mb-3 { margin-bottom: 0.75rem; }
-        .mb-4 { margin-bottom: 1rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .mb-8 { margin-bottom: 2rem; }
-
-        .p-2 { padding: 0.5rem; }
-        .p-3 { padding: 0.75rem; }
-        .p-4 { padding: 1rem; }
-        .p-6 { padding: 1.5rem; }
-
-        .rounded { border-radius: var(--border-radius); }
-        .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-        .shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
-
-        /* Focus States */
-        *:focus {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-        }
-
-        /* Responsive Images */
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: var(--border-radius);
-        }
     </style>
 </head>
-<body class="light-theme">
-    <!-- Fixed Header -->
-    <header class="main-header">
-        <div class="header-content">
-            <!-- Sidebar Toggle for Mobile -->
-            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
-                <i class="fas fa-bars"></i>
-            </button>
-
-            <!-- Platform Title -->
-            <div class="platform-title">
-                <h1 class="text-xl font-bold" style="font-size: 1.25rem;">Core Web Template</h1>
-                <p class="text-small text-secondary" style="font-size: 0.75rem;">Professional Foundation Platform</p>
-            </div>
-
-            <!-- Theme Toggle -->
-            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                <i class="fas fa-moon" id="themeIcon"></i>
-                <span id="themeText">Dark Mode</span>
-            </button>
-        </div>
-    </header>
-
-      <!-- Sidebar Navigation -->
-                  <aside class="sidebar" id="sidebar">
-                 <nav class="sidebar-nav"></nav>
-       </aside>
-
-      <!-- Main Content Area -->
-                   <main class="main-content">
-                  <div class="container">
-        <!-- Empty – ready for future features -->
-    </div>
-  </main>
-
-    <script>
-
-        // Theme Management
-        class ThemeManager {
-            constructor() {
-                this.themeToggle = document.getElementById("themeToggle");
-                this.themeIcon = document.getElementById("themeIcon");
-                this.themeText = document.getElementById("themeText");
-                this.currentTheme = localStorage.getItem("theme") || "light";
-                
-                this.init();
-            }
-
-            init() {
-                this.applyTheme(this.currentTheme);
-                this.setupEventListeners();
-            }
-
-            applyTheme(theme) {
-                document.body.className = theme === "dark" ? "dark-theme" : "light-theme";
-                
-                if (theme === "dark") {
-                    this.themeIcon.className = "fas fa-sun";
-                    this.themeText.textContent = "Light Mode";
-                } else {
-                    this.themeIcon.className = "fas fa-moon";
-                    this.themeText.textContent = "Dark Mode";
-                }
-                
-                localStorage.setItem("theme", theme);
-                this.currentTheme = theme;
-            }
-
-            toggleTheme() {
-                const newTheme = this.currentTheme === "light" ? "dark" : "light";
-                this.applyTheme(newTheme);
-            }
-
-            setupEventListeners() {
-                this.themeToggle.addEventListener("click", () => this.toggleTheme());
-            }
-        }
-
-        // Sidebar Management
-        class SidebarManager {
-            constructor() {
-                this.sidebar = document.getElementById("sidebar");
-                this.sidebarToggle = document.getElementById("sidebarToggle");
-                this.isOpen = window.innerWidth >= 768;
-                
-                this.init();
-            }
-
-            init() {
-                this.updateSidebarState();
-                this.setupEventListeners();
-                this.setupNavigation();
-            }
-
-            updateSidebarState() {
-                if (window.innerWidth >= 768) {
-                    this.sidebar.classList.add("sidebar-open");
-                    this.isOpen = true;
-                } else {
-                    this.sidebar.classList.remove("sidebar-open");
-                    this.isOpen = false;
-                }
-            }
-
-            toggleSidebar() {
-                this.isOpen = !this.isOpen;
-                this.sidebar.classList.toggle("sidebar-open", this.isOpen);
-            }
-
-            setupEventListeners() {
-                this.sidebarToggle.addEventListener("click", () => this.toggleSidebar());
-                
-                // Close sidebar when clicking on a link (mobile)
-                document.querySelectorAll(".nav-link").forEach(link => {
-                    link.addEventListener("click", (e) => {
-                        e.preventDefault();
-                        if (window.innerWidth < 768) {
-                            this.toggleSidebar();
-                        }
-                        this.handleNavigation(link.dataset.page);
-                    });
-                });
-
-                // Handle window resize
-                window.addEventListener("resize", () => {
-                    this.updateSidebarState();
-                });
-            }
-            
-               handleNavigation(pageId) {  
-            console.log("Navigating to:", pageId);  
-            // In a real application, this would load the appropriate content  
-            // For this template, we'll just update the main title  
-            const page = navigationItems.find(item => item.id === pageId);  
-            if (page) {  
-                document.querySelector("h1").textContent = page.label;  
-                document.querySelector("p.text-large").textContent = page.description;  
-            }  
-        }  
-    }
+<body class="min-h-screen bg-gray-50 dark:bg-dark-900 text-gray-800 dark:text-gray-200">
+    <!-- Mobile Overlay -->
+    <div class="overlay" id="mobileOverlay"></div>
     
-        // Content Manager
-        class ContentManager {
-            constructor() {
-                this.container = document.querySelector(".container");
-                this.init();
-            }
-
-            init() {
-                this.ensureContentWidth();
-                this.setupEventListeners();
-            }
-
-            ensureContentWidth() {
-                // Ensure content doesn't exceed max width
-                const maxWidth = parseInt(getComputedStyle(document.documentElement)
-                    .getPropertyValue("--content-max-width"));
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar-transition fixed left-0 top-0 h-screen bg-white dark:bg-dark-800 shadow-lg z-50 w-sidebar-collapsed md:w-sidebar overflow-hidden">
+        <!-- Logo Area -->
+        <div class="p-4 border-b border-gray-200 dark:border-dark-700">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                        <i class="fas fa-cube text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gray-800 dark:text-white hidden md:inline-block">UniversalPro</span>
+                </div>
+                <button id="sidebarToggle" class="md:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Navigation Menu -->
+        <nav class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1 px-2">
+                <li>
+                    <a href="#" data-section="dashboard" class="nav-item active">
+                        <i class="fas fa-home text-lg"></i>
+                        <span class="nav-text">Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="messages" class="nav-item">
+                        <i class="fas fa-comments text-lg"></i>
+                        <span class="nav-text">Messages</span>
+                        <span class="badge bg-success text-white text-xs px-2 py-1 rounded-full">3</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="p2p" class="nav-item">
+                        <i class="fas fa-exchange-alt text-lg"></i>
+                        <span class="nav-text">P2P</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="market" class="nav-item">
+                        <i class="fas fa-shopping-cart text-lg"></i>
+                        <span class="nav-text">Market</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="analytics" class="nav-item">
+                        <i class="fas fa-chart-line text-lg"></i>
+                        <span class="nav-text">Analytics</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="settings" class="nav-item">
+                        <i class="fas fa-cog text-lg"></i>
+                        <span class="nav-text">Settings</span>
+                    </a>
+                </li>
+                <li class="pt-4 border-t border-gray-200 dark:border-dark-700 mt-4">
+                    <a href="#" data-section="help" class="nav-item">
+                        <i class="fas fa-question-circle text-lg"></i>
+                        <span class="nav-text">Help & Support</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- User Profile -->
+        <div class="border-t border-gray-200 dark:border-dark-700 p-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full overflow-hidden">
+                    <img src="https://picsum.photos/100?random=1" alt="User profile" class="w-full h-full object-cover" loading="lazy">
+                </div>
+                <div class="hidden md:block flex-1">
+                    <h4 class="font-medium text-gray-800 dark:text-white">John Doe</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Administrator</p>
+                </div>
+                <button id="themeToggle" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-moon text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main id="mainContent" class="content-transition min-h-screen md:ml-sidebar-collapsed lg:ml-sidebar">
+        <!-- Top Header -->
+        <header class="bg-white dark:bg-dark-800 shadow-sm sticky top-0 z-40">
+            <div class="px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button id="mobileMenuToggle" class="md:hidden text-gray-600 dark:text-gray-300">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-xl font-bold text-gray-800 dark:text-white" id="pageTitle">Dashboard</h1>
+                </div>
                 
-                if (this.container.offsetWidth > maxWidth) {
-                    this.container.style.maxWidth = `${maxWidth}px`;
-                }
-            }
-
-            setupEventListeners() {
-                window.addEventListener("resize", () => this.ensureContentWidth());
+                <div class="flex items-center space-x-4">
+                    <!-- Search -->
+                    <div class="relative hidden md:block">
+                        <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 bg-gray-100 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    
+                    <!-- Notifications -->
+                    <button class="relative p-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+                    </button>
+                    
+                    <!-- Quick Actions -->
+                    <div class="hidden lg:flex items-center space-x-2">
+                        <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
+                            <i class="fas fa-plus mr-2"></i>
+                            New Item
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Content Area -->
+        <div class="p-4 md:p-6">
+            <!-- Dashboard Section (Default) -->
+            <section id="dashboard" class="content-section active animate-fade-in">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Welcome Back, John!</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Here's what's happening with your projects today.</p>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-dark-700 hover:shadow-md transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
+                                <h3 class="text-2xl font-bold text-gray-800 dark:text-white mt-2">$24,580</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-lg bg-success/10 flex items-center justify-center">
+                                <i class="fas fa-dollar-sign text-success text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-success text-sm font-medium">
+                                <i class="fas fa-arrow-up mr-1"></i>12.5%
+                            </span>
+                            <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">from last month</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-dark-700 hover:shadow-md transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Active Users</p>
+                                <h3 class="text-2xl font-bold text-gray-800 dark:text-white mt-2">1,842</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <i class="fas fa-users text-primary text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-success text-sm font-medium">
+                                <i class="fas fa-arrow-up mr-1"></i>8.2%
+                            </span>
+                            <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">from last week</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-dark-700 hover:shadow-md transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Pending Orders</p>
+                                <h3 class="text-2xl font-bold text-gray-800 dark:text-white mt-2">124</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-lg bg-warning/10 flex items-center justify-center">
+                                <i class="fas fa-shopping-cart text-warning text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-error text-sm font-medium">
+                                <i class="fas fa-arrow-down mr-1"></i>3.4%
+                            </span>
+                            <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">from yesterday</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-dark-700 hover:shadow-md transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Conversion Rate</p>
+                                <h3 class="text-2xl font-bold text-gray-800 dark:text-white mt-2">4.8%</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center">
+                                <i class="fas fa-chart-pie text-accent text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-success text-sm font-medium">
+                                <i class="fas fa-arrow-up mr-1"></i>2.1%
+                            </span>
+                            <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">from last month</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-dark-700">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Recent Activity</h3>
+                            <button class="text-primary hover:text-primary/80 text-sm font-medium">View All</button>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <i class="fas fa-user-plus text-primary"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-gray-800 dark:text-white">New user registered</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">2 minutes ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center">
+                                    <i class="fas fa-check-circle text-success"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-gray-800 dark:text-white">Order #1234 completed</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">1 hour ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center">
+                                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-gray-800 dark:text-white">Server maintenance scheduled</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">3 hours ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-dark-700">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Quick Actions</h3>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button class="p-4 bg-primary/5 hover:bg-primary/10 dark:bg-primary/10 dark:hover:bg-primary/20 rounded-lg border border-primary/20 flex flex-col items-center justify-center transition">
+                                <i class="fas fa-plus-circle text-primary text-2xl mb-2"></i>
+                                <span class="text-sm font-medium text-gray-800 dark:text-white">Add Product</span>
+                            </button>
+                            <button class="p-4 bg-success/5 hover:bg-success/10 dark:bg-success/10 dark:hover:bg-success/20 rounded-lg border border-success/20 flex flex-col items-center justify-center transition">
+                                <i class="fas fa-chart-bar text-success text-2xl mb-2"></i>
+                                <span class="text-sm font-medium text-gray-800 dark:text-white">View Reports</span>
+                            </button>
+                            <button class="p-4 bg-warning/5 hover:bg-warning/10 dark:bg-warning/10 dark:hover:bg-warning/20 rounded-lg border border-warning/20 flex flex-col items-center justify-center transition">
+                                <i class="fas fa-cog text-warning text-2xl mb-2"></i>
+                                <span class="text-sm font-medium text-gray-800 dark:text-white">Settings</span>
+                            </button>
+                            <button class="p-4 bg-accent/5 hover:bg-accent/10 dark:bg-accent/10 dark:hover:bg-accent/20 rounded-lg border border-accent/20 flex flex-col items-center justify-center transition">
+                                <i class="fas fa-question-circle text-accent text-2xl mb-2"></i>
+                                <span class="text-sm font-medium text-gray-800 dark:text-white">Help</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Messages Section -->
+            <section id="messages" class="content-section hidden animate-fade-in">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Messages</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Manage your conversations and notifications.</p>
+                </div>
+                
+                <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-gray-200 dark:border-dark-700 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center space-x-4 mb-6">
+                            <div class="flex-1">
+                                <input type="text" placeholder="Search messages..." class="w-full px-4 py-2 bg-gray-100 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                            <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
+                                <i class="fas fa-plus mr-2"></i>
+                                New Message
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4 p-4 hover:bg-gray-50 dark:hover:bg-dark-700 rounded-lg transition">
+                                <div class="w-12 h-12 rounded-full overflow-hidden">
+                                    <img src="https://picsum.photos/100?random=2" alt="User avatar" class="w-full h-full object-cover" loading="lazy">
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium text-gray-800 dark:text-white">Sarah Johnson</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Hey, are we still meeting tomorrow?</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">2 min ago</p>
+                                    <span class="inline-block w-2 h-2 bg-success rounded-full mt-1"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4 p-4 hover:bg-gray-50 dark:hover:bg-dark-700 rounded-lg transition">
+                                <div class="w-12 h-12 rounded-full overflow-hidden">
+                                    <img src="https://picsum.photos/100?random=3" alt="User avatar" class="w-full h-full object-cover" loading="lazy">
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium text-gray-800 dark:text-white">Mike Wilson</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">I've sent the documents for review</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">1 hour ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- P2P Section -->
+            <section id="p2p" class="content-section hidden animate-fade-in">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Peer-to-Peer Trading</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Trade directly with other users in a secure environment.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2">
+                        <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-dark-700">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Active Trades</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-200 dark:border-dark-700">
+                                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Pair</th>
+                                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Price</th>
+                                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Amount</th>
+                                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-gray-200 dark:border-dark-700 hover:bg-gray-50 dark:hover:bg-dark-700">
+                                            <td class="py-3 px-4">
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="font-medium text-gray-800 dark:text-white">BTC/USDT</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-4 text-gray-800 dark:text-white">$42,580.50</td>
+                                            <td class="py-3 px-4 text-gray-800 dark:text-white">0.5 BTC</td>
+                                            <td class="py-3 px-4">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-success/10 text-success">
+                                                    Active
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr class="border-b border-gray-200 dark:border-dark-700 hover:bg-gray-50 dark:hover:bg-dark-700">
+                                            <td class="py-3 px-4">
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="font-medium text-gray-800 dark:text-white">ETH/USDT</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-4 text-gray-800 dark:text-white">$2,340.75</td>
+                                            <td class="py-3 px-4 text-gray-800 dark:text-white">2.8 ETH</td>
+                                            <td class="py-3 px-4">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-warning/10 text-warning">
+                                                    Pending
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-dark-700">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">New Trade</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Asset</label>
+                                    <select class="w-full px-4 py-2 bg-gray-100 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        <option>Bitcoin (BTC)</option>
+                                        <option>Ethereum (ETH)</option>
+                                        <option>USDT</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount</label>
+                                    <input type="text" class="w-full px-4 py-2 bg-gray-100 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="0.00">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Price</label>
+                                    <input type="text" class="w-full px-4 py-2 bg-gray-100 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="0.00">
+                                </div>
+                                <button class="w-full px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition font-medium">
+                                    Create Trade Offer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Market Section -->
+            <section id="market" class="content-section hidden animate-fade-in">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Marketplace</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Browse and purchase products from our marketplace.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-dark-700 hover:shadow-md transition">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://picsum.photos/400/300?random=4" alt="Product image" class="w-full h-full object-cover" loading="lazy">
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-gray-800 dark:text-white mb-2">Premium Headphones</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Noise cancelling wireless headphones with premium sound quality.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-primary">$249.99</span>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition text-sm">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-dark-700 hover:shadow-md transition">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://picsum.photos/400/300?random=5" alt="Product image" class="w-full h-full object-cover" loading="lazy">
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-gray-800 dark:text-white mb-2">Smart Watch Pro</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Advanced smartwatch with health monitoring and GPS.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-primary">$399.99</span>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition text-sm">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-dark-700 hover:shadow-md transition">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://picsum.photos/400/300?random=6" alt="Product image" class="w-full h-full object-cover" loading="lazy">
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-gray-800 dark:text-white mb-2">Wireless Keyboard</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Mechanical wireless keyboard with RGB lighting.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-primary">$129.99</span>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition text-sm">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-dark-700 hover:shadow-md transition">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://picsum.photos/400/300?random=7" alt="Product image" class="w-full h-full object-cover" loading="lazy">
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-gray-800 dark:text-white mb-2">4K Monitor</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">27-inch 4K UHD monitor with HDR support.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-primary">$599.99</span>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition text-sm">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Settings Section -->
+            <section id="settings" class="content-section hidden animate-fade-in">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Settings</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Manage your account preferences and security settings.</p>
+                </div>
+                
+                <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-gray-200 dark:border-dark-700 overflow-hidden">
+                    <div class="p-6">
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Profile Settings</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
+                                        <input type="text" class="w-full px-4 py-2 bg-gray-100 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" value="John Doe">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
+                                        <input type="email" class="w-full px-4 py-2 bg-gray-100 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" value="john.doe@example.com">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Security</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-700 rounded-lg">
+                                        <div>
+                                            <h4 class="font-medium text-gray-800 dark:text-white">Two-Factor Authentication</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">Add an extra layer of security to your account</p>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer" checked>
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 dark:peer-focus:ring-primary/50 rounded-full peer dark:bg-dark-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-"" after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-dark-500 peer-checked:bg-primary"></div>
+                                        </label>
+                                    </div>
+                                    
+                                    <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
+                                        Change Password
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Notifications</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="h-4 w-4 text-primary rounded focus:ring-primary border-gray-300 dark:border-dark-600" checked>
+                                        <label class="ml-3 text-sm text-gray-700 dark:text-gray-300">Email notifications</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="h-4 w-4 text-primary rounded focus:ring-primary border-gray-300 dark:border-dark-600" checked>
+                                        <label class="ml-3 text-sm text-gray-700 dark:text-gray-300">Push notifications</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="h-4 w-4 text-primary rounded focus:ring-primary border-gray-300 dark:border-dark-600">
+                                        <label class="ml-3 text-sm text-gray-700 dark:text-gray-300">SMS notifications</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <script>
+        // Define all data at the beginning
+        const pageTitles = {
+            "dashboard": "Dashboard",
+            "messages": "Messages",
+            "p2p": "P2P Trading",
+            "market": "Marketplace",
+            "analytics": "Analytics",
+            "settings": "Settings",
+            "help": "Help & Support"
+        };
+        
+        const sectionContents = {
+            "dashboard": "Here's what's happening with your projects today.",
+            "messages": "Manage your conversations and notifications.",
+            "p2p": "Trade directly with other users in a secure environment.",
+            "market": "Browse and purchase products from our marketplace.",
+            "analytics": "View detailed analytics and reports.",
+            "settings": "Manage your account preferences and security settings.",
+            "help": "Get help and support for any issues."
+        };
+        
+        // DOM Elements
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
+        const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const themeToggle = document.getElementById("themeToggle");
+        const mobileOverlay = document.getElementById("mobileOverlay");
+        const pageTitle = document.getElementById("pageTitle");
+        const navItems = document.querySelectorAll(".nav-item");
+        const contentSections = document.querySelectorAll(".content-section");
+        
+        // State variables
+        let isSidebarExpanded = window.innerWidth >= 768;
+        let isDarkMode = localStorage.getItem("darkMode") === "true" || 
+                        (!("darkMode" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        
+        // Initialize theme
+        function initTheme() {
+            if (isDarkMode) {
+                document.documentElement.classList.add("dark");
+                themeToggle.innerHTML = '<i class="fas fa-sun text-lg"></i>';
+            } else {
+                document.documentElement.classList.remove("dark");
+                themeToggle.innerHTML = '<i class="fas fa-moon text-lg"></i>';
             }
         }
-
-        // Initialize everything when DOM is loaded
-        document.addEventListener("DOMContentLoaded", () => {
-            // Initialize managers
-            const themeManager = new ThemeManager();
-            const sidebarManager = new SidebarManager();
-            const contentManager = new ContentManager();
-
-            // Set initial state
-            console.log("Core Web Template initialized");
-            console.log("Configuration:", templateConfig);
-            
-            // Add keyboard shortcuts
-            document.addEventListener("keydown", (e) => {
-                // Toggle sidebar with Ctrl/Cmd + B
-                if ((e.ctrlKey || e.metaKey) && e.key === "b") {
-                    e.preventDefault();
-                    sidebarManager.toggleSidebar();
-                }
-                
-                // Toggle theme with Ctrl/Cmd + T
-                if ((e.ctrlKey || e.metaKey) && e.key === "t") {
-                    e.preventDefault();
-                    themeManager.toggleTheme();
+        
+        // Toggle sidebar on mobile
+        function toggleMobileSidebar() {
+            sidebar.classList.toggle("sidebar-mobile");
+            sidebar.classList.toggle("open");
+            mobileOverlay.classList.toggle("active");
+            document.body.style.overflow = sidebar.classList.contains("open") ? "hidden" : "";
+        }
+        
+        // Switch content section
+        function switchSection(sectionId) {
+            // Update active nav item
+            navItems.forEach(item => {
+                item.classList.remove("active");
+                if (item.getAttribute("data-section") === sectionId) {
+                    item.classList.add("active");
                 }
             });
-        });
-
-        // Utility function to generate sample content
-        function generateSampleContent(count) {
-            const content = [];
-            for (let i = 1; i <= count; i++) {
-                content.push({
-                    "id": i,
-                    "title": `Sample Item ${i}`,
-                    "description": `This is a sample content item number ${i}`,
-                    "image": `https://picsum.photos/400/300?random=${i}`
-                });
+            
+            // Update active content section
+            contentSections.forEach(section => {
+                section.classList.remove("active");
+                section.classList.add("hidden");
+                if (section.id === sectionId) {
+                    section.classList.remove("hidden");
+                    section.classList.add("active");
+                }
+            });
+            
+            // Update page title
+            pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
+            
+            // Close mobile sidebar if open
+            if (window.innerWidth < 768 && sidebar.classList.contains("open")) {
+                toggleMobileSidebar();
             }
-            return content;
         }
-
-        // Export template configuration for external use
-        window.CoreTemplate = {
-            config: templateConfig,
-            navigation: navigationItems,
-            utils: {
-                generateSampleContent
+        
+        // Toggle theme
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem("darkMode", isDarkMode);
+            initTheme();
+        }
+        
+        // Handle window resize
+        function handleResize() {
+            if (window.innerWidth >= 768) {
+                sidebar.classList.remove("sidebar-mobile", "open");
+                mobileOverlay.classList.remove("active");
+                document.body.style.overflow = "";
             }
-        };
+        }
+        
+        // Initialize navigation items
+        function initNavigation() {
+            navItems.forEach(item => {
+                item.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute("data-section");
+                    switchSection(sectionId);
+                });
+            });
+        }
+        
+        // Event Listeners
+        mobileMenuToggle.addEventListener("click", toggleMobileSidebar);
+        sidebarToggle.addEventListener("click", toggleMobileSidebar);
+        themeToggle.addEventListener("click", toggleTheme);
+        mobileOverlay.addEventListener("click", toggleMobileSidebar);
+        window.addEventListener("resize", handleResize);
+        
+        // Initialize
+        initTheme();
+        initNavigation();
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener("click", function(event) {
+            if (window.innerWidth < 768 && 
+                !sidebar.contains(event.target) && 
+                !mobileMenuToggle.contains(event.target) &&
+                sidebar.classList.contains("open")) {
+                toggleMobileSidebar();
+            }
+        });
+        
+        // Add hover effects to cards and buttons
+        document.addEventListener("DOMContentLoaded", function() {
+            const cards = document.querySelectorAll(".bg-white, .bg-dark-800");
+            cards.forEach(card => {
+                card.addEventListener("mouseenter", function() {
+                    this.style.transform = "translateY(-2px)";
+                });
+                card.addEventListener("mouseleave", function() {
+                    this.style.transform = "translateY(0)";
+                });
+            });
+        });
+        
+        // Form submission handlers
+        document.querySelectorAll("button[type="submit"]").forEach(button => {
+            button.addEventListener("click", function(e) {
+                e.preventDefault();
+                alert("Form submitted successfully!");
+            });
+        });
+        
+        // Add to cart functionality
+        document.querySelectorAll("button:contains("Add to Cart")").forEach(button => {
+            button.addEventListener("click", function() {
+                const productName = this.closest(".p-4").querySelector("h4").textContent;
+                alert(`"${productName}" added to cart!`);
+            });
+        });
     </script>
 </body>
 </html>
