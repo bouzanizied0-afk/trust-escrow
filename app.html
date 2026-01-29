@@ -492,8 +492,10 @@
             </section>
             
             <!-- P2P Section -->
-           <section id="p2p" class="content-section hidden animate-fade-in"></section>
-
+           <section id="p2p" class="content-section hidden animate-fade-in h-[calc(100vh-80px)]">
+    <iframe src="p2p.html" class="w-full h-full border-none shadow-none" id="p2pFrame"></iframe>
+     </section>
+     
             <!-- Market Section -->
             <section id="market" class="content-section hidden animate-fade-in">
                 <div class="mb-6">
@@ -924,36 +926,16 @@
             }
         });
         
+        document.getElementById('p2p-nav-btn').addEventListener('click', function() {
+    // فقط نتأكد أن الإطار سيعمل عند الضغط
+    const frame = document.getElementById('p2pFrame');
+    if (frame.src === "") {
+        frame.src = "p2p.html";
+    }
+  });
+
         // Initialize with dashboard section active
         switchSection("dashboard");
-        
-        // وظيفة جلب ملف الـ P2P عند الضغط على الزر
-async function loadP2PFile() {
-    const p2pSection = document.getElementById('p2p');
-    
-    // إذا كان القسم فارغاً (لم يتم تحميله من قبل)
-    if (p2pSection.innerHTML.trim() === "") {
-        try {
-            const response = await fetch('p2p.html'); // سيجلب ملفك الذي سميته p2p.html
-            const htmlText = await response.text();
-            p2pSection.innerHTML = htmlText;
-
-            // تشغيل السكربتات الموجودة داخل الملف المحقون
-            const scripts = p2pSection.querySelectorAll('script');
-            scripts.forEach(s => {
-                const newScript = document.createElement('script');
-                newScript.textContent = s.textContent;
-                document.body.appendChild(newScript);
-            });
-            console.log("تم تحميل ملف P2P بنجاح");
-        } catch (err) {
-            console.error("خطأ في جلب الملف:", err);
-        }
-    }
-  }
-     // ربط الزر بالوظيفة
-    document.getElementById('p2p-nav-btn').addEventListener('click', loadP2PFile);
-
     </script>
 </body>
 </html>
