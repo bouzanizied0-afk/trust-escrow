@@ -156,11 +156,7 @@
 </head>
 <body class="min-h-screen bg-gray-50 dark:bg-dark-900 text-gray-800 dark:text-gray-200">
     <!-- Mobile Overlay -->
-    <button id="mobileMenuToggle" class="lg:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-    <i class="fas fa-bars text-lg"></i>
-</button>
-    <div class="overlay" id="mobileOverlay"></div>
-    
+
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar-transition fixed left-0 top-0 h-screen bg-white dark:bg-dark-800 shadow-lg z-50 w-sidebar-collapsed lg:w-sidebar overflow-hidden flex flex-col">
         <!-- Logo Area -->
@@ -1001,20 +997,24 @@
         });
         
         // Form submission handlers
-        document.querySelectorAll("button[type="submit"]").forEach(button => {
+        // 1. تصحيح أزرار الإرسال
+        document.querySelectorAll('button[type="submit"]').forEach(button => {
             button.addEventListener("click", function(e) {
                 e.preventDefault();
                 alert("Form submitted successfully!");
             });
         });
         
-        // Add to cart functionality
-        document.querySelectorAll("button:contains("Add to Cart")").forEach(button => {
-            button.addEventListener("click", function() {
-                const productName = this.closest(".p-4").querySelector("h4").textContent;
-                alert(`"${productName}" added to cart!`);
-            });
+        // 2. تصحيح أزرار إضافة للسلة
+        document.querySelectorAll("button").forEach(button => {
+            if (button.textContent.includes("Add to Cart")) {
+                button.addEventListener("click", function() {
+                    const productName = this.closest(".p-4").querySelector("h4").textContent;
+                    alert(`"${productName}" added to cart!`);
+                });
+            }
         });
+
         
         // Initialize with dashboard section active
         switchSection("dashboard");
