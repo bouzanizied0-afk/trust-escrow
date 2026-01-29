@@ -800,7 +800,7 @@
         const pageTitle = document.getElementById("pageTitle");
         const navItems = document.querySelectorAll(".nav-item");
         const contentSections = document.querySelectorAll(".content-section");
-        c = document.getElementById("dragHandle");
+        const dragHandle = document.getElementById("dragHandle");
         
         // State variables
         let isSidebarExpanded = window.innerWidth >= 1024;
@@ -954,12 +954,12 @@
         }
         
         // Event Listeners
-        mobileMenuToggle.addEventListener("click", toggleMobileSidebar);
-        sidebarToggle.addEventListener("click", toggleMobileSidebar);
-        themeToggle.addEventListener("click", toggleTheme);
-        mobileOverlay.addEventListener("click", toggleMobileSidebar);
-        window.addEventListener("resize", handleResize);
-        
+       [mobileMenuToggle, sidebarToggle, mobileOverlay].forEach(btn         => {
+         btn?.addEventListener("click", toggleMobileSidebar);
+          });
+           themeToggle.addEventListener("click", toggleTheme);
+             window.addEventListener("resize", handleResize);
+
         // Initialize
         initTheme();
         initNavigation();
