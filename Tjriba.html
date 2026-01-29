@@ -764,137 +764,238 @@
             </section>
         </div>
     </main>
-<script>
-    // 1. نفس التعريفات الخاصة بك (بدون حذف)
-    const pageTitles = {
-        "dashboard": "Dashboard", "messages": "Messages", "p2p": "P2P Trading",
-        "market": "Marketplace", "analytics": "Analytics", "settings": "Settings"
-    };
 
-    const sidebar = document.getElementById("sidebar");
-    const mainContent = document.getElementById("mainContent");
-    const mobileMenuToggle = document.getElementById("mobileMenuToggle");
-    const sidebarToggle = document.getElementById("sidebarToggle");
-    const themeToggle = document.getElementById("themeToggle");
-    const mobileOverlay = document.getElementById("mobileOverlay");
-    const pageTitle = document.getElementById("pageTitle");
-    const navItems = document.querySelectorAll(".nav-item");
-    const contentSections = document.querySelectorAll(".content-section");
-    const dragHandle = document.getElementById("dragHandle");
-
-    let isDarkMode = localStorage.getItem("darkMode") === "true";
-    let isDragging = false;
-
-    // --- الحل الجذري للتعليق ---
-    function toggleMobileSidebar() {
-        if (window.innerWidth < 1024) {
-            // هذا السطر "يقتل" أي قيم بكسل ثابتة تجبر السايدبار على البقاء
-            sidebar.style.removeProperty('width');
-            mainContent.style.removeProperty('margin-left');
-            
-            // التأكد من أن السايدبار يأخذ كلاس الموبايل
-            sidebar.classList.add("sidebar-mobile");
-        }
-
-        const isOpen = sidebar.classList.toggle("open");
+    <script>
+        // Define all data at the beginning
+        const pageTitles = {
+            "dashboard": "Dashboard",
+            "messages": "Messages",
+            "p2p": "P2P Trading",
+            "market": "Marketplace",
+            "analytics": "Analytics",
+            "settings": "Settings",
+            "help": "Help & Support"
+        };
         
-        if (mobileOverlay) {
-            mobileOverlay.classList.toggle("active", isOpen);
+        // DOM Elements
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
+        const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const themeToggle = document.getElementById("themeToggle");
+        const mobileOverlay = document.getElementById("mobileOverlay");
+        const pageTitle = document.getElementById("pageTitle");
+        const navItems = document.querySelectorAll(".nav-item");
+        const contentSections = document.querySelectorAll(".content-section");
+        c = document.getElementById("dragHandle");
+        
+        // State variables
+        let isSidebarExpanded = window.innerWidth >= 1024;
+        let isDarkMode = localStorage.getItem("darkMode") === "true" || 
+                        (!("darkMode" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        let isDragging = false;
+        let startX = 0;
+        let startWidth = 0;
+        const minWidth = 240;
+        const maxWidth = 400;
+        
+        // Initialize theme
+        function initTheme() {
+            if (isDarkMode) {
+                document.documentElement.classList.add("dark");
+                themeToggle.innerHTML = '<i class="fas fa-sun text-lg"></i>';
+            } else {
+                document.documentElement.classList.remove("dark");
+                themeToggle.innerHTML = '<i class="fas fa-moon text-lg"></i>';
+            }
         }
+        
+        // Toggle sidebar on mobile
+         function toggleMobileSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const mobileOverlay = document.getElementById("mobileOverlay");
 
-        document.body.style.overflow = isOpen ? "hidden" : "";
+    // نستخدم toggle لتعمل مع كل الأزرار (فتح وإغلاق)
+    sidebar.classList.toggle("open");
+    
+    if (mobileOverlay) {
+        mobileOverlay.classList.toggle("active");
     }
 
-    // --- ميزة السحب (للحاسوب فقط) ---
-    function initSidebarDrag() {
-        if (!dragHandle) return;
-        
-        dragHandle.onmousedown = (e) => {
-            if (window.innerWidth < 1024) return;
-            isDragging = true;
-            let startX = e.clientX;
-            let startWidth = parseInt(getComputedStyle(sidebar).width, 10);
-            sidebar.style.transition = "none";
-            
-            const doDrag = (e) => {
-                if (!isDragging) return;
-                const width = startWidth + e.clientX - startX;
-                if (width >= 240 && width <= 400) {
-                    sidebar.style.setProperty('width', width + 'px', 'important');
-                    mainContent.style.setProperty('margin-left', width + 'px', 'important');
+    // منع التمرير في الخلفية عند الفتح فقط
+    document.body.style.overflow = sidebar.classList.contains("open") ? "hidden" : "";
+    }
+        // Switch content section
+        function switchSection(sectionId) {
+            // Update active nav item
+            navItems.forEach(item => {
+                item.classList.remove("active");
+                if (item.getAttribute("data-section") === sectionId) {
+                    item.classList.add("active");
                 }
-            };
+            });
+            
+            // Update active content section
+            contentSections.forEach(section => {
+                section.classList.remove("active");
+                section.classList.add("hidden");
+                if (section.id === sectionId) {
+                    section.classList.remove("hidden");
+                    section.classList.add("active");
+                }
+            });
+            
+            // Update page title
+            pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
+            
+            // Close mobile sidebar if open
+            if (window.innerWidth < 1024 && sidebar.classList.contains("open")) {
+                toggleMobileSidebar();
+            }
+        }
+        
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem("darkMode", isDarkMode);
+            
+            // هذا السطر يضيف أو يحذف كلمة dark من الصفحة لتفعيل الألوان
+            document.documentElement.classList.toggle("dark", isDarkMode);
+            
+            // هذا السطر يغير شكل الأيقونة فوراً بين شمس وقمر
+            themeToggle.innerHTML = isDarkMode ? 
+                '<i class="fas fa-sun text-lg"></i>' : 
+                '<i class="fas fa-moon text-lg"></i>';
+        }
 
-            const stopDrag = () => {
-                isDragging = false;
-                sidebar.style.transition = "";
-                localStorage.setItem("sidebarWidth", sidebar.style.width);
-                document.removeEventListener("mousemove", doDrag);
-                document.removeEventListener("mouseup", stopDrag);
-            };
-
+        
+        // Handle window resize
+        function handleResize() {
+            if (window.innerWidth >= 1024) {
+                sidebar.classList.remove("sidebar-mobile", "open");
+                mobileOverlay.classList.remove("active");
+                document.body.style.overflow = "";
+            }
+        }
+        
+        // Initialize navigation items
+        function initNavigation() {
+            navItems.forEach(item => {
+                item.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute("data-section");
+                    switchSection(sectionId);
+                });
+            });
+        }
+        
+        // Sidebar drag functionality
+        function initSidebarDrag() {
+            dragHandle.addEventListener("mousedown", startDrag);
             document.addEventListener("mousemove", doDrag);
             document.addEventListener("mouseup", stopDrag);
-        };
-    }
-
-    // --- باقي المميزات (Hover, Click, Sections) كما هي ---
-    function switchSection(sectionId) {
-        navItems.forEach(item => item.classList.toggle("active", item.getAttribute("data-section") === sectionId));
-        contentSections.forEach(section => {
-            section.classList.toggle("hidden", section.id !== sectionId);
-            section.classList.toggle("active", section.id === sectionId);
-        });
-        pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
-
-        if (window.innerWidth < 1024 && sidebar.classList.contains("open")) {
-            toggleMobileSidebar();
+            
+            function startDrag(e) {
+                isDragging = true;
+                startX = e.clientX;
+                startWidth = parseInt(getComputedStyle(sidebar).width, 10);
+                sidebar.style.transition = "none";
+                document.body.style.cursor = "ew-resize";
+                e.preventDefault();
+            }
+            
+            function doDrag(e) {
+                if (!isDragging) return;
+                
+                const width = startWidth + e.clientX - startX;
+                if (width >= minWidth && width <= maxWidth) {
+                    sidebar.style.width = width + "px";
+                    mainContent.style.marginLeft = width + "px";
+                }
+            }
+            
+            function stopDrag() {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                sidebar.style.transition = "";
+                document.body.style.cursor = "";
+                
+                // Save sidebar width
+                const currentWidth = parseInt(getComputedStyle(sidebar).width, 10);
+                localStorage.setItem("sidebarWidth", currentWidth);
+            }
         }
-    }
-
-    function toggleTheme() {
-        isDarkMode = !isDarkMode;
-        localStorage.setItem("darkMode", isDarkMode);
-        document.documentElement.classList.toggle("dark", isDarkMode);
-        themeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    }
-
-    // تشغيل التأثيرات البصرية (Hover & Click)
-    function initEffects() {
-        document.querySelectorAll(".bg-white, .bg-dark-800").forEach(card => {
-            card.onmouseenter = () => card.style.transform = "translateY(-2px)";
-            card.onmouseleave = () => card.style.transform = "translateY(0)";
-        });
-        document.querySelectorAll("button").forEach(btn => {
-            btn.onmousedown = () => btn.style.transform = "scale(0.95)";
-            btn.onmouseup = btn.onmouseleave = () => btn.style.transform = "scale(1)";
-        });
-    }
-
-    // الانطلاق
-    document.addEventListener("DOMContentLoaded", () => {
-        initSidebarDrag();
-        initEffects();
-        if (window.innerWidth >= 1024 && localStorage.getItem("sidebarWidth")) {
-            const w = localStorage.getItem("sidebarWidth");
-            sidebar.style.width = w;
-            mainContent.style.marginLeft = w;
+        
+        // Load saved sidebar width
+        function loadSidebarWidth() {
+            if (window.innerWidth >= 1024) {
+                const savedWidth = localStorage.getItem("sidebarWidth");
+                if (savedWidth) {
+                    const width = parseInt(savedWidth, 10);
+                    if (width >= minWidth && width <= maxWidth) {
+                        sidebar.style.width = width + "px";
+                        mainContent.style.marginLeft = width + "px";
+                    }
+                }
+            }
         }
+        
+        // Event Listeners
+        mobileMenuToggle.addEventListener("click", toggleMobileSidebar);
+        sidebarToggle.addEventListener("click", toggleMobileSidebar);
+        themeToggle.addEventListener("click", toggleTheme);
+        mobileOverlay.addEventListener("click", toggleMobileSidebar);
+        window.addEventListener("resize", handleResize);
+        
+        // Initialize
+        initTheme();
+        initNavigation();
+        loadSidebarWidth();
+        
+        // Initialize sidebar drag on desktop
+        if (window.innerWidth >= 1024) {
+            initSidebarDrag();
+        }
+        
+        // Reinitialize drag on resize
+        window.addEventListener("resize", function() {
+            if (window.innerWidth >= 1024) {
+                initSidebarDrag();
+            }
+        });
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener("click", function(event) {
+            if (window.innerWidth < 1024 && 
+                !sidebar.contains(event.target) && 
+                !mobileMenuToggle.contains(event.target) &&
+                sidebar.classList.contains("open")) {
+                toggleMobileSidebar();
+            }
+        });
+        
+        // Form submission handlers
+        // 1. تصحيح أزرار الإرسال
+        document.querySelectorAll('button[type="submit"]').forEach(button => {
+            button.addEventListener("click", function(e) {
+                e.preventDefault();
+                alert("Form submitted successfully!");
+            });
+        });
+        
+        // 2. تصحيح أزرار إضافة للسلة
+        document.querySelectorAll("button").forEach(button => {
+            if (button.textContent.includes("Add to Cart")) {
+                button.addEventListener("click", function() {
+                    const productName = this.closest(".p-4").querySelector("h4").textContent;
+                    alert(`"${productName}" added to cart!`);
+                });
+            }
+        });
+
+        
+        // Initialize with dashboard section active
         switchSection("dashboard");
-    });
-
-    mobileMenuToggle.onclick = toggleMobileSidebar;
-    sidebarToggle.onclick = toggleMobileSidebar;
-    if (mobileOverlay) mobileOverlay.onclick = toggleMobileSidebar;
-    themeToggle.onclick = toggleTheme;
-
-    // إغلاق ذكي عند النقر في الخارج
-    document.addEventListener("click", (e) => {
-        if (window.innerWidth < 1024 && sidebar.classList.contains("open") && 
-            !sidebar.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
-            toggleMobileSidebar();
-        }
-    });
     </script>
 </body>
 </html>
