@@ -153,6 +153,19 @@
         .dark ::-webkit-scrollbar-thumb:hover {
             background: #9CA3AF;
         }
+
+        @media (min-width: 1024px) {
+            .bg-white, .bg-dark-800 {
+                transition: transform 0.2s ease;
+            }
+            .bg-white:hover, .bg-dark-800:hover {
+                transform: translateY(-2px);
+            }
+            button:not(#mobileMenuToggle):not(#sidebarToggle):not(#sidebar button):active {
+                transform: scale(0.95);
+                transition: transform 0.1s ease;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gray-50 dark:bg-dark-900 text-gray-800 dark:text-gray-200">
@@ -972,32 +985,6 @@
                 sidebar.classList.contains("open")) {
                 toggleMobileSidebar();
             }
-        });
-        // Add hover effects to cards and buttons
-        document.addEventListener("DOMContentLoaded", function() {
-            const cards = document.querySelectorAll(".bg-white, .bg-dark-800");
-            cards.forEach(card => {
-                card.addEventListener("mouseenter", function() {
-                    this.style.transform = "translateY(-2px)";
-                });
-                card.addEventListener("mouseleave", function() {
-                    this.style.transform = "translateY(0)";
-                });
-            });
-            
-            // Add click effects to buttons
-            const buttons = document.querySelectorAll("button");
-            buttons.forEach(button => {
-                button.addEventListener("mousedown", function() {
-                    this.style.transform = "scale(0.98)";
-                });
-                button.addEventListener("mouseup", function() {
-                    this.style.transform = "scale(1)";
-                });
-                button.addEventListener("mouseleave", function() {
-                    this.style.transform = "scale(1)";
-                });
-            });
         });
         
         // Form submission handlers
