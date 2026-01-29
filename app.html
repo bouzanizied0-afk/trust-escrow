@@ -192,7 +192,7 @@
         <nav class="flex-1 overflow-y-auto py-6">
             <ul class="space-y-2 px-4">
                 <li>
-                    <a href="#" data-section="dashboard" class="nav-item active flex items-center space-x-4 p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-dark-700">
+                    <a href="#" id="p2p-nav-btn" data-section="p2p" class="nav-item flex items-center space-x-4 p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-dark-700">
                         <i class="fas fa-home text-lg w-6 text-center"></i>
                         <span class="nav-text hidden lg:inline-block font-medium">Home</span>
                     </a>
@@ -492,90 +492,8 @@
             </section>
             
             <!-- P2P Section -->
-            <section id="p2p" class="content-section hidden animate-fade-in">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Peer-to-Peer Trading</h2>
-                    <p class="text-gray-600 dark:text-gray-400">Trade directly with other users in a secure environment.</p>
-                </div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2">
-                        <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-dark-700">
-                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Active Trades</h3>
-                            <div class="overflow-x-auto">
-                                <table class="w-full">
-                                    <thead>
-                                        <tr class="border-b border-gray-200 dark:border-dark-700">
-                                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Pair</th>
-                                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Price</th>
-                                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Amount</th>
-                                            <th class="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-gray-400">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="border-b border-gray-200 dark:border-dark-700 hover:bg-gray-50 dark:hover:bg-dark-700">
-                                            <td class="py-3 px-4">
-                                                <div class="flex items-center space-x-2">
-                                                    <span class="font-medium text-gray-800 dark:text-white">BTC/USDT</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-3 px-4 text-gray-800 dark:text-white">$42,580.50</td>
-                                            <td class="py-3 px-4 text-gray-800 dark:text-white">0.5 BTC</td>
-                                            <td class="py-3 px-4">
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-success/10 text-success">
-                                                    Active
-                                                </span>
-                                            </td>
-                                        </tr>
-                                        <tr class="border-b border-gray-200 dark:border-dark-700 hover:bg-gray-50 dark:hover:bg-dark-700">
-                                            <td class="py-3 px-4">
-                                                <div class="flex items-center space-x-2">
-                                                    <span class="font-medium text-gray-800 dark:text-white">ETH/USDT</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-3 px-4 text-gray-800 dark:text-white">$2,340.75</td>
-                                            <td class="py-3 px-4 text-gray-800 dark:text-white">2.8 ETH</td>
-                                            <td class="py-3 px-4">
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-warning/10 text-warning">
-                                                    Pending
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-dark-700">
-                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">New Trade</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Asset</label>
-                                    <select class="w-full px-4 py-2 bg-gray-100 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                                        <option>Bitcoin (BTC)</option>
-                                        <option>Ethereum (ETH)</option>
-                                        <option>USDT</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount</label>
-                                    <input type="text" class="w-full px-4 py-2 bg-gray-100 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="0.00">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Price</label>
-                                    <input type="text" class="w-full px-4 py-2 bg-gray-100 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="0.00">
-                                </div>
-                                <button class="w-full px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition font-medium">
-                                    Create Trade Offer
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
+           <section id="p2p" class="content-section hidden animate-fade-in"></section>
+
             <!-- Market Section -->
             <section id="market" class="content-section hidden animate-fade-in">
                 <div class="mb-6">
@@ -1008,6 +926,34 @@
         
         // Initialize with dashboard section active
         switchSection("dashboard");
+        
+        // وظيفة جلب ملف الـ P2P عند الضغط على الزر
+async function loadP2PFile() {
+    const p2pSection = document.getElementById('p2p');
+    
+    // إذا كان القسم فارغاً (لم يتم تحميله من قبل)
+    if (p2pSection.innerHTML.trim() === "") {
+        try {
+            const response = await fetch('p2p.html'); // سيجلب ملفك الذي سميته p2p.html
+            const htmlText = await response.text();
+            p2pSection.innerHTML = htmlText;
+
+            // تشغيل السكربتات الموجودة داخل الملف المحقون
+            const scripts = p2pSection.querySelectorAll('script');
+            scripts.forEach(s => {
+                const newScript = document.createElement('script');
+                newScript.textContent = s.textContent;
+                document.body.appendChild(newScript);
+            });
+            console.log("تم تحميل ملف P2P بنجاح");
+        } catch (err) {
+            console.error("خطأ في جلب الملف:", err);
+        }
+    }
+  }
+     // ربط الزر بالوظيفة
+    document.getElementById('p2p-nav-btn').addEventListener('click', loadP2PFile);
+
     </script>
 </body>
 </html>
