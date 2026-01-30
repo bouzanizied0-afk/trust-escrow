@@ -19,17 +19,37 @@ const p2pTemplate = `
         </div>
 
         <div class="grid grid-cols-2 border-t dark:border-dark-700 bg-gray-50 dark:bg-dark-900">
-            <button onclick="switchP2PTab('market')" class="py-4 text-primary font-bold"><i class="fas fa-store mr-2"></i>Market</button>
-            <button onclick="switchP2PTab('chat')" class="py-4 text-gray-400 font-bold border-l dark:border-dark-700"><i class="fas fa-comment-dots mr-2"></i>Chat</button>
+            <button onclick="switchP2PTab('market')" class="py-4 text-primary font-bold active:bg-gray-200"><i class="fas fa-store mr-2"></i>Market</button>
+            <button onclick="switchP2PTab('chat')" class="py-4 text-gray-400 font-bold border-l dark:border-dark-700 active:bg-gray-200"><i class="fas fa-comment-dots mr-2"></i>Chat</button>
         </div>
     </div>
 </div>
 `;
 
-// دالة الحقن السريع
+// 1. دالة الحقن الأساسية
 function initP2P() {
     const container = document.getElementById('p2p');
     if (container && container.innerHTML.trim() === "") {
         container.innerHTML = p2pTemplate;
+    }
+}
+
+// 2. دالة التبديل بين السوق والدردشة (التي سألته عنها)
+function switchP2PTab(tab) {
+    const displayArea = document.getElementById('p2pInnerContent');
+    if (!displayArea) return;
+
+    if (tab === 'market') {
+        displayArea.innerHTML = `
+            <div class="animate-fade-in p-4 bg-gray-50 dark:bg-dark-900 rounded-xl border dark:border-dark-700">
+                <div class="flex justify-between mb-4 font-bold text-primary"><span>BTC/USDT</span> <span>$52,000</span></div>
+                <button class="w-full bg-primary text-white py-2 rounded-lg">Buy Now</button>
+            </div>`;
+    } else {
+        displayArea.innerHTML = `
+            <div class="animate-fade-in text-center py-20 text-gray-400">
+                <i class="fas fa-comments text-4xl mb-4"></i>
+                <p>Chat Room is empty.</p>
+            </div>`;
     }
 }
