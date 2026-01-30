@@ -492,7 +492,9 @@
             </section>
             
             <!-- P2P Section -->
-            <section id="p2p" class="content-section hidden animate-fade-in"></section>
+            <section id="p2p" class="content-section hidden animate-fade-in">
+                </section>
+
             <!-- Market Section -->
             <section id="market" class="content-section hidden animate-fade-in">
                 <div class="mb-6">
@@ -764,7 +766,10 @@
                     item.classList.add("active");
                 }
             });
-            
+            if (sectionId === 'p2p') {
+          initP2P();
+         }
+
             // Update active content section
             contentSections.forEach(section => {
                 section.classList.remove("active");
@@ -922,30 +927,10 @@
                 });
             }
         });
-        async function loadP2PContent() {
-    const container = document.getElementById('p2p');
-    
-    // منع تكرار التحميل إذا كان المحتوى موجوداً
-    if (container.children.length > 0) return;
-
-    try {
-        const response = await fetch('p2p.html');
-        if (!response.ok) throw new Error('File not found');
-        const html = await response.text();
         
-        // حقن المحتوى
-        container.innerHTML = html;
-        
-        // إعادة ضبط الـ display لضمان عدم تأثر السايدبار
-        container.style.display = "block"; 
-        
-    } catch (error) {
-        console.error("Error:", error);
-        container.innerHTML = "<div class='p-10 text-center text-red-500'>تعذر تحميل نظام P2P. تأكد من وجود ملف p2p.html في نفس المجلد.</div>";
-    }
-   }
         // Initialize with dashboard section active
         switchSection("dashboard");
     </script>
+  <script src="p2p-component.js"></script>
 </body>
 </html>
