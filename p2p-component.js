@@ -1,4 +1,4 @@
-/**
+
  * P2P Trading Platform Module
  * Version: 1.0.0
  * Organization: Global Standard Clean Code
@@ -291,18 +291,23 @@ const P2PEngine = {
         p2pAppData.currentChat = null;
     },
 
-    toggleUIComponent(id) {
-        const el = this.uiElements[id];
-        const isHidden = el.classList.contains("hidden");
-        this.hideUIComponent('attachmentMenu');
-        this.hideUIComponent('emojiPicker');
-        if (isHidden) el.classList.remove
-        if (isHidden) el.classList.remove("hidden");
-    },
+    // اجعل الحرف الأول t صغيراً ليتوافق مع بقية الكود
+toggleUIComponent(id) {
+    const el = this.uiElements[id];
+    if (!el) return;
+    
+    const isHidden = el.classList.contains("hidden");
 
-    hideUIComponent(id) {
-        if (this.uiElements[id]) this.uiElements[id].classList.add("hidden");
-    },
+    this.hideUIComponent('attachmentMenu');
+    this.hideUIComponent('emojiPicker');
+    this.hideUIComponent('voiceRecorder');
+
+    if (isHidden) {
+        el.classList.remove("hidden");
+    }
+},
+
+
 
     // 8. نظام النقر المفوض (Delegated Clicks)
     // هذا الجزء يضمن عمل الأزرار حتى لو تمت إضافتها ديناميكياً
@@ -375,12 +380,20 @@ const P2PEngine = {
     }
 };
 
-// تشغيل النظام عند تحميل الصفحة
-document.addEventListener("DOMContentLoaded", () => {
-    P2PEngine.init();
+   // اضعه هنا في نهاية الملف تماماً بدلاً من المحذوف
+const startP2PWithRetry = setInterval(() => {
+    const marketCheck = document.getElementById("marketPage");
     
-    // ربط خيارات المرفقات بشكل إضافي
-    document.querySelectorAll(".attachment-option").forEach(btn => {
-        btn.onclick = () => P2PEngine.sendImageMessage();
-    });
-});
+    if (marketCheck) {
+        console.log("P2P HTML detected! Launching Engine...");
+        P2PEngine.init();
+        
+        document.querySelectorAll(".attachment-option").forEach(btn => {
+            btn.onclick = () => P2PEngine.sendImageMessage();
+        });
+
+        clearInterval(startP2PWithRetry);
+    } else {
+        console.log("Waiting for P2P layout to load...");
+    }
+}, 500);
