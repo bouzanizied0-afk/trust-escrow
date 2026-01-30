@@ -165,32 +165,14 @@
                 transform: scale(0.95);
                 transition: transform 0.1s ease;
             }
+      }
+        /* إضافة مساحة في أسفل الصفحة تساوي طول الشريط */
+       main, body {
+    padding-bottom: 4rem; /* نفس طول الـ h-16 */
         }
     </style>
 </head>
-     <body class="min-h-screen bg-gray-50 dark:bg-dark-950">
-    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-900 border-t border-gray-200 dark:border-dark-800 z-50 shadow-lg">
-        <div class="flex items-center justify-around">
-            <button data-page="market" class="p2p-nav-btn flex-1 flex flex-col items-center justify-center py-3 text-primary transition-colors">
-                <i class="fas fa-store text-lg mb-1"></i>
-                <span class="text-[10px] font-bold">Market</span>
-            </button>
-            <button data-page="messages" class="p2p-nav-btn flex-1 flex flex-col items-center justify-center py-3 text-gray-400 hover:text-primary transition-colors">
-                <i class="fas fa-comment-dots text-lg mb-1"></i>
-                <span class="text-[10px] font-bold">Chats</span>
-            </button>
-            <button data-page="orders" class="p2p-nav-btn flex-1 flex flex-col items-center justify-center py-3 text-gray-400 hover:text-primary transition-colors">
-                <i class="fas fa-file-invoice text-lg mb-1"></i>
-                <span class="text-[10px] font-bold">Orders</span>
-            </button>
-            <button data-page="disputes" class="p2p-nav-btn flex-1 flex flex-col items-center justify-center py-3 text-gray-400 hover:text-primary transition-colors">
-                <i class="fas fa-shield-alt text-lg mb-1"></i>
-                <span class="text-[10px] font-bold">Support</span>
-            </button>
-        </div>
-    </nav>
-
- <div  class="min-h-screen bg-gray-50 dark:bg-dark-900 text-gray-800 dark:text-gray-200">
+<body class="min-h-screen bg-gray-50 dark:bg-dark-900 text-gray-800 dark:text-gray-200">
    <div class="overlay" id="mobileOverlay"></div> 
    <aside id="sidebar" class="sidebar-transition fixed left-0 top-0 h-screen bg-white dark:bg-dark-800 shadow-lg z-50 w-sidebar-collapsed lg:w-sidebar overflow-hidden flex flex-col">
         <!-- Logo Area -->
@@ -206,7 +188,12 @@
                     <i class="fas fa-times text-lg"></i> </button>
             </div>
         </div>
-        
+      <!-- Bottom Tab Bar -->
+        <nav id="bottom-tab-bar" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-900 border-t border-gray-200 dark:border-dark-800 z-50 h-16 shadow-lg">
+    <div class="flex items-center justify-around h-full w-full">
+        </div>
+     </nav>
+  
         <!-- Drag Handle (Desktop only) -->
         <div class="sidebar-drag-handle hidden lg:block absolute right-0 top-0 bottom-0 w-2 hover:w-3 transition-all" id="dragHandle"></div>
         
