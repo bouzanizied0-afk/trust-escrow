@@ -754,32 +754,21 @@
         mobileOverlay.classList.toggle("active");
     }
 
-    // منع التمرير في الخلفية عند الفتح فقط
-    document.body.style.overflow = sidebar.classList.contains("open") ? "hidden" : "";
-    }
-                // Update active content section
-            contentSections.forEach(section => {
-                section.classList.remove("active");
-                section.classList.add("hidden");
-                if (section.id === sectionId) {
-                    section.classList.remove("hidden");
-                    section.classList.add("active");
-                }
-            });
-            
-            // Update page title
-            pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
-            
-            // Close mobile sidebar if open
-            if (window.innerWidth < 1024 && sidebar.classList.contains("open")) {
-                toggleMobileSidebar();
-            }
-        }
-        
-        function toggleTheme() {
-            isDarkMode = !isDarkMode;
+           // منع التمرير في الخلفية عند الفتح فقط
+           // 1. إدارة التمرير في الخلفية (تبقى كما هي بقوتها)
+         document.body.style.overflow = sidebar.classList.contains("open") ? "hidden" : "";
+
+           // 2. تصحيح القوس في شرط إغلاق القائمة (كان هناك قوس زائد في غير مكانه)
+        if (window.innerWidth < 1024 && sidebar.classList.contains("open")) {
+         toggleMobileSidebar();
+}
+
+         // 3. دالة تبديل المظهر (كما هي تماماً)
+          function toggleTheme() {
+           isDarkMode = !isDarkMode;
             localStorage.setItem("darkMode", isDarkMode);
-            
+        }
+
             // هذا السطر يضيف أو يحذف كلمة dark من الصفحة لتفعيل الألوان
             document.documentElement.classList.toggle("dark", isDarkMode);
             
@@ -918,6 +907,6 @@
         // Initialize with dashboard section active
         switchSection("dashboard");
     </script>
-  <script src="p2p-component.js"></script>
+    <script src="router.js"></script>
 </body>
 </html>
