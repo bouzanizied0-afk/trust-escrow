@@ -28,24 +28,30 @@ function switchSection(sectionId) {
         if (item.getAttribute('data-section') === sectionId) item.classList.add('active');
     });
 
-    // --- هنا نضع كود العنوان ---
+    // تحديث كود العنوان
     const pageTitle = document.getElementById('pageTitle');
     if (pageTitle) {
-        // يذهب للكائن titles ويبحث عن المفتاح (مثلاً 'market') ويأخذ قيمته ('Marketplace')
         pageTitle.textContent = titles[sectionId] || 'Dashboard';
     }
-    // ---------------------------
 
+    // تحميل الموديول
     if (modules[sectionId]) {
         loadModule(sectionId, modules[sectionId]);
+    } else {
+        // إذا كان القسم p2p محملاً مسبقاً، نتأكد من تشغيله
+        if (sectionId === 'p2p' && typeof P2PModule !== 'undefined') {
+            P2PModule.init();
+        }
     }
-}
+} // <--- تم تصحيح القوس هنا
 
-// دالة تحميل الملفات (تبقى كما هي)
+// دالة تحميل الملفات
 function loadModule(id, fileName) {
     if (document.getElementById('script-' + id)) {
-        if (typeof window['init' + id.toUpperCase()] === 'function') {
-            window['init' + id.toUpperCase()]();
+        // إذا الملف موجود مسبقاً، نشغل الدالة فوراً
+        const funcName = 'init' + id.toUpperCase();
+        if (typeof window[funcName] === 'function') {
+            window[funcName]();
         }
         return;
     }
@@ -54,8 +60,9 @@ function loadModule(id, fileName) {
     script.id = 'script-' + id;
     script.src = fileName;
     script.onload = () => {
-        if (typeof window['init' + id.toUpperCase()] === 'function') {
-            window['init' + id.toUpperCase()]();
+        const funcName = 'init' + id.toUpperCase();
+        if (typeof window[funcName] === 'function') {
+            window[funcName]();
         }
     };
     document.body.appendChild(script);
