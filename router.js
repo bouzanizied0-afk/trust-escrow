@@ -1,3 +1,13 @@
+// خريطة العناوين (خارج الدالة لسهولة الوصول)
+const titles = { 
+    'dashboard': 'Dashboard', 
+    'p2p': 'P2P Trading',
+    'messages': 'Messages',
+    'market': 'Marketplace',
+    'analytics': 'Analytics',
+    'settings': 'Settings',
+    'help': 'Help & Support'
+        
 // خريطة النظام: نحدد اسم القسم واسم الملف التابع له
 const modules = {
     'p2p': 'p2p-component.js'
