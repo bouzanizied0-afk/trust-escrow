@@ -757,20 +757,7 @@
     // منع التمرير في الخلفية عند الفتح فقط
     document.body.style.overflow = sidebar.classList.contains("open") ? "hidden" : "";
     }
-        // Switch content section
-        function switchSection(sectionId) {
-            // Update active nav item
-            navItems.forEach(item => {
-                item.classList.remove("active");
-                if (item.getAttribute("data-section") === sectionId) {
-                    item.classList.add("active");
-                }
-            });
-            if (sectionId === 'p2p') {
-          initP2P();
-         }
-
-            // Update active content section
+                // Update active content section
             contentSections.forEach(section => {
                 section.classList.remove("active");
                 section.classList.add("hidden");
