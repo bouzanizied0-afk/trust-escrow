@@ -490,8 +490,83 @@
                     </div>
                 </div>
             </section>
+            
             <!-- P2P Section -->
             <section id="p2p" class="content-section hidden animate-fade-in"></section>
+            <!-- Market Section -->
+            <section id="market" class="content-section hidden animate-fade-in">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Marketplace</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Browse and purchase products from our marketplace.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-dark-700 hover:shadow-md transition">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://picsum.photos/400/300?random=4" alt="Product image" class="w-full h-full object-cover" loading="lazy">
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-gray-800 dark:text-white mb-2">Premium Headphones</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Noise cancelling wireless headphones with premium sound quality.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-primary">$249.99</span>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition text-sm">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-dark-700 hover:shadow-md transition">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://picsum.photos/400/300?random=5" alt="Product image" class="w-full h-full object-cover" loading="lazy">
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-gray-800 dark:text-white mb-2">Smart Watch Pro</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Advanced smartwatch with health monitoring and GPS.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-primary">$399.99</span>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition text-sm">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-dark-700 hover:shadow-md transition">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://picsum.photos/400/300?random=6" alt="Product image" class="w-full h-full object-cover" loading="lazy">
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-gray-800 dark:text-white mb-2">Wireless Keyboard</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Mechanical wireless keyboard with RGB lighting.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-primary">$129.99</span>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition text-sm">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-dark-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-dark-700 hover:shadow-md transition">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://picsum.photos/400/300?random=7" alt="Product image" class="w-full h-full object-cover" loading="lazy">
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-gray-800 dark:text-white mb-2">4K Monitor</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">27-inch 4K UHD monitor with HDR support.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-primary">$599.99</span>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition text-sm">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
             <!-- Analytics Section -->
             <section id="analytics" class="content-section hidden animate-fade-in">
                 <div class="mb-6">
@@ -850,39 +925,25 @@
         async function loadP2PContent() {
     const container = document.getElementById('p2p');
     
-    // إذا كان القسم فارغاً، نقوم بجلب الملف
-    if (container.innerHTML.trim() === "") {
-        try {
-            const response = await fetch('p2p.html');
-            const html = await response.text();
-            container.innerHTML = html;
-            console.log("تم تحميل محتوى P2P الأصلي بنجاح");
-        } catch (error) {
-            console.error("فشل في تحميل الملف:", error);
-            container.innerHTML = "<p class='text-red-500 p-10 text-center'>خطأ في تحميل المحتوى.</p>";
-        }
+    // منع تكرار التحميل إذا كان المحتوى موجوداً
+    if (container.children.length > 0) return;
+
+    try {
+        const response = await fetch('p2p.html');
+        if (!response.ok) throw new Error('File not found');
+        const html = await response.text();
+        
+        // حقن المحتوى
+        container.innerHTML = html;
+        
+        // إعادة ضبط الـ display لضمان عدم تأثر السايدبار
+        container.style.display = "block"; 
+        
+    } catch (error) {
+        console.error("Error:", error);
+        container.innerHTML = "<div class='p-10 text-center text-red-500'>تعذر تحميل نظام P2P. تأكد من وجود ملف p2p.html في نفس المجلد.</div>";
     }
-}
-
-// تعديل بسيط على وظيفة التبديل لتعمل مع التحميل الخارجي
-const originalSwitchSection = switchSection; // حفظ الدالة الأصلية
-switchSection = function(sectionId) {
-    if (sectionId === 'p2p') {
-        loadP2PContent();
-    }
-    originalSwitchSection(sectionId);
-};
-
-// وظيفة التبديل بين صفحات P2P (يجب أن تظل في القالب الرئيسي لتتمكن من التحكم في العناصر المحقونة)
-function changeP2PPage(subPageId, title) {
-    document.querySelectorAll('.p2p-sub-content').forEach(el => el.classList.add('hidden'));
-    const target = document.getElementById(subPageId);
-    if (target) target.classList.remove('hidden');
-    
-    const headerTitle = document.getElementById('p2pHeaderTitle');
-    if (headerTitle) headerTitle.innerText = title;
-}
-
+   }
         // Initialize with dashboard section active
         switchSection("dashboard");
     </script>
