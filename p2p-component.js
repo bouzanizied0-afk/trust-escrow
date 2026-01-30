@@ -1,5 +1,5 @@
 const P2PModule = {
-    // البيانات الافتراضية (appData من الكود الأول)
+    // البيانات الافتراضية
     data: {
         currentPage: "market",
         orders: [
@@ -9,14 +9,18 @@ const P2PModule = {
 
     // الدالة الرئيسية التي سيستدعيها الـ Router
     init: function() {
+        console.log("P2P Module Initializing...");
         this.renderLayout();
-        this.showMarket(); // عرض السوق تلقائياً عند البدء
+        this.showMarket(); 
     },
 
-    // بناء الهيكل الأساسي (Tabs & Content Area)
+    // بناء الهيكل الأساسي
     renderLayout: function() {
         const root = document.getElementById('p2p-root');
-        if (!root) return;
+        if (!root) {
+            console.error("Target #p2p-root not found in HTML!");
+            return;
+        }
 
         root.innerHTML = `
             <div class="flex flex-col h-full bg-dark-900 animate-fade-in">
@@ -26,19 +30,21 @@ const P2PModule = {
                 </div>
 
                 <div id="p2p-main-display" class="flex-1 overflow-y-auto p-4 space-y-4 pb-24 scrollbar-hide">
-                    </div>
+                </div>
             </div>
         `;
         this.bindGlobalEvents();
     },
 
-    // عرض قائمة السوق (المستخلصة من الكود الأول)
+    // عرض قائمة السوق
     showMarket: function() {
         const display = document.getElementById('p2p-main-display');
+        if (!display) return;
+        
         display.innerHTML = `
-            <div class="space-y-4">
+            <div class="space-y-4 animate-fade-in">
                 <div class="flex items-center justify-between mb-2">
-                    <h2 class="text-lg font-bold">Available Offers</h2>
+                    <h2 class="text-lg font-bold text-white">Available Offers</h2>
                     <button class="text-primary text-sm"><i class="fas fa-filter mr-1"></i> Filter</button>
                 </div>
                 
@@ -71,7 +77,7 @@ const P2PModule = {
         `;
     },
 
-    // ربط الأحداث (Tabs Switching)
+    // ربط الأحداث
     bindGlobalEvents: function() {
         const buyTab = document.getElementById('buy-tab');
         const sellTab = document.getElementById('sell-tab');
@@ -85,7 +91,13 @@ const P2PModule = {
         sellTab?.addEventListener('click', () => {
             sellTab.className = "flex-1 py-4 font-semibold border-b-2 border-primary text-primary transition-all";
             buyTab.className = "flex-1 py-4 font-semibold text-dark-400 hover:text-white transition-all";
-            // هنا يمكننا استدعاء دالة عرض البيع لاحقاً
+            // دالة عرض البيع
+            document.getElementById('p2p-main-display').innerHTML = '<div class="text-center py-10 text-dark-400">No Sell Offers Available</div>';
         });
     }
+};
+
+// --- أهم جزء: هذا هو الجسر الذي سيبحث عنه الـ Router الخاص بك ---
+window.initP2P = function() {
+    P2PModule.init();
 };
