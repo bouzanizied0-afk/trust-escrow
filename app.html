@@ -698,16 +698,6 @@
     </main>
 
     <script>
-        // Define all data at the beginning
-        const pageTitles = {
-            "dashboard": "Dashboard",
-            "messages": "Messages",
-            "p2p": "P2P Trading",
-            "market": "Marketplace",
-            "analytics": "Analytics",
-            "settings": "Settings",
-            "help": "Help & Support"
-        };
         
         // DOM Elements
         const sidebar = document.getElementById("sidebar");
@@ -718,7 +708,6 @@
         const mobileOverlay = document.getElementById("mobileOverlay");
         const pageTitle = document.getElementById("pageTitle");
         const navItems = document.querySelectorAll(".nav-item");
-        const contentSections = document.querySelectorAll(".content-section");
         const dragHandle = document.getElementById("dragHandle");
         
         // State variables
@@ -757,38 +746,7 @@
     // منع التمرير في الخلفية عند الفتح فقط
     document.body.style.overflow = sidebar.classList.contains("open") ? "hidden" : "";
     }
-        // Switch content section
-        function switchSection(sectionId) {
-            // Update active nav item
-            navItems.forEach(item => {
-                item.classList.remove("active");
-                if (item.getAttribute("data-section") === sectionId) {
-                    item.classList.add("active");
-                }
-            });
-            if (sectionId === 'p2p') {
-          initP2P();
-         }
-
-            // Update active content section
-            contentSections.forEach(section => {
-                section.classList.remove("active");
-                section.classList.add("hidden");
-                if (section.id === sectionId) {
-                    section.classList.remove("hidden");
-                    section.classList.add("active");
-                }
-            });
-            
-            // Update page title
-            pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
-            
-            // Close mobile sidebar if open
-            if (window.innerWidth < 1024 && sidebar.classList.contains("open")) {
-                toggleMobileSidebar();
-            }
-        }
-        
+    
         function toggleTheme() {
             isDarkMode = !isDarkMode;
             localStorage.setItem("darkMode", isDarkMode);
@@ -802,7 +760,6 @@
                 '<i class="fas fa-moon text-lg"></i>';
         }
 
-        
         // Handle window resize
         function handleResize() {
             if (window.innerWidth >= 1024) {
@@ -944,4 +901,3 @@
       </script>
 </body>
 </html>
-
