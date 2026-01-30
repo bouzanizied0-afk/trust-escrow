@@ -709,7 +709,7 @@
             "help": "Help & Support"
         };
         
-               // DOM Elements
+        // DOM Elements
         const sidebar = document.getElementById("sidebar");
         const mainContent = document.getElementById("mainContent");
         const mobileMenuToggle = document.getElementById("mobileMenuToggle");
@@ -718,9 +718,11 @@
         const mobileOverlay = document.getElementById("mobileOverlay");
         const pageTitle = document.getElementById("pageTitle");
         const navItems = document.querySelectorAll(".nav-item");
+        const contentSections = document.querySelectorAll(".content-section");
         const dragHandle = document.getElementById("dragHandle");
         
         // State variables
+        let isSidebarExpanded = window.innerWidth >= 1024;
         let isDarkMode = localStorage.getItem("darkMode") === "true" || 
                         (!("darkMode" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches);
         let isDragging = false;
@@ -729,92 +731,217 @@
         const minWidth = 240;
         const maxWidth = 400;
         
-        // 1. Theme Logic
+        // Initialize theme
         function initTheme() {
-            document.documentElement.classList.toggle("dark", isDarkMode);
-            themeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun text-lg"></i>' : '<i class="fas fa-moon text-lg"></i>';
+            if (isDarkMode) {
+                document.documentElement.classList.add("dark");
+                themeToggle.innerHTML = '<i class="fas fa-sun text-lg"></i>';
+            } else {
+                document.documentElement.classList.remove("dark");
+                themeToggle.innerHTML = '<i class="fas fa-moon text-lg"></i>';
+            }
+        }
+        
+        // Toggle sidebar on mobile
+         function toggleMobileSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const mobileOverlay = document.getElementById("mobileOverlay");
+
+    // نستخدم toggle لتعمل مع كل الأزرار (فتح وإغلاق)
+    sidebar.classList.toggle("open");
+    
+    if (mobileOverlay) {
+        mobileOverlay.classList.toggle("active");
+    }
+
+    // منع التمرير في الخلفية عند الفتح فقط
+    document.body.style.overflow = sidebar.classList.contains("open") ? "hidden" : "";
+    }
+        // Switch content section
+        function switchSection(sectionId) {
+            // Update active nav item
+            navItems.forEach(item => {
+                item.classList.remove("active");
+                if (item.getAttribute("data-section") === sectionId) {
+                    item.classList.add("active");
+                }
+            });
+            if (sectionId === 'p2p') {
+          initP2P();
+         }
+
+            // Update active content section
+            contentSections.forEach(section => {
+                section.classList.remove("active");
+                section.classList.add("hidden");
+                if (section.id === sectionId) {
+                    section.classList.remove("hidden");
+                    section.classList.add("active");
+                }
+            });
+            
+            // Update page title
+            pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
+            
+            // Close mobile sidebar if open
+            if (window.innerWidth < 1024 && sidebar.classList.contains("open")) {
+                toggleMobileSidebar();
+            }
         }
         
         function toggleTheme() {
             isDarkMode = !isDarkMode;
             localStorage.setItem("darkMode", isDarkMode);
-            initTheme();
+            
+            // هذا السطر يضيف أو يحذف كلمة dark من الصفحة لتفعيل الألوان
+            document.documentElement.classList.toggle("dark", isDarkMode);
+            
+            // هذا السطر يغير شكل الأيقونة فوراً بين شمس وقمر
+            themeToggle.innerHTML = isDarkMode ? 
+                '<i class="fas fa-sun text-lg"></i>' : 
+                '<i class="fas fa-moon text-lg"></i>';
         }
 
-        // 2. Sidebar Logic
-        function toggleMobileSidebar() {
-            sidebar.classList.toggle("open");
-            if (mobileOverlay) mobileOverlay.classList.toggle("active");
-            document.body.style.overflow = sidebar.classList.contains("open") ? "hidden" : "";
-        }
-
+        
+        // Handle window resize
         function handleResize() {
             if (window.innerWidth >= 1024) {
-                sidebar.classList.remove("open");
+                sidebar.classList.remove("sidebar-mobile", "open");
                 mobileOverlay.classList.remove("active");
                 document.body.style.overflow = "";
             }
         }
-
-        // 3. Navigation Logic (Linking to router.js)
+        
+        // Initialize navigation items
         function initNavigation() {
             navItems.forEach(item => {
                 item.addEventListener("click", function(e) {
                     e.preventDefault();
                     const sectionId = this.getAttribute("data-section");
-                    if (window.innerWidth < 1024) toggleMobileSidebar();
-                    switchSection(sectionId); // هذه تنادي الدالة في router.js
+                    switchSection(sectionId);
                 });
             });
         }
-
-        // 4. Sidebar Dragging
+        
+        // Sidebar drag functionality
         function initSidebarDrag() {
-            if (window.innerWidth < 1024) return;
-            dragHandle.addEventListener("mousedown", (e) => {
+            dragHandle.addEventListener("mousedown", startDrag);
+            document.addEventListener("mousemove", doDrag);
+            document.addEventListener("mouseup", stopDrag);
+            
+            function startDrag(e) {
                 isDragging = true;
                 startX = e.clientX;
                 startWidth = parseInt(getComputedStyle(sidebar).width, 10);
                 sidebar.style.transition = "none";
                 document.body.style.cursor = "ew-resize";
-            });
-            document.addEventListener("mousemove", (e) => {
+                e.preventDefault();
+            }
+            
+            function doDrag(e) {
                 if (!isDragging) return;
+                
                 const width = startWidth + e.clientX - startX;
                 if (width >= minWidth && width <= maxWidth) {
                     sidebar.style.width = width + "px";
                     mainContent.style.marginLeft = width + "px";
                 }
-            });
-            document.addEventListener("mouseup", () => {
+            }
+            
+            function stopDrag() {
+                if (!isDragging) return;
+                
                 isDragging = false;
                 sidebar.style.transition = "";
                 document.body.style.cursor = "";
-                localStorage.setItem("sidebarWidth", parseInt(sidebar.style.width));
-            });
+                
+                // Save sidebar width
+                const currentWidth = parseInt(getComputedStyle(sidebar).width, 10);
+                localStorage.setItem("sidebarWidth", currentWidth);
+            }
         }
+        
+        // Load saved sidebar width
+        function loadSidebarWidth() {
+            if (window.innerWidth >= 1024) {
+                const savedWidth = localStorage.getItem("sidebarWidth");
+                if (savedWidth) {
+                    const width = parseInt(savedWidth, 10);
+                    if (width >= minWidth && width <= maxWidth) {
+                        sidebar.style.width = width + "px";
+                        mainContent.style.marginLeft = width + "px";
+                    }
+                }
+            }
+        }
+        
+        // Event Listeners
+       [mobileMenuToggle, sidebarToggle, mobileOverlay].forEach(btn         => {
+         btn?.addEventListener("click", toggleMobileSidebar);
+          });
+           themeToggle.addEventListener("click", toggleTheme);
+             window.addEventListener("resize", handleResize);
 
-        // Initialize Everything
+        // Initialize
         initTheme();
         initNavigation();
-        initSidebarDrag();
+        loadSidebarWidth();
         
-        themeToggle.addEventListener("click", toggleTheme);
-        window.addEventListener("resize", handleResize);
-        [mobileMenuToggle, sidebarToggle, mobileOverlay].forEach(btn => {
-            btn?.addEventListener("click", toggleMobileSidebar);
+        // Initialize sidebar drag on desktop
+        if (window.innerWidth >= 1024) {
+            initSidebarDrag();
+        }
+        
+        // Reinitialize drag on resize
+        window.addEventListener("resize", function() {
+            if (window.innerWidth >= 1024) {
+                initSidebarDrag();
+            }
         });
-        </script> <script src="router.js"></script>
-
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener("click", function(event) {
+            if (window.innerWidth < 1024 && 
+                !sidebar.contains(event.target) && 
+                !mobileMenuToggle.contains(event.target) &&
+                sidebar.classList.contains("open")) {
+                toggleMobileSidebar();
+            }
+        });
+        
+        // Form submission handlers
+        // 1. تصحيح أزرار الإرسال
+        document.querySelectorAll('button[type="submit"]').forEach(button => {
+            button.addEventListener("click", function(e) {
+                e.preventDefault();
+                alert("Form submitted successfully!");
+            });
+        });
+        
+        // 2. تصحيح أزرار إضافة للسلة
+        document.querySelectorAll("button").forEach(button => {
+            if (button.textContent.includes("Add to Cart")) {
+                button.addEventListener("click", function() {
+                    const productName = this.closest(".p-4").querySelector("h4").textContent;
+                    alert(`"${productName}" added to cart!`);
+                });
+            }
+        });
+     </script>
+    <script src="router.js"></script>
     <script>
         window.onload = () => {
+            // تهيئة الواجهة
+            initTheme();
+            initNavigation();
+            loadSidebarWidth();
+            
+            // تشغيل القسم الافتراضي من خلال الروتر
             if (typeof switchSection === 'function') {
                 switchSection("dashboard");
-            } else {
-                console.error("Router.js failed to load!");
             }
         };
-    </script>
+      </script>
 </body>
 </html>
 
