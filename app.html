@@ -175,8 +175,9 @@
             }
       }
         /* إضافة مساحة في أسفل الصفحة تساوي طول الشريط */
-       main, body {
-    padding-bottom: 4rem; /* نفس طول الـ h-16 */
+       .content-section:not(#p2p) {
+    padding-bottom: 4rem;
+     }
         }
     </style>
 </head>
@@ -274,7 +275,8 @@
     </aside>
     
     <!-- Main Content -->
-    <main id="mainContent" class="content-transition min-h-screen lg:ml-sidebar-collapsed xl:ml-sidebar">
+    <main id="mainContent" class="content-transition min-h
+      -screen lg:ml-sidebar-collapsed xl:ml-sidebar">
         <!-- Top Header -->
         <header class="bg-white dark:bg-dark-800 shadow-sm sticky top-0 z-40">
             <div class="px-4 py-3 flex items-center justify-between">
@@ -456,7 +458,6 @@
                     </div>
                 </div>
             </section>
-            
             <!-- Messages Section -->
             <section id="messages" class="content-section hidden animate-fade-in">
                 <div class="mb-6">
@@ -506,7 +507,6 @@
                         </div>
                     </div>
                 </div>
-            </section>
             
              <!-- P2P Section -->
             <section id="p2p" class="content-section hidden animate-fade-in">
