@@ -497,7 +497,9 @@
             "disputes": document.getElementById("disputesPage")
         };
         const backToConversations = document.getElementById("backToConversations");
-
+          if (sidebar && sidebarToggle) {
+        sidebarToggle.addEventListener("click", () => { ... });
+     }
         // Sidebar Toggle
         sidebarToggle.addEventListener("click", function() {
             appData.sidebarOpen = !appData.sidebarOpen;
