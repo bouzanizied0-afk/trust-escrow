@@ -92,7 +92,7 @@
             user-select: none;
         }
         
-        .sidebar-drag-handle:hover {
+        .،sidebar-drag-handle:hover {
             background-color: rgba(59, 130, 246, 0.1);
         }
             /* ===== P2P BRIDGE ===== */
@@ -100,6 +100,12 @@
     #p2p-app {
         height: 100%;
     }
+                              html, body {
+               height: 100%;
+               }
+              #mainContent {
+            min-height: 100vh;
+           }
                @media (max-width: 1023px) {
             /* استخدم # بدل . لأن السايدبار عندك ID وليس Class */
             #sidebar { 
