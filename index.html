@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUP Unified Console | ziedzizou-7b74d</title>
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-green: #00ff41;
+            --neon-red: #ff3131;
+            --dark-bg: #050505;
+            --panel-bg: rgba(10, 10, 15, 0.9);
+            --border-glow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+        body { background: var(--dark-bg); color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-x: hidden; }
+        .dashboard { background: var(--panel-bg); border: 1px solid var(--neon-blue); padding: 15px 30px; border-radius: 4px; box-shadow: var(--border-glow); width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .telemetry #progressStatus { font-size: 2.5rem; color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); font-weight: 900; }
+        .main-container { display: grid; grid-template-columns: 1fr 380px; gap: 25px; width: 100%; max-width: 1200px; }
+        .canvas-section { background: #000; border: 2px solid #1a1a1a; border-radius: 4px; position: relative; min-height: 500px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .chat-section { background: var(--panel-bg); border: 1px solid #222; display: flex; flex-direction: column; height: 550px; border-top: 3px solid var(--neon-blue); }
+        #messages { flex-grow: 1; padding: 15px; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 0.85rem; background: rgba(0,0,0,0.3); color: #aaa; }
+        .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--neon-red); transition: 0.3s; }
+        .dot.online { background: var(--neon-green); box-shadow: 0 0 20px var(--neon-green); }
+        .btn { padding: 15px 35px; background: #000; border: 1px solid var(--neon-blue); color: var(--neon-blue); cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn:hover:not(:disabled) { background: var(--neon-blue); color: #000; }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        #displayScreen { max-width: 95%; max-height: 95%; display: none; border: 1px solid var(--neon-blue); box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
+        .bottom-controls { margin-top: 20px; display: flex; gap: 20px; align-items: center; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <div class="system-info">
+            <h2 style="margin:0; color:var(--neon-blue);">QUP CONSOLE | ZIEDZIZOU</h2>
+            <div id="rotaryCounter" style="font-family:monospace; letter-spacing:2px;">CLOCK: 0000000000</div>
+        </div>
+        <div class="telemetry">
+            <div id="progressStatus">0%</div>
+        </div>
+        <div class="connection-status" style="text-align:left;">
+            <div id="statusText" style="font-size:0.7rem; margin-bottom:5px;">DISCONNECTED</div>
+            <div id="connDot" class="dot"></div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="canvas-section">
+            <img id="displayScreen">
+            <video id="videoScreen" controls style="display:none; max-width:95%;"></video>
+            <div id="placeholderText" style="color: #111; font-size: 5rem; font-weight: 900; user-select: none;">RADAR</div>
+        </div>
+        <div class="chat-section">
+            <div id="messages"></div>
+            <div style="padding: 10px; background: #111; display: flex; gap:5px;">
+                <input type="text" id="msgInput" placeholder="Enter Command..." style="flex:1; background:#000; color:var(--neon-green); border:1px solid #333; padding:10px; outline:none;">
+                <button id="sendMsgBtn" class="btn" style="padding:10px 20px;">بث</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-controls">
+        <label for="fileInput" style="cursor:pointer; border:1px solid #fff; padding:15px; font-weight:bold;">📁 اختيار مصفوفة</label>
+        <input type="file" id="fileInput" style="display:none;">
+        <button id="sendBtn" class="btn" style="border-color:var(--neon-green); color:var(--neon-green);" disabled>إطلاق النبضة</button>
+        <button id="clearCloudBtn" class="btn" style="border-color:var(--neon-red); color:var(--neon-red);">تطهير السحابة</button>
+    </div>
+
+    <script type="module">
+        // أضفنا remove هنا
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZs0bb_t-bzMtaJqy_W_QDBSdQKHLEiD4",
+            authDomain: "ziedzizou-7b74d.firebaseapp.com",
+            databaseURL: "https://ziedzizou-7b74d-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "ziedzizou-7b74d",
+            storageBucket: "ziedzizou-7b74d.firebasestorage.app",
+            messagingSenderId: "937969676323",
+            appId: "1:937969676323:web:8c89472de068a2e6cd0196"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const pulseRef = ref(db, 'qup_pulses');
+
+        window.fbSet = set;
+        window.streamRef = pulseRef;
+
+        window.logToChat = (msg) => {
+            const m = document.getElementById('messages');
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            m.innerHTML += `<div style="margin-bottom:5px;"><span style="color:#555;">[${time}]</span> > ${msg}</div>`;
+            m.scrollTop = m.scrollHeight;
+        };
+
+        window.updateProgressPulse = (ratio) => {
+            document.getElementById('progressStatus').innerText = Math.floor(ratio * 100) + "%";
+        };
+
+        window.updateRotaryVisual = (tick) => {
+            document.getElementById('rotaryCounter').innerText = `CLOCK: ${tick.toString().padStart(10, '0')}`;
+        };
+
+        onValue(ref(db, '.info/connected'), (snap) => {
+            const dot = document.getElementById('connDot');
+            const txt = document.getElementById('statusText');
+            if (snap.val() === true) {
+                dot.classList.add('online');
+                txt.innerText = "ZIEDZIZOU LINK ACTIVE";
+                window.logToChat("<span style='color:var(--neon-green)'>تم تفعيل القناة الكونية.</span>");
+            } else {
+                dot.classList.remove('online');
+                txt.innerText = "OFFLINE";
+            }
+        });
+
+        onValue(pulseRef, (snapshot) => {
+            const data = snapshot.val();
+            // إذا كانت البيانات محذوفة من فيرباس (null)، صفر الواجهة تلقائياً للطرفين
+            if (!data) {
+                document.getElementById('progressStatus').innerText = "0%";
+                document.getElementById('displayScreen').style.display = 'none';
+                document.getElementById('placeholderText').style.display = 'block';
+                return;
+            }
+            if (window.processIncomingPulse) {
+                window.processIncomingPulse(data);
+            }
+        });
+
+        // برمجة زر تطهير السحابة
+        document.getElementById('clearCloudBtn').onclick = async () => {
+            try {
+                // حذف البيانات من فيرباس تماماً
+                await remove(pulseRef);
+                
+                // تنظيف الواجهة المحلية
+                document.getElementById('displayScreen').src = "";
+                document.getElementById('displayScreen').style.display = 'none';
+                document.getElementById('placeholderText').style.display = 'block';
+                document.getElementById('messages').innerHTML = "";
+                document.getElementById('rotaryCounter').innerText = "CLOCK: 0000000000";
+                
+                window.logToChat("<span style='color:var(--neon-red)'>🚨 تم حذف المصفوفة نهائياً من السحابة وتصفير الرادار.</span>");
+            } catch (e) {
+                window.logToChat("❌ خطأ في عملية الحذف: " + e.message);
+            }
+        };
+
+        document.getElementById('sendBtn').onclick = () => {
+            const fileInput = document.getElementById('fileInput');
+            if (window.QUP_Source && fileInput.files[0]) {
+                window.logToChat("<span style='color:var(--neon-blue)'>جاري تفتيت الكتلة وإطلاق النبضات...</span>");
+                window.QUP_Source.transmit(fileInput.files[0]);
+            }
+        };
+
+        document.getElementById('fileInput').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('sendBtn').disabled = false;
+                window.logToChat(`الملف جاهز: ${file.name}`);
+            }
+        };
+    </script>
+
+    <script src="Mouhark.js"></script>
+    <script src="Moursel.js"></script>
+    <script src="Mostaqbel.js"></script>
+</body>
+</html>
