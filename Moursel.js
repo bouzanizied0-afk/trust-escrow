@@ -58,4 +58,16 @@ const QUP_Source = {
     }
 };
 
-document.getElementById('fileInput').onchange = (e) => QUP_Source.transmit(e.target.files[0]);
+// --- [ ربط المحرك بالواجهة العالمية ] ---
+// 1. تعريف المحرك عالمياً لكي يراه ملف الـ index والأزرار (الجسر)
+window.QUP_Source = QUP_Source;
+
+// 2. تفعيل الحساس: يبدأ البث فور اختيار الملف من الجهاز
+if (document.getElementById('fileInput')) {
+    document.getElementById('fileInput').onchange = (e) => {
+        if (e.target.files[0]) {
+            QUP_Source.transmit(e.target.files[0]);
+        }
+    };
+}
+
