@@ -10,36 +10,22 @@
             --dark-bg: #050505; --panel-bg: #0a0a0f;
         }
         body { background: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        
-        /* شريط الحالة الإحترافي */
         .status-bar { width: 100%; max-width: 1200px; background: var(--panel-bg); border: 1px solid #1a1a2e; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
         .conn-indicator { display: flex; align-items: center; gap: 10px; font-weight: bold; }
         .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--neon-red); box-shadow: 0 0 10px var(--neon-red); }
         .dot.online { background: var(--neon-green); box-shadow: 0 0 15px var(--neon-green); }
-
-        /* حاوية العرض الرئيسية (تلفاز + رادار) */
         .main-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; width: 100%; max-width: 1200px; margin-top: 20px; }
-        
         .screen-container { background: #000; border: 2px solid #1a1a1a; height: 500px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; }
         #displayScreen, #videoScreen { max-width: 100%; max-height: 100%; display: none; z-index: 2; }
-        
-        /* نظام الرادار (Canvas) خلف الميديا */
         #radarCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.4; z-index: 1; }
-
         .side-panel { display: flex; flex-direction: column; gap: 20px; }
-        
-        /* واجهة الدردشة */
         .chat-box { background: var(--panel-bg); border: 1px solid #1a1a2e; height: 350px; display: flex; flex-direction: column; border-radius: 8px; }
         #messages { flex-grow: 1; padding: 10px; overflow-y: auto; font-family: monospace; font-size: 0.8rem; color: #00f2ff; }
-        
-        /* أزرار التحكم */
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn { padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; text-transform: uppercase; }
         .btn-send { background: var(--neon-green); color: black; }
         .btn-delete { background: var(--neon-red); color: white; }
         .btn-file { background: var(--neon-blue); color: black; }
-        .btn:hover { opacity: 0.8; transform: scale(0.98); }
-
         #progressContainer { width: 100%; height: 5px; background: #111; margin-top: 10px; border-radius: 10px; }
         #progressBar { width: 0%; height: 100%; background: var(--neon-green); transition: 0.3s; }
     </style>
@@ -52,7 +38,7 @@
             <div id="clockDisplay" style="font-family: monospace; font-size: 0.8rem; margin-top: 5px;">TICK: 00000000</div>
         </div>
         <div class="conn-indicator">
-            <span id="connText">FIREBASE DISCONNECTED</span>
+            <span id="connText">CONNECTING...</span>
             <div id="connDot" class="dot"></div>
         </div>
         <div style="text-align: center;">
@@ -63,7 +49,10 @@
 
     <div class="main-grid">
         <div class="screen-container">
-            <canvas id="radarCanvas"></canvas> <img id="displayScreen"> <video id="videoScreen" controls autoplay muted></video> <div id="placeholder" style="color: #222; font-size: 5rem; font-weight: 900; position: absolute;">QUP TV</div>
+            <canvas id="radarCanvas"></canvas>
+            <img id="displayScreen">
+            <video id="videoScreen" controls autoplay muted></video>
+            <div id="placeholder" style="color: #222; font-size: 5rem; font-weight: 900; position: absolute;">QUP TV</div>
         </div>
 
         <div class="side-panel">
@@ -86,28 +75,47 @@
     </div>
 
     <script type="module">
-        import { QUP_Core } from './QUP_Core.js';
-        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        // استدعاء المكاتب من الروابط الرسمية لتعمل داخل المتصفح
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const db = getDatabase();
+        // إعداداتك التي تنجح معك دائماً
+        const firebaseConfig = {
+          apiKey: "AIzaSyAZs0bb_t-bzMtaJqy_W_QDBSdQKHLEiD4",
+          authDomain: "ziedzizou-7b74d.firebaseapp.com",
+          databaseURL: "https://ziedzizou-7b74d-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "ziedzizou-7b74d",
+          storageBucket: "ziedzizou-7b74d.firebasestorage.app",
+          messagingSenderId: "937969676323",
+          appId: "1:937969676323:web:8c89472de068a2e6cd0196",
+          measurementId: "G-WQR9DXYGPS"
+        };
+
+        // تشغيل فيرباس
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
         const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
 
-        // 1. تحديث حالة الاتصال (الزر الأحمر/الأخضر)
+        // تصدير الأدوات للمحرك (QUP_Core) لكي يراها
+        window.fbSet = set;
+        window.streamRef = streamRef;
+
+        // مراقبة الاتصال (الزر الأخضر/الأحمر)
         onValue(ref(db, '.info/connected'), (snap) => {
             const dot = document.getElementById('connDot');
             const txt = document.getElementById('connText');
             if (snap.val() === true) {
                 dot.classList.add('online');
                 txt.innerText = "FIREBASE LINK ACTIVE";
-                txt.style.color = "var(--neon-green)";
+                txt.style.color = "#00ff41";
             } else {
                 dot.classList.remove('online');
-                txt.innerText = "LINK BROKEN";
-                txt.style.color = "var(--neon-red)";
+                txt.innerText = "CONNECTING...";
+                txt.style.color = "#ff3131";
             }
         });
 
-        // 2. دوال الربط مع المحرك والمستقبل
+        // دوال تحديث الواجهة
         window.updateProgressPulse = (ratio) => {
             const p = Math.floor(ratio * 100);
             document.getElementById('progressBar').style.width = p + "%";
@@ -124,40 +132,26 @@
             m.scrollTop = m.scrollHeight;
         };
 
-        // 3. الرادار اللحظي: رسم البكسلات فور وصول النبضات
+        // نظام الرادار
         const canvas = document.getElementById('radarCanvas');
         const ctx = canvas.getContext('2d');
         window.drawToCanvas = (buffer) => {
             if (!buffer) return;
-            // رسم سريع جداً لمحاكاة بناء الملف
-            const size = Math.sqrt(buffer.length);
-            canvas.width = size || 500;
-            canvas.height = size || 500;
-            const imgData = ctx.createImageData(canvas.width, canvas.height);
-            for (let i = 0; i < buffer.length; i++) {
-                imgData.data[i * 4] = buffer[i];     // R
-                imgData.data[i * 4 + 1] = buffer[i]; // G
-                imgData.data[i * 4 + 2] = buffer[i]; // B
-                imgData.data[i * 4 + 3] = 255;       // A
-            }
+            const size = Math.sqrt(buffer.length / 4) || 256;
+            canvas.width = canvas.height = size;
+            const imgData = ctx.createImageData(size, size);
+            for (let i = 0; i < buffer.length; i++) imgData.data[i] = buffer[i];
             ctx.putImageData(imgData, 0, 0);
         };
 
-        // 4. التحكم بالأزرار
-        document.getElementById('sendBtn').onclick = () => {
-            const file = document.getElementById('fileInput').files[0];
-            if (file) QUP_Core.transmit(file);
-            else alert("اختر ملفاً أولاً!");
-        };
-
+        // أزرار التحكم
         document.getElementById('clearBtn').onclick = () => {
             remove(streamRef).then(() => {
-                window.logToChat("🚨 تم تطهير السحابة كلياً.");
+                window.logToChat("🚨 تم تطهير السحابة.");
                 location.reload();
             });
         };
 
-        // معاينة الملف المختار قبل الإرسال
         document.getElementById('fileInput').onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -168,12 +162,21 @@
                 if(isVideo) document.getElementById('videoScreen').src = url;
                 else document.getElementById('displayScreen').src = url;
                 document.getElementById('placeholder').style.display = 'none';
-                window.logToChat(`✅ تم تحميل: ${file.name}`);
+                window.logToChat(`✅ تم تجهيز: ${file.name}`);
+            }
+        };
+
+        // استيراد المحرك وبدء العمل
+        import { QUP_Core } from './QUP_Core.js';
+        document.getElementById('sendBtn').onclick = () => {
+            const file = document.getElementById('fileInput').files[0];
+            if (file) {
+                window.logToChat("🚀 إرسال النبضات...");
+                QUP_Core.transmit(file);
             }
         };
     </script>
 
-    <script type="module" src="QUP_Core.js"></script>
     <script type="module" src="QUP_Receiver_Ultimate.js"></script>
 </body>
 </html>
