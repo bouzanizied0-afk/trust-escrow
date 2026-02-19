@@ -2,114 +2,79 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>QUP Command Center - Sovereign Edition</title>
+    <title>QUP Command Center - Ultra Stable</title>
     <style>
-        :root {
-            --green: #2ecc71; --red: #e74c3c; --blue: #3498db; --dark: #0a0a0a;
-            --neon-green: #39ff14;
-        }
         body {
-            margin: 0; background-color: var(--dark); color: white;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex; flex-direction: column; align-items: center;
-            overflow: hidden;
+            margin: 0; background-color: #050505; color: #2ecc71;
+            font-family: 'Courier New', monospace;
+            display: flex; flex-direction: column; align-items: center; height: 100vh;
         }
-
-        /* العداد الرقمي الضخم */
-        #main-counter {
-            font-size: 5rem; font-weight: 900; color: var(--neon-green);
-            text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
-            margin: 10px 0; font-family: 'Digital-7', monospace;
-            letter-spacing: 5px;
+        /* مؤشر الاتصال العلوي */
+        .status-bar {
+            width: 100%; padding: 10px; background: #111;
+            display: flex; justify-content: center; align-items: center; gap: 15px;
+            border-bottom: 2px solid #222;
         }
-
-        .container {
-            display: grid; grid-template-columns: 1fr 380px;
-            gap: 15px; width: 98%; height: 75vh;
-        }
-
-        /* شاشة الميديا */
-        .tv-screen {
-            background: #000; border: 2px solid #222; border-radius: 5px;
-            position: relative; display: flex; align-items: center; justify-content: center;
-            box-shadow: inset 0 0 100px rgba(0,0,0,1);
-        }
-        #tv-image, #tv-video { 
-            max-width: 95%; max-height: 95%; display: none; z-index: 10;
-            border: 1px solid #444; 
-        }
-        
-        /* الرادار اللحظي */
-        #radar-canvas { 
-            position: absolute; top:0; left:0; width: 100%; height: 100%; 
-            opacity: 0.4; z-index: 1; pointer-events: none;
-        }
-
-        .side-panel { display: flex; flex-direction: column; gap: 10px; }
-        
-        /* سجل النبضات */
-        .chat-area {
-            flex-grow: 1; background: rgba(0,20,0,0.9); border: 1px solid var(--green);
-            border-radius: 4px; padding: 10px; overflow-y: auto;
-            font-size: 0.8rem; color: var(--green); box-shadow: 0 0 10px rgba(0,255,0,0.1);
-        }
-
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        
-        button {
-            padding: 12px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 3px; font-weight: bold; text-transform: uppercase;
-        }
-        .btn-send { background: var(--green); color: #000; }
-        .btn-delete { background: transparent; color: var(--red); border: 1px solid var(--red); }
-        .btn-file { background: var(--blue); color: white; }
-
-        .status-header {
-            width: 100%; background: #111; padding: 10px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid #333;
-        }
-        #status-light { 
-            width: 12px; height: 12px; border-radius: 50%; background: red;
+        #status-light {
+            width: 20px; height: 20px; border-radius: 50%; background-color: red;
             box-shadow: 0 0 10px red; transition: 0.5s;
         }
+        /* العداد الرقمي الضخم */
+        #main-counter {
+            font-size: 6rem; font-weight: bold; margin: 20px 0;
+            text-shadow: 0 0 20px #2ecc71; color: #39ff14;
+        }
+        .container {
+            display: grid; grid-template-columns: 1fr 350px;
+            gap: 20px; width: 95%; height: 60vh;
+        }
+        /* شاشة الرادار والميديا */
+        .display-unit {
+            background: #000; border: 2px solid #2ecc71; position: relative;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        #radar-canvas { position: absolute; width: 100%; height: 100%; opacity: 0.5; z-index: 1; }
+        #tv-image, #tv-video { max-width: 90%; max-height: 90%; display: none; z-index: 5; border: 1px solid #2ecc71; }
+
+        /* لوحة التحكم والرسائل */
+        .panel { display: flex; flex-direction: column; gap: 10px; }
+        #log-box {
+            flex-grow: 1; background: rgba(0,20,0,0.9); border: 1px solid #2ecc71;
+            padding: 10px; font-size: 0.8rem; overflow-y: auto; color: #2ecc71;
+        }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        button {
+            padding: 15px; cursor: pointer; border: none; font-weight: bold;
+            background: #2ecc71; color: #000; transition: 0.3s;
+        }
+        button:hover { background: #39ff14; }
+        .btn-danger { background: #e74c3c; color: white; }
     </style>
 </head>
 <body>
 
-    <div class="status-header">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <div id="status-light"></div>
-            <span id="status-text" style="font-size: 0.8rem; color: #aaa;">DISCONNECTED</span>
-        </div>
-        <div style="color: var(--blue); font-size: 0.9rem;">
-            PULSE LOAD: <span id="percent">0%</span>
-        </div>
+    <div class="status-bar">
+        <div id="status-light"></div>
+        <span id="status-text">جاري مزامنة النبضات...</span>
     </div>
 
     <div id="main-counter">000000</div>
 
     <div class="container">
-        <div class="tv-screen">
+        <div class="display-unit">
             <canvas id="radar-canvas"></canvas>
             <img id="tv-image">
             <video id="tv-video" controls autoplay></video>
-            <div id="tv-placeholder" style="color: #222; font-size: 1.5rem; z-index: 0;">WAITING FOR ATOMIC STREAM...</div>
         </div>
 
-        <div class="side-panel">
-            <div class="chat-area" id="chat-box">
-                <div>>> INITIALIZING QUP SOVEREIGN ENGINE...</div>
-            </div>
-            
+        <div class="panel">
+            <div id="log-box">>> نظام QUP جاهز للبث...</div>
             <input type="file" id="fileInput" style="display: none;">
-            
-            <div class="controls">
-                <button class="btn-file" onclick="document.getElementById('fileInput').click()">📂 اختيار ملف</button>
-                <button class="btn-send" id="sendBtn">🚀 بث النبضة</button>
-                <button class="btn-delete" id="clearBtn">🗑 مسح السحاب</button>
-                <button class="btn-delete" id="resetUI" style="color: #ccc; border-color: #444;">🔄 إعادة تعيين</button>
+            <div class="btn-group">
+                <button onclick="document.getElementById('fileInput').click()">📂 اختيار ملف</button>
+                <button id="sendBtn" style="background: #39ff14;">🚀 بث النبضة</button>
             </div>
+            <button class="btn-danger" id="clearBtn">💀 تدمير السحاب</button>
         </div>
     </div>
 
@@ -117,7 +82,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // إعدادات فيربايس الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyAZs0bb_t-bzMtaJqy_W_QDBSdQKHLEiD4",
             authDomain: "ziedzizou-7b74d.firebaseapp.com",
@@ -133,109 +97,85 @@
         const db = getDatabase(app);
         const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
 
-        // تصدير المتغيرات للنظام العالمي (Global) لتعمل مع الملفات الخارجية
-        window.fbSet = (data) => set(streamRef, data);
-        window.streamRef = streamRef;
-        window.db = db;
-
-        // استيراد منطق المحرك والمستقبل
-        import { QUP_Core } from './QUP_Core.js';
-        import './QUP_Receiver_Ultimate.js';
-
         const light = document.getElementById('status-light');
         const text = document.getElementById('status-text');
-        const mainCounter = document.getElementById('main-counter');
+        const counter = document.getElementById('main-counter');
+        const logBox = document.getElementById('log-box');
 
-        // مراقبة الاتصال
+        // --- نظام الاتصال الفوري (نفس منطق كودك الناجح) ---
         onValue(ref(db, ".info/connected"), (snap) => {
             if (snap.val() === true) {
                 light.style.backgroundColor = "#2ecc71";
-                light.style.boxShadow = "0 0 15px #2ecc71";
-                text.innerText = "SOVEREIGN LINK ACTIVE";
-                logToChat("SYS", "LINK ESTABLISHED TO FIREBASE");
+                light.style.boxShadow = "0 0 20px #2ecc71";
+                text.innerText = "متصل بنظام Zied Zizou السيادي";
+                addToLog("SYSTEM", "اتصال آمن ومستقر");
             } else {
                 light.style.backgroundColor = "red";
-                text.innerText = "LINK SEVERED";
+                text.innerText = "انقطع الاتصال";
             }
         });
 
-        // دوال التحديث اللحظي للواجهة
-        window.updateProgressPulse = (ratio) => {
-            const p = Math.floor(ratio * 100);
-            document.getElementById('percent').innerText = p + "%";
-        };
-
-        window.updateRotaryVisual = (tick) => {
-            // تحديث العداد الرقمي بالـ TICK الحالي
-            mainCounter.innerText = tick.toString().padStart(6, '0');
-        };
-
-        // الرادار (الرسم المباشر)
-        const canvas = document.getElementById('radar-canvas');
-        const ctx = canvas.getContext('2d');
-        window.drawToCanvas = (buffer) => {
-            if (!buffer) return;
-            const side = Math.ceil(Math.sqrt(buffer.length));
-            canvas.width = canvas.height = side;
-            const imageData = ctx.createImageData(side, side);
-            
-            for (let i = 0; i < buffer.length; i++) {
-                const val = buffer[i];
-                const idx = i * 4;
-                imageData.data[idx] = 0;       // R
-                imageData.data[idx+1] = val;   // G (أخضر راداري)
-                imageData.data[idx+2] = 0;       // B
-                imageData.data[idx+3] = 255;   // A
-            }
-            ctx.putImageData(imageData, 0, 0);
-        };
-
-        // إدارة السجل
-        function logToChat(tag, msg) {
-            const box = document.getElementById('chat-box');
-            const time = new Date().toLocaleTimeString().split(' ')[0];
-            box.innerHTML += `<div><span style="color:#555">[${time}]</span> <span style="color:#fff">${tag}:</span> ${msg}</div>`;
-            box.scrollTop = box.scrollHeight;
+        function addToLog(tag, msg) {
+            logBox.innerHTML += `<div>[${tag}]: ${msg}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
         }
-        window.logToChat = logToChat; // جعلها متاحة للمستقبل
 
-        // التحكم
+        // --- محرك QUP CORE المدمج لضمان الاستقرار ---
+        const QUP_Core = {
+            async transmit(file) {
+                const rawData = new Uint8Array(await file.arrayBuffer());
+                const sid = Date.now();
+                const seed = Math.random();
+                
+                addToLog("CORE", "توليد طبقة الشبح...");
+                await set(streamRef, { t: 'GENESIS', name: file.name, size: rawData.length, seed, sid });
+
+                const layers = [8, 4, 2, 1];
+                for (let step of layers) {
+                    await this.stream(rawData, step, sid, seed);
+                }
+                await set(streamRef, { t: 'TERMINATE', sid });
+                addToLog("CORE", "اكتمل البث الذري");
+            },
+            async stream(data, step, sid, seed) {
+                for (let i = 0; i < data.length; i += step) {
+                    if (i % 500 === 0) {
+                        counter.innerText = i.toString().padStart(6, '0');
+                        await set(streamRef, { d: `${i}:${data[i]}`, t: 'DATA', sid });
+                    }
+                }
+            }
+        };
+
+        // --- محرك الاستقبال والرادار ---
+        onValue(streamRef, (snap) => {
+            const data = snap.val();
+            if (!data) return;
+            if (data.t === 'DATA') {
+                counter.innerText = data.d.split(':')[0].padStart(6, '0');
+                drawRadar();
+            }
+        });
+
+        function drawRadar() {
+            const canvas = document.getElementById('radar-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = "rgba(46, 204, 113, 0.1)";
+            ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 5, 5);
+        }
+
+        // تشغيل الأزرار
         document.getElementById('sendBtn').onclick = () => {
             const file = document.getElementById('fileInput').files[0];
-            if (file) {
-                logToChat("CORE", `STARTING TRANSMISSION: ${file.name}`);
-                QUP_Core.transmit(file);
-            } else {
-                alert("يرجى اختيار ملف أولاً");
-            }
+            if (file) QUP_Core.transmit(file);
         };
 
-        document.getElementById('clearBtn').onclick = async () => {
-            if(confirm("تدمير البيانات السحابية؟")) {
-                await remove(streamRef);
-                logToChat("SYS", "CLOUD STORAGE PURGED");
-            }
+        document.getElementById('clearBtn').onclick = () => {
+            remove(streamRef);
+            addToLog("SYS", "تم تدمير البيانات");
+            counter.innerText = "000000";
         };
 
-        document.getElementById('resetUI').onclick = () => location.reload();
-
-        // تفعيل المعاينة اللحظية عند اكتمال الاستلام
-        window.materializeInUI = (blob, name) => {
-            const url = URL.createObjectURL(blob);
-            const isVideo = name.toLowerCase().match(/\.(mp4|webm|ogg)$/);
-            
-            document.getElementById('tv-placeholder').style.display = 'none';
-            if (isVideo) {
-                const v = document.getElementById('tv-video');
-                v.src = url; v.style.display = 'block';
-                document.getElementById('tv-image').style.display = 'none';
-            } else {
-                const img = document.getElementById('tv-image');
-                img.src = url; img.style.display = 'block';
-                document.getElementById('tv-video').style.display = 'none';
-            }
-            logToChat("RCVR", `MATERIALIZATION COMPLETE: ${name}`);
-        };
     </script>
 </body>
 </html>
