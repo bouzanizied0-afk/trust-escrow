@@ -8,7 +8,9 @@ export const QUP_Core = {
     threshold: 2,
     
     async transmit(file) {
-        const rawData = new Uint8Array(await file.arrayBuffer());
+                const rawData = new Uint8Array(await file.arrayBuffer());
+        if(document.getElementById('digital-counter')) document.getElementById('digital-counter').innerText = "0000000000";
+        
         const sid = Date.now();
         const seed = Math.random();
         const hashLock = await this.calculateHash(rawData);
@@ -41,12 +43,19 @@ export const QUP_Core = {
             }
 
             // تحديث العدادات بناءً على الحمل الحقيقي
-            if (i % 400 === 0) {
-    // حساب النسبة المئوية
-    const percent = Math.floor((i / data.length) * 100);
-    // إرسال النسبة للعداد الكبير في الواجهة
-    window.mainCounter.innerText = percent + "%";
-    }
+                        if (i % 400 === 0) {
+                // حساب النسبة المئوية
+                const percent = Math.floor((i / data.length) * 100);
+                
+                // 1. تحديث النسبة المئوية
+                window.mainCounter.innerText = percent + "%";
+
+                // 2. تحديث العداد الرقمي (الأصفار) بالملي
+                const digitalCounter = document.getElementById('digital-counter');
+                if (digitalCounter) {
+                    digitalCounter.innerText = String(i).padStart(10, '0');
+                }
+            }
 
             if (packet.length > 1000) {
                 await set(streamRef, { d: packet, sid, step, t: 'DATA' });
