@@ -1,16 +1,16 @@
-// --- [QUP-ULTIMATE: The Sovereign Engine] ---
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set } from "firebase/database";
+// --- [QUP-ULTIMATE: The Sovereign Engine - Fixed Version] ---
 
-const firebaseConfig = { /* ... بياناتك السابقة ... */ };
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
+// استخدام روابط CDN لكي يفهمها المتصفح مباشرة
+import { ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 export const QUP_Core = {
     threshold: 2,
     
-    async transmit(file) {
+    async transmit(file, onProgress) {
+        // استخدام القاعدة التي تم تعريفها في window عبر ملف index
+        const db = window.db; 
+        const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
+        
         const rawData = new Uint8Array(await file.arrayBuffer());
         const sid = Date.now();
         const seed = Math.random();
@@ -25,14 +25,14 @@ export const QUP_Core = {
         // 2. نظام الطبقات الكامل (Layered Perception) - [8, 4, 2, 1]
         const layers = [8, 4, 2, 1]; 
         for (let step of layers) {
-            await this.executeAtomicStream(rawData, step, sid, seed);
+            await this.executeAtomicStream(db, streamRef, rawData, step, sid, seed, onProgress);
         }
 
         // 3. نبضة اليقين الرياضي (TERMINATE)
         await set(streamRef, { t: 'TERMINATE', sid, lock: hashLock });
     },
 
-    async executeAtomicStream(data, step, sid, seed) {
+    async executeAtomicStream(db, streamRef, data, step, sid, seed, onProgress) {
         let packet = "";
         for (let i = 0; i < data.length; i += step) {
             const actual = data[i];
@@ -43,16 +43,16 @@ export const QUP_Core = {
                 packet += `${i.toString(36)}:${String.fromCharCode(0x4E00 + actual)}|`;
             }
 
-            // تحديث العدادات بناءً على الحمل الحقيقي
-            if (i % 400 === 0) {
-                window.updateProgressPulse?.(i / data.length);
-                window.updateRotaryVisual?.(i);
+            // تحديث العداد في الواجهة (النسبة المئوية)
+            if (i % 400 === 0 && onProgress) {
+                const percent = Math.floor((i / data.length) * 100);
+                onProgress(percent);
             }
 
             if (packet.length > 1000) {
                 await set(streamRef, { d: packet, sid, step, t: 'DATA' });
                 packet = "";
-                await new Promise(r => setTimeout(r, 20)); // تدفق ناعم
+                await new Promise(r => setTimeout(r, 20)); // تدفق ناعم لعدم تجميد المتصفح
             }
         }
         if (packet) await set(streamRef, { d: packet, sid, step, t: 'DATA' });
@@ -68,4 +68,4 @@ export const QUP_Core = {
     }
 };
 
-document.getElementById('fileInput').onchange = (e) => QUP_Core.transmit(e.target.files[0]);
+// تم ترك الربط لملف الـ index ليقوم به عند الضغط على الزر، لضمان استقلالية القالب
