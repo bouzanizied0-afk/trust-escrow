@@ -1,30 +1,33 @@
-// --- [QUP-v3: The Genesis Source] ---
+// --- [QUP-v3: The Genesis Source - STABLE] ---
 const QUP_Source = {
     threshold: 2,
     
+    async calculateHash(data) {
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    },
+
+    getAtomicByte(t, s) { 
+        return Math.floor(((Math.sin(t * 0.05 + s) + Math.cos(t * 0.02)) / 2 + 1) * 127.5); 
+    },
+
     async transmit(file) {
         const rawData = new Uint8Array(await file.arrayBuffer());
         const sid = Date.now();
         const seed = Math.random();
-
-        // حساب البصمة الذرية (Hash-Lock) لليقين الرياضي
         const hashLock = await this.calculateHash(rawData);
 
-        // 1. إرسال نبضة البداية (The Genesis Pulse)
+        // إرسال إشارة البداية (SYNC) لتجهيز المستقبل
         window.fbSet(window.streamRef, {
-            t: 'GENESIS', name: file.name, size: rawData.length, seed, sid, lock: hashLock
+            t: 'SYNC', name: file.name, size: rawData.length, seed, sid, lock: hashLock
         });
         
-        // 2. إطلاق "نظام الطبقات" (Layered Perception)
-        // الطبقة 0: إرسال الأوامر للمستقبل لبناء "طبقة الشبح" (التوقعات الموجية)
-        // الطبقات التالية: حقن "مغناطيس التفاصيل" (Detail Magnets)
         const layers = [8, 4, 2, 1]; 
         for (let step of layers) {
             await this.streamLayer(rawData, step, sid, seed);
         }
 
-        // 3. بروتوكول الختام (TERMINATE)
-        window.fbSet(window.streamRef, { t: 'TERMINATE', sid, lock: hashLock });
+        window.fbSet(window.streamRef, { t: 'TERMINATE', sid });
     },
     
     async streamLayer(data, step, sid, seed) {
@@ -33,45 +36,24 @@ const QUP_Source = {
             const actual = data[i];
             const predicted = this.getAtomicByte(i, seed);
             if (Math.abs(actual - predicted) > this.threshold) {
-                packet += i.toString(36) + ":" + String.fromCharCode(0x4E00 + actual) + "|";
+                // استخدام تنسيق B{index},{value}; ليفهمه المستقبل
+                packet += "B" + i.toString(36) + "," + String.fromCharCode(0x4E00 + actual) + ";";
             }
-            if (packet.length > 1500) {
-                this.inject(packet, sid, step);
+            if (packet.length > 1000) {
+                this.inject(packet, sid);
                 packet = "";
-                await new Promise(r => setTimeout(r, 50)); // موازنة التدفق
+                await new Promise(r => setTimeout(r, 40)); 
             }
         }
-        if (packet) this.inject(packet, sid, step);
+        if (packet) this.inject(packet, sid);
     },
 
-    getAtomicByte(t, s) { 
-        return Math.floor(((Math.sin(t * 0.05 + s) + Math.cos(t * 0.02)) / 2 + 1) * 127.5); 
-    },
-
-    async calculateHash(data) {
-        const msgUint8 = data;
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-    },
-
-                inject(d, sid, step) { 
-        // 1. إرسال البيانات للسحابة
+    inject(d, sid) { 
         if (window.fbSet && window.streamRef) {
-            window.fbSet(window.streamRef, { d, sid, step, t: 'INJECT' }); 
+            window.fbSet(window.streamRef, { d, sid, t: 'DATA' }); 
         }
-
-        // 2. تحديث العداد (هذا ما يبحث عنه المحلل)
-        if (window.updateProgressPulse) {
-            window.updateProgressPulse(1); 
-        }
+        if (window.updateProgressPulse) window.updateProgressPulse(1); 
     } 
-}; // <--- إغلاق الكائن النهائي (QUP_Source) يجب أن يكون هنا
+};
 
-// الآن نضع "الجاسوس" خارج الكائن ليعمل فور تحميل الملف
-(function() {
-    window.engineStatus = "LOADED";
-    // تعريف يدوي للتأكد من الرؤية العالمية
-    window.QUP_Source = QUP_Source; 
-    alert("✅ المحرك: تم تحميل ملف mouhark.js بنجاح");
-})();
-
+window.QUP_Source = QUP_Source;
