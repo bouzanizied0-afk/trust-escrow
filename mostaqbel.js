@@ -1,10 +1,11 @@
-// --- [QUP-v2: Sink Engine - الذكاء الاصطناعي للمعاينة] ---
+// --- [QUP-v3: المستقبل الذكي - SINK ENGINE] ---
 const QUP_Sink = {
     buffer: null,
     lastSid: null,
     totalSize: 0,
     fileName: "",
 
+    // معادلة التوليد الذرية (يجب أن تطابق المحرك تماماً)
     getAtomicByte(tick, seed) {
         return Math.floor(((Math.sin(tick * 0.05 + seed) + Math.cos(tick * 0.02)) / 2 + 1) * 127.5);
     },
@@ -12,78 +13,88 @@ const QUP_Sink = {
     processPulse(data) {
         if (!data) return;
 
-        // نظام التقرير اللحظي (لنعرف ماذا يحدث)
-        if (window.logToChat) {
-            if (data.t === 'SYNC') window.logToChat("📥 استلمت إشارة SYNC: جاري تهيئة الذاكرة...");
-            if (data.t === 'DATA') console.log("📥 استلمت نبضة بيانات...");
+        // --- [ الجزء المضاف: نظام استقبال الرسائل واختبار الترابط ] ---
+        if (data.t === 'CHAT') {
+            if (window.logToChat) window.logToChat("📥 استلم المستقبل: " + data.msg);
+            
+            // تحريك العداد الدوري (1-10) كدليل مرئي على الاستلام
+            let counterElement = document.getElementById('rotaryCounter');
+            if (counterElement) {
+                let currentTick = parseInt(counterElement.innerText) || 0;
+                let nextTick = (currentTick % 10) + 1;
+                if (window.updateRotaryVisual) window.updateRotaryVisual(nextTick);
+            }
+            return; // إنهاء المعالجة لأنها رسالة نصية وليست بيانات ملف
         }
 
-        // 1. استقبال إشارة المزامنة
+        // 1. استقبال بروتوكول المزامنة (SYNC)
         if (data.t === 'SYNC' && data.sid !== this.lastSid) {
             this.lastSid = data.sid;
             this.totalSize = data.size;
             this.fileName = data.name;
             this.buffer = new Uint8Array(this.totalSize);
             
+            // بناء "طبقة الشبح" الأولية
             for (let i = 0; i < this.totalSize; i++) {
                 this.buffer[i] = this.getAtomicByte(i, data.seed);
             }
+            if (window.logToChat) window.logToChat(`📡 بدأت المزامنة: ${this.fileName} (${this.totalSize} bytes)`);
             return; 
         }
 
-        // 2. الحقن المغناطيسي للبيانات
+        // 2. استقبال بروتوكول الحقن (DATA)
         if (data.t === 'DATA' && this.buffer) {
             const symbols = data.d.split(';');
-            let successCount = 0;
-
             symbols.forEach(symbol => {
                 if (!symbol || !symbol.includes(',')) return;
                 const [meta, valChar] = symbol.split(',');
+                
                 if (meta.startsWith("B")) {
-                    const index = parseInt(meta.substring(1), 36);
-                    const value = valChar.charCodeAt(0) - 0x4E00;
+                    const index = parseInt(meta.substring(1), 36); // فك إحداثي المكان
+                    const value = valChar.charCodeAt(0) - 0x4E00; // فك القيمة الرقمية
+                    
                     if (index < this.buffer.length) {
-                        this.buffer[index] = value;
-                        successCount++;
+                        this.buffer[index] = value; // الحقن المباشر في الذاكرة
                     }
                 }
             });
 
-            // تحديث العداد (هنا حل مشكلة العداد)
-            if (window.updateProgressPulse) {
-                // نرسل قيمة تصاعدية للعداد
-                window.updateProgressPulse(successCount / this.totalSize || 0.1); 
-            }
-
-            // إشعار بالنجاح في الدردشة (مرة واحدة لكل حزمة)
-            if (successCount > 0 && Math.random() > 0.9) {
-                window.logToChat(`✅ تم حقن ${successCount} إحداثي في الذاكرة.`);
-            }
-
+            // تحديث الواجهة عند كل حقن ناجح
             this.renderMedia();
-            if (window.updateRotaryVisual) window.updateRotaryVisual(Math.floor(Math.random() * 999999999));
-        } else if (data.t === 'DATA' && !this.buffer) {
-            window.logToChat("⚠️ خطأ: وصلت بيانات قبل وصول إشارة المزامنة (SYNC)!");
+            
+            // تحريك العداد الدوري عشوائياً أثناء حقن البيانات لإظهار النشاط
+            if (window.updateRotaryVisual) {
+                window.updateRotaryVisual(Math.floor(Math.random() * 10) + 1);
+            }
         }
     },
 
+    // دالة التجسيد المادي للملف المستلم
     renderMedia() {
+        if (!this.buffer || !this.fileName) return;
+
         const isVideo = this.fileName.toLowerCase().match(/\.(mp4|webm|mov)$/);
         const blob = new Blob([this.buffer], { type: isVideo ? 'video/mp4' : 'image/png' });
         const url = URL.createObjectURL(blob);
         
-        const display = document.getElementById(isVideo ? 'videoScreen' : 'displayScreen');
-        const other = document.getElementById(isVideo ? 'displayScreen' : 'videoScreen');
-        
-        if (display) {
-            display.src = url;
-            display.style.display = 'block';
-            if (other) other.style.display = 'none';
-            if (document.getElementById('placeholderText')) document.getElementById('placeholderText').style.display = 'none';
+        const imgDisplay = document.getElementById('displayScreen');
+        const videoDisplay = document.getElementById('videoScreen');
+        const placeholder = document.getElementById('placeholderText');
+
+        if (placeholder) placeholder.style.display = 'none';
+
+        if (isVideo && videoDisplay) {
+            if (imgDisplay) imgDisplay.style.display = 'none';
+            videoDisplay.style.display = 'block';
+            if (videoDisplay.src !== url) videoDisplay.src = url;
+        } else if (imgDisplay) {
+            if (videoDisplay) videoDisplay.style.display = 'none';
+            imgDisplay.style.display = 'block';
+            imgDisplay.src = url;
         }
     }
 };
 
+// تعريف المستقبل عالمياً ليراه ملف index.html
 window.QUP_Sink = QUP_Sink;
-// ربط القناة العالمية
 window.processIncomingPulse = (data) => QUP_Sink.processPulse(data);
