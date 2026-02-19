@@ -3,201 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QUP Unified Console | ziedzizou-7b74d</title>
+    <title>QUP SOVEREIGN CONSOLE</title>
     <style>
         :root {
-            --neon-blue: #00f2ff;
-            --neon-green: #00ff41;
-            --neon-red: #ff3131;
-            --dark-bg: #050505;
-            --panel-bg: rgba(10, 10, 15, 0.9);
-            --border-glow: 0 0 15px rgba(0, 242, 255, 0.3);
+            --neon-blue: #00f2ff; --neon-green: #00ff41; --neon-red: #ff3131;
+            --dark-bg: #050505; --panel-bg: #0a0a0f;
         }
-        body { background: var(--dark-bg); color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-x: hidden; }
-        .dashboard { background: var(--panel-bg); border: 1px solid var(--neon-blue); padding: 15px 30px; border-radius: 4px; box-shadow: var(--border-glow); width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .telemetry #progressStatus { font-size: 2.5rem; color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); font-weight: 900; }
-        .main-container { display: grid; grid-template-columns: 1fr 380px; gap: 25px; width: 100%; max-width: 1200px; }
-        .canvas-section { background: #000; border: 2px solid #1a1a1a; border-radius: 4px; position: relative; min-height: 500px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: inset 0 0 50px rgba(0,242,255,0.1); }
-        .chat-section { background: var(--panel-bg); border: 1px solid #222; display: flex; flex-direction: column; height: 550px; border-top: 3px solid var(--neon-blue); }
-        #messages { flex-grow: 1; padding: 15px; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 0.85rem; background: rgba(0,0,0,0.3); color: #aaa; }
-        .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--neon-red); transition: 0.3s; }
-        .dot.online { background: var(--neon-green); box-shadow: 0 0 20px var(--neon-green); }
+        body { background: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         
-        .btn { padding: 15px 35px; background: #000; border: 2px solid var(--neon-blue); color: var(--neon-blue); cursor: pointer; font-weight: bold; transition: 0.2s; outline: none; text-transform: uppercase; letter-spacing: 1px; }
-        .btn:hover:not(:disabled) { background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 20px var(--neon-blue); }
-        
-        #sendBtn:active { transform: scale(0.9); box-shadow: 0 0 40px var(--neon-green); background: var(--neon-green); color: #000; }
-        #clearCloudBtn:active { transform: scale(0.9); box-shadow: 0 0 40px var(--neon-red); background: var(--neon-red); color: #fff; }
-        #sendMsgBtn:active { transform: scale(0.9); box-shadow: 0 0 40px var(--neon-blue); background: var(--neon-blue); color: #000; }
-        .file-label:active { background: #fff; color: #000; }
+        /* شريط الحالة الإحترافي */
+        .status-bar { width: 100%; max-width: 1200px; background: var(--panel-bg); border: 1px solid #1a1a2e; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .conn-indicator { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--neon-red); box-shadow: 0 0 10px var(--neon-red); }
+        .dot.online { background: var(--neon-green); box-shadow: 0 0 15px var(--neon-green); }
 
-        #displayScreen, #videoScreen { max-width: 95%; max-height: 95%; display: none; border: 1px solid var(--neon-blue); box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); }
-        .bottom-controls { margin-top: 20px; display: flex; gap: 20px; align-items: center; }
-        .btn:disabled { opacity: 0.2; cursor: not-allowed; border-color: #333; color: #333; }
+        /* حاوية العرض الرئيسية (تلفاز + رادار) */
+        .main-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; width: 100%; max-width: 1200px; margin-top: 20px; }
+        
+        .screen-container { background: #000; border: 2px solid #1a1a1a; height: 500px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; }
+        #displayScreen, #videoScreen { max-width: 100%; max-height: 100%; display: none; z-index: 2; }
+        
+        /* نظام الرادار (Canvas) خلف الميديا */
+        #radarCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.4; z-index: 1; }
+
+        .side-panel { display: flex; flex-direction: column; gap: 20px; }
+        
+        /* واجهة الدردشة */
+        .chat-box { background: var(--panel-bg); border: 1px solid #1a1a2e; height: 350px; display: flex; flex-direction: column; border-radius: 8px; }
+        #messages { flex-grow: 1; padding: 10px; overflow-y: auto; font-family: monospace; font-size: 0.8rem; color: #00f2ff; }
+        
+        /* أزرار التحكم */
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; text-transform: uppercase; }
+        .btn-send { background: var(--neon-green); color: black; }
+        .btn-delete { background: var(--neon-red); color: white; }
+        .btn-file { background: var(--neon-blue); color: black; }
+        .btn:hover { opacity: 0.8; transform: scale(0.98); }
+
+        #progressContainer { width: 100%; height: 5px; background: #111; margin-top: 10px; border-radius: 10px; }
+        #progressBar { width: 0%; height: 100%; background: var(--neon-green); transition: 0.3s; }
     </style>
 </head>
 <body>
 
-    <div class="dashboard">
-        <div class="system-info">
-            <h2 style="margin:0; color:var(--neon-blue);">QUP CONSOLE | ZIEDZIZOU</h2>
-            <div id="rotaryCounter" style="font-family:monospace; letter-spacing:5px; font-size: 1.5rem; color: var(--neon-green);">0</div>
+    <div class="status-bar">
+        <div>
+            <span style="color: var(--neon-blue); font-weight: bold;">QUP ULTIMATE CONSOLE</span>
+            <div id="clockDisplay" style="font-family: monospace; font-size: 0.8rem; margin-top: 5px;">TICK: 00000000</div>
         </div>
-        <div class="telemetry">
-            <div id="progressStatus">0%</div>
-        </div>
-        <div class="connection-status" style="text-align:left;">
-            <div id="statusText" style="font-size:0.7rem; margin-bottom:5px;">DISCONNECTED</div>
+        <div class="conn-indicator">
+            <span id="connText">FIREBASE DISCONNECTED</span>
             <div id="connDot" class="dot"></div>
         </div>
+        <div style="text-align: center;">
+            <span style="font-size: 0.7rem; color: #555;">BUFFER LOAD</span>
+            <div id="progressStatus" style="color: var(--neon-green); font-weight: bold;">0%</div>
+        </div>
     </div>
 
-    <div class="main-container">
-        <div class="canvas-section">
-            <img id="displayScreen">
-            <video id="videoScreen" controls autoplay muted></video>
-            <div id="placeholderText" style="color: #111; font-size: 5rem; font-weight: 900; user-select: none;">RADAR</div>
+    <div class="main-grid">
+        <div class="screen-container">
+            <canvas id="radarCanvas"></canvas> <img id="displayScreen"> <video id="videoScreen" controls autoplay muted></video> <div id="placeholder" style="color: #222; font-size: 5rem; font-weight: 900; position: absolute;">QUP TV</div>
         </div>
-        <div class="chat-section">
-            <div id="messages"></div>
-            <div style="padding: 10px; background: #111; display: flex; gap:5px;">
-                <input type="text" id="msgInput" placeholder="Enter Command..." style="flex:1; background:#000; color:var(--neon-green); border:1px solid #333; padding:10px; outline:none;">
-                <button id="sendMsgBtn" class="btn" style="padding:10px 20px; border-color:var(--neon-blue); color:var(--neon-blue);">بث</button>
+
+        <div class="side-panel">
+            <div class="chat-box">
+                <div id="messages"></div>
+                <div style="padding: 10px; border-top: 1px solid #1a1a2e; display: flex; gap: 5px;">
+                    <input type="text" id="chatInput" placeholder="Command..." style="flex:1; background: #000; border: 1px solid #222; color: #fff; padding: 5px;">
+                    <button class="btn btn-file" style="padding: 5px 10px;">💬</button>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="bottom-controls">
-        <label for="fileInput" class="file-label" style="cursor:pointer; border:2px solid #fff; padding:15px; font-weight:bold; transition: 0.2s;">📁 اختيار مصفوفة</label>
-        <input type="file" id="fileInput" style="display:none;">
-        <button id="sendBtn" class="btn" style="border-color:var(--neon-green); color:var(--neon-green);" disabled>إطلاق النبضة</button>
-        <button id="clearCloudBtn" class="btn" style="border-color:var(--neon-red); color:var(--neon-red);">تطهير السحابة</button>
+            <div class="controls">
+                <label for="fileInput" class="btn btn-file" style="text-align: center; display: block;">📂 اختـار</label>
+                <input type="file" id="fileInput" style="display: none;">
+                <button id="sendBtn" class="btn btn-send">🚀 إرسال</button>
+                <button id="clearBtn" class="btn btn-delete">🧹 حذف</button>
+            </div>
+            <div id="progressContainer"><div id="progressBar"></div></div>
+        </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { QUP_Core } from './QUP_Core.js';
+        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAZs0bb_t-bzMtaJqy_W_QDBSdQKHLEiD4",
-            authDomain: "ziedzizou-7b74d.firebaseapp.com",
-            databaseURL: "https://ziedzizou-7b74d-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "ziedzizou-7b74d",
-            storageBucket: "ziedzizou-7b74d.firebasestorage.app",
-            messagingSenderId: "937969676323",
-            appId: "1:937969676323:web:8c89472de068a2e6cd0196"
+        const db = getDatabase();
+        const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
+
+        // 1. تحديث حالة الاتصال (الزر الأحمر/الأخضر)
+        onValue(ref(db, '.info/connected'), (snap) => {
+            const dot = document.getElementById('connDot');
+            const txt = document.getElementById('connText');
+            if (snap.val() === true) {
+                dot.classList.add('online');
+                txt.innerText = "FIREBASE LINK ACTIVE";
+                txt.style.color = "var(--neon-green)";
+            } else {
+                dot.classList.remove('online');
+                txt.innerText = "LINK BROKEN";
+                txt.style.color = "var(--neon-red)";
+            }
+        });
+
+        // 2. دوال الربط مع المحرك والمستقبل
+        window.updateProgressPulse = (ratio) => {
+            const p = Math.floor(ratio * 100);
+            document.getElementById('progressBar').style.width = p + "%";
+            document.getElementById('progressStatus').innerText = p + "%";
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const pulseRef = ref(db, 'qup_pulses');
-
-        window.fbSet = set;
-        window.streamRef = pulseRef;
+        window.updateRotaryVisual = (tick) => {
+            document.getElementById('clockDisplay').innerText = `TICK: ${tick.toString().padStart(8, '0')}`;
+        };
 
         window.logToChat = (msg) => {
             const m = document.getElementById('messages');
-            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
-            m.innerHTML += `<div style="margin-bottom:5px;"><span style="color:#555;">[${time}]</span> > ${msg}</div>`;
+            m.innerHTML += `<div>> ${msg}</div>`;
             m.scrollTop = m.scrollHeight;
         };
 
-        window.updateProgressPulse = (ratio) => {
-            document.getElementById('progressStatus').innerText = Math.floor(ratio * 100) + "%";
+        // 3. الرادار اللحظي: رسم البكسلات فور وصول النبضات
+        const canvas = document.getElementById('radarCanvas');
+        const ctx = canvas.getContext('2d');
+        window.drawToCanvas = (buffer) => {
+            if (!buffer) return;
+            // رسم سريع جداً لمحاكاة بناء الملف
+            const size = Math.sqrt(buffer.length);
+            canvas.width = size || 500;
+            canvas.height = size || 500;
+            const imgData = ctx.createImageData(canvas.width, canvas.height);
+            for (let i = 0; i < buffer.length; i++) {
+                imgData.data[i * 4] = buffer[i];     // R
+                imgData.data[i * 4 + 1] = buffer[i]; // G
+                imgData.data[i * 4 + 2] = buffer[i]; // B
+                imgData.data[i * 4 + 3] = 255;       // A
+            }
+            ctx.putImageData(imgData, 0, 0);
         };
 
-        // دالة العداد الدوري المحدثة
-        window.updateRotaryVisual = (tick) => {
-            const counter = document.getElementById('rotaryCounter');
-            if (counter) {
-                counter.innerText = tick;
-                // فلاش بسيط عند التغيير
-                counter.style.opacity = "0.5";
-                setTimeout(() => counter.style.opacity = "1", 50);
-            }
+        // 4. التحكم بالأزرار
+        document.getElementById('sendBtn').onclick = () => {
+            const file = document.getElementById('fileInput').files[0];
+            if (file) QUP_Core.transmit(file);
+            else alert("اختر ملفاً أولاً!");
         };
 
-        onValue(ref(db, '.info/connected'), (snap) => {
-            const dot = document.getElementById('connDot');
-            const txt = document.getElementById('statusText');
-            if (snap.val() === true) {
-                dot.classList.add('online');
-                txt.innerText = "ZIEDZIZOU LINK ACTIVE";
-            } else {
-                dot.classList.remove('online');
-                txt.innerText = "OFFLINE";
-            }
-        });
+        document.getElementById('clearBtn').onclick = () => {
+            remove(streamRef).then(() => {
+                window.logToChat("🚨 تم تطهير السحابة كلياً.");
+                location.reload();
+            });
+        };
 
-        // التنصت العام على فيرباس لتمرير البيانات للمستقبل
-        onValue(pulseRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data && window.processIncomingPulse) {
-                window.processIncomingPulse(data);
-            }
-        });
-
+        // معاينة الملف المختار قبل الإرسال
         document.getElementById('fileInput').onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
                 const url = URL.createObjectURL(file);
-                const imgDisplay = document.getElementById('displayScreen');
-                const videoDisplay = document.getElementById('videoScreen');
-                if (file.type.startsWith('video/')) {
-                    imgDisplay.style.display = 'none';
-                    videoDisplay.style.display = 'block';
-                    videoDisplay.src = url;
-                } else {
-                    videoDisplay.style.display = 'none';
-                    imgDisplay.style.display = 'block';
-                    imgDisplay.src = url;
-                }
-                document.getElementById('sendBtn').disabled = false;
-                window.logToChat(`✅ جاهز للبث: ${file.name}`);
-            }
-        };
-
-        // زر البث (إرسال رسائل CHAT لاختبار المستقبل)
-        document.getElementById('sendMsgBtn').onclick = () => {
-            const input = document.getElementById('msgInput');
-            if(input.value.trim() !== "") {
-                set(pulseRef, { t: 'CHAT', msg: input.value, sid: Date.now() });
-                input.value = "";
-            }
-        };
-
-        document.getElementById('clearCloudBtn').onclick = async () => {
-            try {
-                await remove(pulseRef);
-                window.logToChat("<span style='color:var(--neon-red)'>🚨 تم تطهير السحابة.</span>");
-                location.reload(); // إعادة تحميل لتصفير كل شيء
-            } catch (e) { console.error(e); }
-        };
-
-        document.getElementById('sendBtn').onclick = () => {
-            const fileInput = document.getElementById('fileInput');
-            if (window.QUP_Source && fileInput.files[0]) {
-                window.logToChat("<span style='color:var(--neon-blue)'>🚀 إطلاق النبضات!</span>");
-                window.QUP_Source.transmit(fileInput.files[0]);
+                const isVideo = file.type.startsWith('video/');
+                document.getElementById('displayScreen').style.display = isVideo ? 'none' : 'block';
+                document.getElementById('videoScreen').style.display = isVideo ? 'block' : 'none';
+                if(isVideo) document.getElementById('videoScreen').src = url;
+                else document.getElementById('displayScreen').src = url;
+                document.getElementById('placeholder').style.display = 'none';
+                window.logToChat(`✅ تم تحميل: ${file.name}`);
             }
         };
     </script>
 
-    <script src="mouhark.js"></script>
-    <script src="mostaqbel.js"></script>
-
-    <script>
-    (function() {
-        const diagDiv = document.createElement('div');
-        diagDiv.style = "position:fixed; bottom:10px; left:10px; background:rgba(0,0,0,0.9); color:#00f2ff; padding:12px; font-family:monospace; font-size:11px; border:1px solid #00f2ff; border-radius:5px; z-index:9999; pointer-events:none;";
-        diagDiv.id = "qup-diag";
-        document.body.appendChild(diagDiv);
-        setInterval(() => {
-            diagDiv.innerHTML = `<b style='color:#ff3131'>[QUP DIAGNOSTIC]</b><br>
-            ENGINE: ${window.QUP_Source ? "OK" : "NO"}<br>
-            SINK: ${window.QUP_Sink ? "OK" : "NO"}`;
-        }, 1000);
-    })();
-    </script>
+    <script type="module" src="QUP_Core.js"></script>
+    <script type="module" src="QUP_Receiver_Ultimate.js"></script>
 </body>
 </html>
