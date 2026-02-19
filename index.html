@@ -2,64 +2,76 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Engine UI Auditor | محلل عدادات المحرك</title>
+    <title>QUP Smart Auditor | المحلل الذكي</title>
     <style>
-        body { background: #050505; color: #00ff41; font-family: monospace; padding: 20px; }
-        .card { border: 1px solid #333; padding: 15px; margin-bottom: 10px; background: #000; }
-        .error { color: #ff3131; border-left: 5px solid #ff3131; padding-right: 10px; }
-        .success { color: #00ff41; border-left: 5px solid #00ff41; padding-right: 10px; }
-        .highlight { color: #00f2ff; font-weight: bold; }
+        body { background: #050505; color: #00ff41; font-family: monospace; padding: 20px; text-align: center; }
+        .card { border: 1px solid #333; padding: 15px; margin-bottom: 10px; background: #000; text-align: right; }
+        .error { color: #ff3131; border-right: 5px solid #ff3131; padding-left: 10px; }
+        .success { color: #00ff41; border-right: 5px solid #00ff41; padding-left: 10px; }
+        .status-box { border: 1px dashed #00f2ff; padding: 10px; margin-top: 20px; color: #00f2ff; }
     </style>
 </head>
 <body>
-    <h2>🕵️ فحص توافق المحرك مع الواجهة (UI-Sync Check)</h2>
-    <div id="report">جاري الفحص...</div>
+    <h2>🕵️ نظام التشخيص المباشر (Mobile Version)</h2>
+    <div id="report">جاري البحث عن ملف المحرك...</div>
+    <div id="debugStatus" class="status-box">حالة الاتصال: بانتظار التحميل...</div>
 
-    <script src="Mouhark.js"></script>
+    <script src="mouhark.js" onerror="alert('🔴 خطأ: تعذر الوصول لملف mouhark.js! تأكد من وجوده في نفس المجلد وتطابق اسمه بالكامل.')"></script>
 
     <script>
+        // دالة العداد لاستقبال نبضات المحرك
+        window.updateProgressPulse = function(amount) {
+            console.log("تم استلام نبضة!");
+            let status = document.getElementById('debugStatus');
+            status.innerHTML = "📡 النبضات تعمل! تم استقبال تحديث.";
+            status.style.color = "#00ff41";
+        };
+
         function runEngineAudit() {
             const report = document.getElementById('report');
+            const debugStatus = document.getElementById('debugStatus');
             let html = "";
 
+            // 1. اختبار وجود الكائن
             if (!window.QUP_Source) {
-                report.innerHTML = "<div class='card error'>❌ لم يتم العثور على QUP_Source. تأكد من اسم الملف.</div>";
+                alert("❌ فشل المحلل: كائن QUP_Source غير موجود في الذاكرة.");
+                report.innerHTML = "<div class='card error'>❌ لم يتم العثور على QUP_Source. <br> المحرك لم يتم تحميله بسبب خطأ في المسار أو خطأ في الأقواس داخل ملف JS.</div>";
+                debugStatus.innerHTML = "الحالة: ملف المحرك مفقود أو معطوب.";
                 return;
             }
 
-            // 1. فحص وجود دوال التحديث (The Pulse Callbacks)
-            const transmitCode = QUP_Source.transmit.toString();
-            const streamCode = QUP_Source.streamLayer ? QUP_Source.streamLayer.toString() : "";
+            alert("✅ تم العثور على المحرك! جاري تحليل الدوال...");
+
+            // 2. تحليل الكود الداخلي
+            const transmitCode = QUP_Source.transmit ? QUP_Source.transmit.toString() : "";
+            const injectCode = QUP_Source.inject ? QUP_Source.inject.toString() : "";
 
             html += "<div class='card'>";
-            html += "<h3>🔍 فحص كود التحديث:</h3>";
+            html += "<h3>🔍 نتائج فحص الدوال:</h3>";
             
-            // هل المحرك يحاول تحديث التقدم؟
-            if (transmitCode.includes('updateProgressPulse') || streamCode.includes('updateProgressPulse')) {
-                html += "<p class='success'>✅ المحرك يحتوي على أوامر تحديث التقدم (Progress Update).</p>";
+            // فحص الربط بالعداد
+            if (transmitCode.includes('updateProgressPulse') || injectCode.includes('updateProgressPulse')) {
+                html += "<p class='success'>✅ المحرك مرتبط بالواجهة (يحتوي على updateProgressPulse).</p>";
             } else {
-                html += "<p class='error'>❌ المحرك 'أعمى': لا يحتوي على استدعاء لدالة updateProgressPulse. لهذا السبب العداد ثابت.</p>";
+                html += "<p class='error'>❌ المحرك صامت: لا يرسل إشارات للعداد. أضف سطر التحديث داخل دالة inject.</p>";
             }
 
-            // 2. فحص طريقة حساب النسبة
-            if (streamCode.includes('totalSize') || transmitCode.includes('size')) {
-                html += "<p class='success'>✅ المحرك يدرك حجم الملف الكلي.</p>";
+            // فحص إرسال البيانات
+            if (injectCode.includes('fbSet')) {
+                html += "<p class='success'>✅ المحرك مجهز لإرسال البيانات لـ Firebase.</p>";
             } else {
-                html += "<p class='error'>❌ المحرك لا يحسب الحجم الكلي، لن تظهر النسبة المئوية % أبداً.</p>";
+                html += "<p class='error'>❌ المحرك لا يحتوي على أوامر إرسال (fbSet)!</p>";
             }
-            html += "</div>";
-
-            // 3. النصيحة البرمجية
-            html += "<div class='card highlight'>";
-            html += "<h3>💡 النتيجة:</h3>";
-            html += "<p>لكي يشتغل العداد والنسبة، يجب أن تضع هذا السطر داخل حلقة التكرار (Loop) في ملف Mouhark.js:</p>";
-            html += "<code>if(window.updateProgressPulse) window.updateProgressPulse(مقدار_الزيادة);</code>";
             html += "</div>";
 
             report.innerHTML = html;
+            debugStatus.innerHTML = "الحالة: التحليل اكتمل بنجاح.";
         }
 
-        setTimeout(runEngineAudit, 1000);
+        // تشغيل الفحص بعد التأكد من تحميل الصفحة
+        window.onload = function() {
+            setTimeout(runEngineAudit, 1500);
+        };
     </script>
 </body>
 </html>
