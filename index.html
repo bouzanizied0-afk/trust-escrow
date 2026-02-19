@@ -9,14 +9,13 @@
             font-family: 'Courier New', monospace;
             display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden;
         }
-        /* المصابيح الثلاثة العلوي */
         .status-bar {
             width: 100%; padding: 10px; background: #111;
             display: flex; justify-content: center; align-items: center; gap: 30px;
             border-bottom: 2px solid #222; font-size: 0.8rem;
         }
         .status-item { display: flex; align-items: center; gap: 8px; }
-        .led { width: 12px; height: 12px; border-radius: 50%; background: grey; transition: 0.5s; }
+        .led { width: 12px; height: 12px; border-radius: 50%; background: #330000; transition: 0.5s; border: 1px solid #000; }
         
         #main-counter {
             font-size: 5rem; font-weight: bold; margin: 10px 0;
@@ -26,7 +25,6 @@
             display: grid; grid-template-columns: 1fr 380px;
             gap: 15px; width: 98%; height: 75vh;
         }
-        /* الشاشة */
         .display-unit {
             background: #000; border: 2px solid #2ecc71; position: relative;
             display: flex; align-items: center; justify-content: center; overflow: hidden;
@@ -34,7 +32,6 @@
         #radar-canvas { position: absolute; width: 100%; height: 100%; opacity: 0.3; z-index: 1; }
         #tv-image, #tv-video { max-width: 95%; max-height: 95%; display: none; z-index: 5; border: 1px solid #2ecc71; }
 
-        /* اللوحة الجانبية */
         .panel { display: flex; flex-direction: column; gap: 10px; height: 100%; }
         #chat-box {
             flex-grow: 1; background: rgba(0,15,0,0.9); border: 1px solid #2ecc71;
@@ -49,7 +46,6 @@
             padding: 12px; cursor: pointer; border: none; font-weight: bold;
             background: #2ecc71; color: #000;
         }
-        .btn-send-chat { padding: 8px 15px; }
         .btn-danger { background: #e74c3c; color: white; margin-top: auto; }
     </style>
 </head>
@@ -60,10 +56,10 @@
             <div id="led-fb" class="led"></div> <span>FIREBASE</span>
         </div>
         <div class="status-item">
-            <div id="led-core" class="led"></div> <span>QUP_CORE</span>
+            <div id="led-core" class="led"></div> <span>QUP_CORE.js</span>
         </div>
         <div class="status-item">
-            <div id="led-rcv" class="led"></div> <span>RECEIVER</span>
+            <div id="led-rcv" class="led"></div> <span>RECEIVER.js</span>
         </div>
     </div>
 
@@ -74,14 +70,13 @@
             <canvas id="radar-canvas"></canvas>
             <img id="tv-image">
             <video id="tv-video" controls autoplay></video>
-            <div id="placeholder" style="color:#111; z-index:0">SYSTEM READY</div>
         </div>
 
         <div class="panel">
-            <div id="chat-box">>> نظام QUP متصل...</div>
+            <div id="chat-box">>> جاري فحص تكامل النظام...</div>
             <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="أدخل رسالتك...">
-                <button id="sendMsgBtn" class="btn-send-chat">إرسال</button>
+                <input type="text" id="chatInput" placeholder="النظام مقفل...">
+                <button id="sendMsgBtn">إرسال</button>
             </div>
             
             <input type="file" id="fileInput" style="display: none;">
@@ -95,8 +90,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // إعدادات Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAZs0bb_t-bzMtaJqy_W_QDBSdQKHLEiD4",
             authDomain: "ziedzizou-7b74d.firebaseapp.com",
@@ -110,112 +106,57 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
-        const chatRef = ref(db, 'QUP_CHAT');
+        
+        // ربط المتغيرات عالمياً لكي تستخدمها الملفات الخارجية فقط
+        window.db = db;
+        window.counter = document.getElementById('main-counter');
 
         const ledFb = document.getElementById('led-fb');
         const ledCore = document.getElementById('led-core');
         const ledRcv = document.getElementById('led-rcv');
-        const counter = document.getElementById('main-counter');
-        const chatBox = document.getElementById('chat-box');
 
-        // --- مراقبة الاتصال والملفات ---
+        // 1. فحص اتصال فيربايس الحقيقي
         onValue(ref(db, ".info/connected"), (snap) => {
             if (snap.val() === true) {
-                ledFb.style.backgroundColor = "#2ecc71";
+                ledFb.style.background = "#2ecc71";
                 ledFb.style.boxShadow = "0 0 10px #2ecc71";
-                // عند تفعيل فيربايس، نفترض أن الملفات جاهزة للاستدعاء
-                ledCore.style.backgroundColor = "#3498db";
-                ledRcv.style.backgroundColor = "#3498db";
-                addToChat("SYS", "نظام الإرسال والاستقبال جاهز.");
+            } else {
+                ledFb.style.background = "red";
             }
         });
 
-        // --- نظام الدردشة ---
-        document.getElementById('sendMsgBtn').onclick = sendMessage;
-        document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
+        // 2. استدعاء الملفات الخارجية (الواجهة ستموت بدونها)
+        try {
+            // استدعاء محرك الإرسال
+            import('./QUP_Core.js').then(module => {
+                window.QUP_Core = module.QUP_Core;
+                ledCore.style.background = "#2ecc71";
+                ledCore.style.boxShadow = "0 0 10px #2ecc71";
+                // تفعيل زر الإرسال فقط عند نجاح تحميل الملف
+                document.getElementById('sendBtn').onclick = () => {
+                    const file = document.getElementById('fileInput').files[0];
+                    if (file) window.QUP_Core.transmit(file);
+                };
+            }).catch(() => { ledCore.style.background = "red"; });
 
-        function sendMessage() {
-            const msg = document.getElementById('chatInput').value;
-            if(msg) {
-                push(chatRef, { user: "USER", text: msg, time: Date.now() });
-                document.getElementById('chatInput').value = "";
-            }
-        }
+            // استدعاء محرك الاستقبال والدردشة الخارجي
+            import('./QUP_Receiver_Ultimate.js').then(module => {
+                ledRcv.style.background = "#2ecc71";
+                ledRcv.style.boxShadow = "0 0 10px #2ecc71";
+                // هنا يفترض أن الملف الخارجي هو من يدير دالة الإرسال والدردشة
+            }).catch(() => { ledRcv.style.background = "red"; });
 
-        onValue(chatRef, (snap) => {
-            chatBox.innerHTML = "";
-            snap.forEach(child => {
-                const data = child.val();
-                addToChat(data.user, data.text);
-            });
-        });
+        } catch(e) { console.error("Integrity Error"); }
 
-        function addToChat(user, msg) {
-            chatBox.innerHTML += `<div><span style="color:#888">[${user}]:</span> ${msg}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        // --- محرك الإرسال (المرسل) ---
+        // معاينة الصور للمرسل فقط (محلي)
         document.getElementById('fileInput').onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
-                // عرض الصورة فوراً للمرسل
                 const url = URL.createObjectURL(file);
-                const isVideo = file.type.startsWith('video/');
                 document.getElementById('tv-image').src = url;
-                document.getElementById('tv-image').style.display = isVideo ? 'none' : 'block';
-                document.getElementById('tv-video').style.display = isVideo ? 'block' : 'none';
-                if(isVideo) document.getElementById('tv-video').src = url;
-                addToChat("CORE", `تم تجهيز الملف: ${file.name}`);
+                document.getElementById('tv-image').style.display = "block";
             }
         };
-
-        const QUP_Core = {
-            async transmit(file) {
-                ledCore.style.backgroundColor = "#39ff14";
-                const rawData = new Uint8Array(await file.arrayBuffer());
-                await set(streamRef, { t: 'GENESIS', name: file.name, size: rawData.length, sid: Date.now() });
-                
-                for (let i = 0; i < rawData.length; i += 1000) {
-                    counter.innerText = i.toString().padStart(6, '0');
-                    await set(streamRef, { d: `${i}:${rawData[i]}`, t: 'DATA' });
-                }
-                await set(streamRef, { t: 'TERMINATE' });
-                ledCore.style.backgroundColor = "#3498db";
-            }
-        };
-
-        // --- محرك الاستقبال (المستقبل) ---
-        onValue(streamRef, (snap) => {
-            const data = snap.val();
-            if (!data) return;
-            ledRcv.style.backgroundColor = "#39ff14";
-            if (data.t === 'DATA') {
-                counter.innerText = data.d.split(':')[0].padStart(6, '0');
-                drawRadar();
-            }
-            if (data.t === 'TERMINATE') ledRcv.style.backgroundColor = "#3498db";
-        });
-
-        function drawRadar() {
-            const canvas = document.getElementById('radar-canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = "rgba(57, 255, 20, 0.2)";
-            ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 3, 3);
-        }
-
-        document.getElementById('sendBtn').onclick = () => {
-            const file = document.getElementById('fileInput').files[0];
-            if (file) QUP_Core.transmit(file);
-        };
-
-        document.getElementById('clearBtn').onclick = () => {
-            remove(streamRef);
-            remove(chatRef);
-            location.reload();
-        };
-
     </script>
 </body>
 </html>
