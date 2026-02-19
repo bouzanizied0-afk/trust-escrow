@@ -1,10 +1,10 @@
 // --- [QUP-ULTIMATE: The Radar Receiver] ---
-import { getDatabase, ref, onValue } from "firebase/database";
+import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-const db = getDatabase();
+const db = window.db;
 const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
 
-const QUP_Receiver = {
+export const QUP_Receiver = {
     engine: { buffer: null, sid: null, lock: null, name: null, seed: null },
 
     init() {
