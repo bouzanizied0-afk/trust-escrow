@@ -54,15 +54,17 @@ const QUP_Source = {
         return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     },
 
-            inject(d, sid, step) { 
+                inject(d, sid, step) { 
         // 1. إرسال البيانات للسحابة
-        window.fbSet(window.streamRef, { d, sid, step, t: 'INJECT' }); 
+        if (window.fbSet && window.streamRef) {
+            window.fbSet(window.streamRef, { d, sid, step, t: 'INJECT' }); 
+        }
 
-        // 2. تحريك العداد
+        // 2. تحديث العداد (هذا ما يبحث عنه المحلل)
         if (window.updateProgressPulse) {
             window.updateProgressPulse(1); 
         }
-    } // إغلاق دالة inject سليم هنا
+    } 
 }; // <--- إغلاق الكائن النهائي (QUP_Source) يجب أن يكون هنا
 
 // الآن نضع "الجاسوس" خارج الكائن ليعمل فور تحميل الملف
