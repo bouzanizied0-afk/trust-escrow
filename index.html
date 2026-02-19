@@ -169,16 +169,67 @@
         };
 
         document.getElementById('fileInput').onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('sendBtn').disabled = false;
-                window.logToChat(`جاهز للبث: ${file.name}`);
+    const file = e.target.files[0];
+    
+    if (file) {
+        // 1. إظهار المعاينة الفورية للصورة
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const display = document.getElementById('displayScreen');
+            if (display) {
+                display.src = event.target.result;
+                display.style.display = 'block'; 
+                
+                // إخفاء نص "بانتظار الملف" إن وجد
+                const placeholder = document.getElementById('placeholderText');
+                if (placeholder) placeholder.style.display = 'none';
             }
         };
+        reader.readAsDataURL(file);
+
+        // 2. تفعيل زر الإرسال وتجهيز الواجهة
+        document.getElementById('sendBtn').disabled = false;
+        
+        // إذا كان لديك نظام دردشة أو سجل أحداث
+        if (window.logToChat) {
+            window.logToChat(`✅ تم التحميل: ${file.name}`);
+        } else {
+            console.log(`جاهز للبث: ${file.name}`);
+        }
+    }
+};
+
     </script>
 
-    <script src="mouhark.js"></script>
-    <script src="moursel.js"></script>
-    <script src="mostaqbel.js"></script>
+       <script src="Mouhark.js"></script>
+    <script src="Moursel.js"></script>
+    <script src="Mostaqbel.js"></script>
+
+    <script>
+    (function() {
+        const diagDiv = document.createElement('div');
+        // تنسيق اللوحة لتظهر بشكل احترافي في الزاوية
+        diagDiv.style = "position:fixed; bottom:10px; left:10px; background:rgba(0,0,0,0.9); color:#00f2ff; padding:12px; font-family:monospace; font-size:11px; border:1px solid #00f2ff; border-radius:5px; z-index:9999; box-shadow: 0 0 10px #00f2ff; pointer-events:none; line-height:1.5;";
+        diagDiv.id = "qup-diag";
+        document.body.appendChild(diagDiv);
+
+        setInterval(() => {
+            const report = {
+                "📡 FIREBASE": window.streamRef ? "READY" : "OFFLINE",
+                "⚙️ ENGINE": window.QUP_Source ? "ACTIVE" : "MISSING",
+                "📥 SINK": window.QUP_Sink ? "ACTIVE" : "MISSING",
+                "🚀 STATUS": window.fbSet ? "CONNECTED" : "ERR: NO_PATH",
+                "⏱️ LAST": window.lastPulseType || "WAITING..."
+            };
+            
+            diagDiv.innerHTML = "<b style='color:#ff3131'>[QUP DIAGNOSTIC V1]</b><br>" + 
+                Object.entries(report).map(([k, v]) => {
+                    let color = v.includes("READY") || v.includes("ACTIVE") || v.includes("CONNECTED") ? "#00ff41" : "#ff3131";
+                    return `${k}: <span style="color:${color}">${v}</span>`;
+                }).join('<br>');
+        }, 800);
+    })();
+    </script>
+
 </body>
 </html>
