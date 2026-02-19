@@ -54,15 +54,22 @@ const QUP_Source = {
         return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     },
 
-        inject(d, sid, step) { 
-        // 1. إرسال البيانات للسحابة (الأمر الأصلي)
+            inject(d, sid, step) { 
+        // 1. إرسال البيانات للسحابة
         window.fbSet(window.streamRef, { d, sid, step, t: 'INJECT' }); 
 
-        // 2. تحريك العداد (يجب أن يكون هنا بالداخل ليعمل مع كل نبضة)
+        // 2. تحريك العداد
         if (window.updateProgressPulse) {
             window.updateProgressPulse(1); 
         }
-    } // إغلاق الدالة
-}; // إغلاق الكائن النهائي
+    } // إغلاق دالة inject سليم هنا
+}; // <--- إغلاق الكائن النهائي (QUP_Source) يجب أن يكون هنا
 
-        
+// الآن نضع "الجاسوس" خارج الكائن ليعمل فور تحميل الملف
+(function() {
+    window.engineStatus = "LOADED";
+    // تعريف يدوي للتأكد من الرؤية العالمية
+    window.QUP_Source = QUP_Source; 
+    alert("✅ المحرك: تم تحميل ملف mouhark.js بنجاح");
+})();
+
