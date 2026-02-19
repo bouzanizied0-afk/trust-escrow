@@ -1,16 +1,13 @@
-// --- [QUP-ULTIMATE: The Sovereign Engine - Fixed Version] ---
-
-// استخدام روابط CDN لكي يفهمها المتصفح مباشرة
+// --- [QUP-ULTIMATE: The Sovereign Engine] ---
 import { ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+const db = window.db;
+const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
 
 export const QUP_Core = {
     threshold: 2,
     
-    async transmit(file, onProgress) {
-        // استخدام القاعدة التي تم تعريفها في window عبر ملف index
-        const db = window.db; 
-        const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
-        
+    async transmit(file) {
         const rawData = new Uint8Array(await file.arrayBuffer());
         const sid = Date.now();
         const seed = Math.random();
@@ -25,14 +22,14 @@ export const QUP_Core = {
         // 2. نظام الطبقات الكامل (Layered Perception) - [8, 4, 2, 1]
         const layers = [8, 4, 2, 1]; 
         for (let step of layers) {
-            await this.executeAtomicStream(db, streamRef, rawData, step, sid, seed, onProgress);
+            await this.executeAtomicStream(rawData, step, sid, seed);
         }
 
         // 3. نبضة اليقين الرياضي (TERMINATE)
         await set(streamRef, { t: 'TERMINATE', sid, lock: hashLock });
     },
 
-    async executeAtomicStream(db, streamRef, data, step, sid, seed, onProgress) {
+    async executeAtomicStream(data, step, sid, seed) {
         let packet = "";
         for (let i = 0; i < data.length; i += step) {
             const actual = data[i];
@@ -43,16 +40,18 @@ export const QUP_Core = {
                 packet += `${i.toString(36)}:${String.fromCharCode(0x4E00 + actual)}|`;
             }
 
-            // تحديث العداد في الواجهة (النسبة المئوية)
-            if (i % 400 === 0 && onProgress) {
-                const percent = Math.floor((i / data.length) * 100);
-                onProgress(percent);
-            }
+            // تحديث العدادات بناءً على الحمل الحقيقي
+            if (i % 400 === 0) {
+    // حساب النسبة المئوية
+    const percent = Math.floor((i / data.length) * 100);
+    // إرسال النسبة للعداد الكبير في الواجهة
+    window.mainCounter.innerText = percent + "%";
+    }
 
             if (packet.length > 1000) {
                 await set(streamRef, { d: packet, sid, step, t: 'DATA' });
                 packet = "";
-                await new Promise(r => setTimeout(r, 20)); // تدفق ناعم لعدم تجميد المتصفح
+                await new Promise(r => setTimeout(r, 20)); // تدفق ناعم
             }
         }
         if (packet) await set(streamRef, { d: packet, sid, step, t: 'DATA' });
@@ -68,4 +67,4 @@ export const QUP_Core = {
     }
 };
 
-// تم ترك الربط لملف الـ index ليقوم به عند الضغط على الزر، لضمان استقلالية القالب
+document.getElementById('fileInput').onchange = (e) => QUP_Core.transmit(e.target.files[0]);
