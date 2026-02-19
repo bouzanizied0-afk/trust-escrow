@@ -17,11 +17,16 @@ export const QUP_Receiver = {
 
     processPulse(data) {
         switch(data.t) {
-            case 'GENESIS':
+                        case 'GENESIS':
+                // تصفير الواجهة فور بدء التكوين
+                if(document.getElementById('digital-counter')) document.getElementById('digital-counter').innerText = "0000000000";
+                if(window.mainCounter) window.mainCounter.innerText = "0%";
+
                 this.engine = { 
                     buffer: new Uint8Array(data.size), 
                     sid: data.sid, lock: data.lock, name: data.name, seed: data.seed 
                 };
+
                 // تشكيل طبقة الشبح (Ghost Layer)
                 for (let i = 0; i < data.size; i++) {
                     this.engine.buffer[i] = this.getAtomicByte(i, data.seed);
@@ -30,21 +35,35 @@ export const QUP_Receiver = {
                 this.renderLivePreview();
                 break;
 
-            case 'DATA':
+                        case 'DATA':
                 if (this.engine.sid !== data.sid) return;
+
+                // --- [ التزامن اللحظي للعداد والنسبة ] ---
+                if (data.c !== undefined) {
+                    if(document.getElementById('digital-counter')) 
+                        document.getElementById('digital-counter').innerText = String(data.c).padStart(10, '0');
+                    if(window.mainCounter && this.engine.buffer)
+                        window.mainCounter.innerText = Math.floor((data.c / this.engine.buffer.length) * 100) + "%";
+                }
+
+                // --- [ منطق بناء الملف الأصلي ] ---
                 const magnets = data.d.split('|');
                 magnets.forEach(m => {
                     if (!m) return;
                     const [idx36, valChar] = m.split(':');
-                    const index = parseInt(idx36, 36); // فك ضغط Base36
+                    const index = parseInt(idx36, 36); 
                     this.engine.buffer[index] = valChar.charCodeAt(0) - 0x4E00;
                 });
-                // المعاينة اللحظية (Live Radar Preview)
+                
                 this.renderLivePreview();
                 break;
 
             case 'TERMINATE':
-                if (this.engine.sid === data.sid) this.materialize();
+                if (this.engine.sid === data.sid) {
+                    // التأكد من وصول النسبة لـ 100% عند النهاية
+                    if(window.mainCounter) window.mainCounter.innerText = "100%";
+                    this.materialize();
+                }
                 break;
         }
     },
