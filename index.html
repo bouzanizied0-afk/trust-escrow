@@ -22,9 +22,13 @@
         #messages { flex-grow: 1; padding: 15px; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 0.85rem; background: rgba(0,0,0,0.3); color: #aaa; }
         .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--neon-red); transition: 0.3s; }
         .dot.online { background: var(--neon-green); box-shadow: 0 0 20px var(--neon-green); }
-        .btn { padding: 15px 35px; background: #000; border: 1px solid var(--neon-blue); color: var(--neon-blue); cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn:hover:not(:disabled) { background: var(--neon-blue); color: #000; }
+        
+        /* تأثير الإشعاع عند الضغط */
+        .btn { padding: 15px 35px; background: #000; border: 1px solid var(--neon-blue); color: var(--neon-blue); cursor: pointer; font-weight: bold; transition: 0.2s; outline: none; }
+        .btn:hover:not(:disabled) { background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 15px var(--neon-blue); }
+        .btn:active { transform: scale(0.95); box-shadow: 0 0 25px white; }
         .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
         #displayScreen { max-width: 95%; max-height: 95%; display: none; border: 1px solid var(--neon-blue); box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
         .bottom-controls { margin-top: 20px; display: flex; gap: 20px; align-items: center; }
     </style>
@@ -55,7 +59,7 @@
             <div id="messages"></div>
             <div style="padding: 10px; background: #111; display: flex; gap:5px;">
                 <input type="text" id="msgInput" placeholder="Enter Command..." style="flex:1; background:#000; color:var(--neon-green); border:1px solid #333; padding:10px; outline:none;">
-                <button id="sendMsgBtn" class="btn" style="padding:10px 20px;">بث</button>
+                <button id="sendMsgBtn" class="btn" style="padding:10px 20px; border-color:var(--neon-green); color:var(--neon-green);">بث</button>
             </div>
         </div>
     </div>
@@ -68,7 +72,6 @@
     </div>
 
     <script type="module">
-        // أضفنا remove هنا
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
@@ -119,10 +122,10 @@
 
         onValue(pulseRef, (snapshot) => {
             const data = snapshot.val();
-            // إذا كانت البيانات محذوفة من فيرباس (null)، صفر الواجهة تلقائياً للطرفين
             if (!data) {
                 document.getElementById('progressStatus').innerText = "0%";
                 document.getElementById('displayScreen').style.display = 'none';
+                document.getElementById('videoScreen').style.display = 'none';
                 document.getElementById('placeholderText').style.display = 'block';
                 return;
             }
@@ -131,29 +134,36 @@
             }
         });
 
-        // برمجة زر تطهير السحابة
+        // زر الدردشة (بث الأوامر)
+        document.getElementById('sendMsgBtn').onclick = () => {
+            const input = document.getElementById('msgInput');
+            if(input.value.trim() !== "") {
+                window.logToChat(`<span style="color:var(--neon-blue)">COMMAND:</span> ${input.value}`);
+                // هنا يمكنك ربط فيرباس لإرسال نصوص الدردشة أيضاً
+                input.value = "";
+            }
+        };
+
+        // زر تطهير السحابة
         document.getElementById('clearCloudBtn').onclick = async () => {
             try {
-                // حذف البيانات من فيرباس تماماً
                 await remove(pulseRef);
-                
-                // تنظيف الواجهة المحلية
                 document.getElementById('displayScreen').src = "";
                 document.getElementById('displayScreen').style.display = 'none';
                 document.getElementById('placeholderText').style.display = 'block';
                 document.getElementById('messages').innerHTML = "";
                 document.getElementById('rotaryCounter').innerText = "CLOCK: 0000000000";
-                
-                window.logToChat("<span style='color:var(--neon-red)'>🚨 تم حذف المصفوفة نهائياً من السحابة وتصفير الرادار.</span>");
+                window.logToChat("<span style='color:var(--neon-red)'>🚨 تم تطهير السحابة وتصفير الرادار.</span>");
             } catch (e) {
-                window.logToChat("❌ خطأ في عملية الحذف: " + e.message);
+                window.logToChat("❌ خطأ: " + e.message);
             }
         };
 
+        // زر إطلاق النبضة
         document.getElementById('sendBtn').onclick = () => {
             const fileInput = document.getElementById('fileInput');
             if (window.QUP_Source && fileInput.files[0]) {
-                window.logToChat("<span style='color:var(--neon-blue)'>جاري تفتيت الكتلة وإطلاق النبضات...</span>");
+                window.logToChat("<span style='color:var(--neon-blue)'>🚀 تفتيت المصفوفة.. إطلاق النبضات!</span>");
                 window.QUP_Source.transmit(fileInput.files[0]);
             }
         };
@@ -162,7 +172,7 @@
             const file = e.target.files[0];
             if (file) {
                 document.getElementById('sendBtn').disabled = false;
-                window.logToChat(`الملف جاهز: ${file.name}`);
+                window.logToChat(`جاهز للبث: ${file.name}`);
             }
         };
     </script>
