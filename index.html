@@ -17,20 +17,25 @@
         .dashboard { background: var(--panel-bg); border: 1px solid var(--neon-blue); padding: 15px 30px; border-radius: 4px; box-shadow: var(--border-glow); width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .telemetry #progressStatus { font-size: 2.5rem; color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); font-weight: 900; }
         .main-container { display: grid; grid-template-columns: 1fr 380px; gap: 25px; width: 100%; max-width: 1200px; }
-        .canvas-section { background: #000; border: 2px solid #1a1a1a; border-radius: 4px; position: relative; min-height: 500px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .canvas-section { background: #000; border: 2px solid #1a1a1a; border-radius: 4px; position: relative; min-height: 500px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: inset 0 0 50px rgba(0,242,255,0.1); }
         .chat-section { background: var(--panel-bg); border: 1px solid #222; display: flex; flex-direction: column; height: 550px; border-top: 3px solid var(--neon-blue); }
         #messages { flex-grow: 1; padding: 15px; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 0.85rem; background: rgba(0,0,0,0.3); color: #aaa; }
         .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--neon-red); transition: 0.3s; }
         .dot.online { background: var(--neon-green); box-shadow: 0 0 20px var(--neon-green); }
         
-        /* تأثير الإشعاع عند الضغط */
-        .btn { padding: 15px 35px; background: #000; border: 1px solid var(--neon-blue); color: var(--neon-blue); cursor: pointer; font-weight: bold; transition: 0.2s; outline: none; }
-        .btn:hover:not(:disabled) { background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 15px var(--neon-blue); }
-        .btn:active { transform: scale(0.95); box-shadow: 0 0 25px white; }
-        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        /* أزرار محسنة بتأثيرات ضوئية قوية */
+        .btn { padding: 15px 35px; background: #000; border: 2px solid var(--neon-blue); color: var(--neon-blue); cursor: pointer; font-weight: bold; transition: 0.2s; outline: none; text-transform: uppercase; letter-spacing: 1px; }
+        .btn:hover:not(:disabled) { background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 20px var(--neon-blue); }
+        
+        /* تأثيرات الألوان عند الضغط Active */
+        #sendBtn:active { transform: scale(0.9); box-shadow: 0 0 40px var(--neon-green); background: var(--neon-green); color: #000; }
+        #clearCloudBtn:active { transform: scale(0.9); box-shadow: 0 0 40px var(--neon-red); background: var(--neon-red); color: #fff; }
+        #sendMsgBtn:active { transform: scale(0.9); box-shadow: 0 0 40px var(--neon-blue); background: var(--neon-blue); color: #000; }
+        .file-label:active { background: #fff; color: #000; }
 
-        #displayScreen { max-width: 95%; max-height: 95%; display: none; border: 1px solid var(--neon-blue); box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
+        #displayScreen, #videoScreen { max-width: 95%; max-height: 95%; display: none; border: 1px solid var(--neon-blue); box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); }
         .bottom-controls { margin-top: 20px; display: flex; gap: 20px; align-items: center; }
+        .btn:disabled { opacity: 0.2; cursor: not-allowed; border-color: #333; color: #333; }
     </style>
 </head>
 <body>
@@ -52,20 +57,20 @@
     <div class="main-container">
         <div class="canvas-section">
             <img id="displayScreen">
-            <video id="videoScreen" controls style="display:none; max-width:95%;"></video>
+            <video id="videoScreen" controls autoplay muted></video>
             <div id="placeholderText" style="color: #111; font-size: 5rem; font-weight: 900; user-select: none;">RADAR</div>
         </div>
         <div class="chat-section">
             <div id="messages"></div>
             <div style="padding: 10px; background: #111; display: flex; gap:5px;">
                 <input type="text" id="msgInput" placeholder="Enter Command..." style="flex:1; background:#000; color:var(--neon-green); border:1px solid #333; padding:10px; outline:none;">
-                <button id="sendMsgBtn" class="btn" style="padding:10px 20px; border-color:var(--neon-green); color:var(--neon-green);">بث</button>
+                <button id="sendMsgBtn" class="btn" style="padding:10px 20px; border-color:var(--neon-blue); color:var(--neon-blue);">بث</button>
             </div>
         </div>
     </div>
 
     <div class="bottom-controls">
-        <label for="fileInput" style="cursor:pointer; border:1px solid #fff; padding:15px; font-weight:bold;">📁 اختيار مصفوفة</label>
+        <label for="fileInput" class="file-label" style="cursor:pointer; border:2px solid #fff; padding:15px; font-weight:bold; transition: 0.2s;">📁 اختيار مصفوفة</label>
         <input type="file" id="fileInput" style="display:none;">
         <button id="sendBtn" class="btn" style="border-color:var(--neon-green); color:var(--neon-green);" disabled>إطلاق النبضة</button>
         <button id="clearCloudBtn" class="btn" style="border-color:var(--neon-red); color:var(--neon-red);">تطهير السحابة</button>
@@ -120,116 +125,77 @@
             }
         });
 
-        onValue(pulseRef, (snapshot) => {
-            const data = snapshot.val();
-            if (!data) {
-                document.getElementById('progressStatus').innerText = "0%";
-                document.getElementById('displayScreen').style.display = 'none';
-                document.getElementById('videoScreen').style.display = 'none';
-                document.getElementById('placeholderText').style.display = 'block';
-                return;
-            }
-            if (window.processIncomingPulse) {
-                window.processIncomingPulse(data);
-            }
-        });
+        // تشغيل المعاينة الذكية (صورة / فيديو)
+        document.getElementById('fileInput').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                const imgDisplay = document.getElementById('displayScreen');
+                const videoDisplay = document.getElementById('videoScreen');
+                const placeholder = document.getElementById('placeholderText');
 
-        // زر الدردشة (بث الأوامر)
+                if (placeholder) placeholder.style.display = 'none';
+
+                if (file.type.startsWith('video/')) {
+                    imgDisplay.style.display = 'none';
+                    videoDisplay.style.display = 'block';
+                    videoDisplay.src = url;
+                } else {
+                    videoDisplay.style.display = 'none';
+                    imgDisplay.style.display = 'block';
+                    imgDisplay.src = url;
+                }
+
+                document.getElementById('sendBtn').disabled = false;
+                window.logToChat(`✅ تم تحميل مصفوفة: ${file.name}`);
+            }
+        };
+
+        // الأوامر الأخرى باقية كما هي
         document.getElementById('sendMsgBtn').onclick = () => {
             const input = document.getElementById('msgInput');
             if(input.value.trim() !== "") {
                 window.logToChat(`<span style="color:var(--neon-blue)">COMMAND:</span> ${input.value}`);
-                // هنا يمكنك ربط فيرباس لإرسال نصوص الدردشة أيضاً
                 input.value = "";
             }
         };
 
-        // زر تطهير السحابة
         document.getElementById('clearCloudBtn').onclick = async () => {
             try {
                 await remove(pulseRef);
-                document.getElementById('displayScreen').src = "";
                 document.getElementById('displayScreen').style.display = 'none';
+                document.getElementById('videoScreen').style.display = 'none';
                 document.getElementById('placeholderText').style.display = 'block';
-                document.getElementById('messages').innerHTML = "";
-                document.getElementById('rotaryCounter').innerText = "CLOCK: 0000000000";
-                window.logToChat("<span style='color:var(--neon-red)'>🚨 تم تطهير السحابة وتصفير الرادار.</span>");
-            } catch (e) {
-                window.logToChat("❌ خطأ: " + e.message);
-            }
+                document.getElementById('progressStatus').innerText = "0%";
+                window.logToChat("<span style='color:var(--neon-red)'>🚨 تم تطهير السحابة.</span>");
+            } catch (e) { console.error(e); }
         };
 
-        // زر إطلاق النبضة
         document.getElementById('sendBtn').onclick = () => {
             const fileInput = document.getElementById('fileInput');
             if (window.QUP_Source && fileInput.files[0]) {
-                window.logToChat("<span style='color:var(--neon-blue)'>🚀 تفتيت المصفوفة.. إطلاق النبضات!</span>");
+                window.logToChat("<span style='color:var(--neon-blue)'>🚀 إطلاق النبضات!</span>");
                 window.QUP_Source.transmit(fileInput.files[0]);
             }
         };
-
-        document.getElementById('fileInput').onchange = (e) => {
-    const file = e.target.files[0];
-    
-    if (file) {
-        // 1. إظهار المعاينة الفورية للصورة
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const display = document.getElementById('displayScreen');
-            if (display) {
-                display.src = event.target.result;
-                display.style.display = 'block'; 
-                
-                // إخفاء نص "بانتظار الملف" إن وجد
-                const placeholder = document.getElementById('placeholderText');
-                if (placeholder) placeholder.style.display = 'none';
-            }
-        };
-        reader.readAsDataURL(file);
-
-        // 2. تفعيل زر الإرسال وتجهيز الواجهة
-        document.getElementById('sendBtn').disabled = false;
-        
-        // إذا كان لديك نظام دردشة أو سجل أحداث
-        if (window.logToChat) {
-            window.logToChat(`✅ تم التحميل: ${file.name}`);
-        } else {
-            console.log(`جاهز للبث: ${file.name}`);
-        }
-    }
-};
-
     </script>
 
-       <script src="mouhark.js"></script>
+    <script src="mouhark.js"></script>
     <script src="moursel.js"></script>
     <script src="mostaqbel.js"></script>
 
     <script>
     (function() {
         const diagDiv = document.createElement('div');
-        // تنسيق اللوحة لتظهر بشكل احترافي في الزاوية
-        diagDiv.style = "position:fixed; bottom:10px; left:10px; background:rgba(0,0,0,0.9); color:#00f2ff; padding:12px; font-family:monospace; font-size:11px; border:1px solid #00f2ff; border-radius:5px; z-index:9999; box-shadow: 0 0 10px #00f2ff; pointer-events:none; line-height:1.5;";
+        diagDiv.style = "position:fixed; bottom:10px; left:10px; background:rgba(0,0,0,0.9); color:#00f2ff; padding:12px; font-family:monospace; font-size:11px; border:1px solid #00f2ff; border-radius:5px; z-index:9999; pointer-events:none;";
         diagDiv.id = "qup-diag";
         document.body.appendChild(diagDiv);
-
         setInterval(() => {
-            const report = {
-                "📡 FIREBASE": window.streamRef ? "READY" : "OFFLINE",
-                "⚙️ ENGINE": window.QUP_Source ? "ACTIVE" : "MISSING",
-                "📥 SINK": window.QUP_Sink ? "ACTIVE" : "MISSING",
-                "🚀 STATUS": window.fbSet ? "CONNECTED" : "ERR: NO_PATH",
-                "⏱️ LAST": window.lastPulseType || "WAITING..."
-            };
-            
-            diagDiv.innerHTML = "<b style='color:#ff3131'>[QUP DIAGNOSTIC V1]</b><br>" + 
-                Object.entries(report).map(([k, v]) => {
-                    let color = v.includes("READY") || v.includes("ACTIVE") || v.includes("CONNECTED") ? "#00ff41" : "#ff3131";
-                    return `${k}: <span style="color:${color}">${v}</span>`;
-                }).join('<br>');
-        }, 800);
+            diagDiv.innerHTML = `<b style='color:#ff3131'>[QUP DIAGNOSTIC]</b><br>
+            ENGINE: ${window.QUP_Source ? "OK" : "NO"}<br>
+            SINK: ${window.QUP_Sink ? "OK" : "NO"}`;
+        }, 1000);
     })();
     </script>
-
 </body>
 </html>
