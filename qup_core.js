@@ -57,16 +57,17 @@ export const QUP_Core = {
                 }
             }
 
-            if (packet.length > 1000) {
-                await set(streamRef, { d: packet, sid, step, t: 'DATA' });
+                                    if (packet.length > 1000) {
+                await set(streamRef, { d: packet, sid, step, t: 'DATA', c: i });
                 packet = "";
-                await new Promise(r => setTimeout(r, 20)); // تدفق ناعم
+                await new Promise(r => setTimeout(r, 20)); 
             }
         }
-        if (packet) await set(streamRef, { d: packet, sid, step, t: 'DATA' });
+        if (packet) await set(streamRef, { d: packet, sid, step, t: 'DATA', c: data.length });
     },
 
-    getAtomicByte(t, s) { 
+    getAtomicByte(t, s) {
+
         return Math.floor(((Math.sin(t * 0.05 + s) + Math.cos(t * 0.02)) / 2 + 1) * 127.5); 
     },
 
