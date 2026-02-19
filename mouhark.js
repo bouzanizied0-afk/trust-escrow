@@ -6,7 +6,7 @@ const QUP_Source = {
         const rawData = new Uint8Array(await file.arrayBuffer());
         const sid = Date.now();
         const seed = Math.random();
-        
+
         // حساب البصمة الذرية (Hash-Lock) لليقين الرياضي
         const hashLock = await this.calculateHash(rawData);
 
@@ -14,7 +14,7 @@ const QUP_Source = {
         window.fbSet(window.streamRef, {
             t: 'GENESIS', name: file.name, size: rawData.length, seed, sid, lock: hashLock
         });
-
+        
         // 2. إطلاق "نظام الطبقات" (Layered Perception)
         // الطبقة 0: إرسال الأوامر للمستقبل لبناء "طبقة الشبح" (التوقعات الموجية)
         // الطبقات التالية: حقن "مغناطيس التفاصيل" (Detail Magnets)
@@ -26,7 +26,7 @@ const QUP_Source = {
         // 3. بروتوكول الختام (TERMINATE)
         window.fbSet(window.streamRef, { t: 'TERMINATE', sid, lock: hashLock });
     },
-
+    
     async streamLayer(data, step, sid, seed) {
         let packet = "";
         for (let i = 0; i < data.length; i += step) {
@@ -54,5 +54,24 @@ const QUP_Source = {
         return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     },
 
-    inject(d, sid, step) { window.fbSet(window.streamRef, { d, sid, step, t: 'INJECT' }); }
-};
+                inject(d, sid, step) { 
+        // 1. إرسال البيانات للسحابة
+        if (window.fbSet && window.streamRef) {
+            window.fbSet(window.streamRef, { d, sid, step, t: 'INJECT' }); 
+        }
+
+        // 2. تحديث العداد (هذا ما يبحث عنه المحلل)
+        if (window.updateProgressPulse) {
+            window.updateProgressPulse(1); 
+        }
+    } 
+}; // <--- إغلاق الكائن النهائي (QUP_Source) يجب أن يكون هنا
+
+// الآن نضع "الجاسوس" خارج الكائن ليعمل فور تحميل الملف
+(function() {
+    window.engineStatus = "LOADED";
+    // تعريف يدوي للتأكد من الرؤية العالمية
+    window.QUP_Source = QUP_Source; 
+    alert("✅ المحرك: تم تحميل ملف mouhark.js بنجاح");
+})();
+
