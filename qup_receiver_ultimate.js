@@ -1,107 +1,66 @@
-// --- [QUP-ULTIMATE: The Radar Receiver] ---
-import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-export const QUP_Receiver = {
-    engine: { buffer: null, sid: null, lock: null, name: null, seed: null },
-
-        init() {
-        const db = window.db;
-        const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
-
-        onValue(streamRef, (snapshot) => {
-            const data = snapshot.val();
-            if (!data) return;
-            this.processPulse(data);
-        });
+export const QUP_Translator = {
+    getSpatioTemporalClock(t, s) {
+        const val = Math.floor(((Math.sin(t * 0.05 + s) + Math.cos(t * 0.02)) / 2 + 1) * 127.5);
+        return { r: val, g: val, b: val };
     },
 
-    processPulse(data) {
-        switch(data.t) {
-                        case 'GENESIS':
-                // تصفير الواجهة فور بدء التكوين
-                if(document.getElementById('digital-counter')) document.getElementById('digital-counter').innerText = "0000000000";
-                if(window.mainCounter) window.mainCounter.innerText = "0%";
-
-                this.engine = { 
-                    buffer: new Uint8Array(data.size), 
-                    sid: data.sid, lock: data.lock, name: data.name, seed: data.seed 
-                };
-
-                // تشكيل طبقة الشبح (Ghost Layer)
-                for (let i = 0; i < data.size; i++) {
-                    this.engine.buffer[i] = this.getAtomicByte(i, data.seed);
-                }
-                // استدعاء الرادار فوراً لمعاينة "الشبح"
-                this.renderLivePreview(data);
-                break;
-
-                        case 'DATA':
-                if (this.engine.sid !== data.sid) return;
-
-                // --- [ التزامن اللحظي للعداد والنسبة ] ---
-                if (data.c !== undefined) {
-                    if(document.getElementById('digital-counter')) 
-                        document.getElementById('digital-counter').innerText = String(data.c).padStart(10, '0');
-                    if(window.mainCounter && this.engine.buffer)
-                        window.mainCounter.innerText = Math.floor((data.c / this.engine.buffer.length) * 100) + "%";
-                }
-
-                // --- [ منطق بناء الملف الأصلي ] ---
-                const magnets = data.d.split('|');
-                magnets.forEach(m => {
-                    if (!m) return;
-                    const [idx36, valChar] = m.split(':');
-                    const index = parseInt(idx36, 36); 
-                    this.engine.buffer[index] = valChar.charCodeAt(0) - 0x4E00;
-                });
-                
-                 this.renderLivePreview(data);
-                break;
-
-
-            case 'TERMINATE':
-                if (this.engine.sid === data.sid) {
-                    // التأكد من وصول النسبة لـ 100% عند النهاية
-                    if(window.mainCounter) window.mainCounter.innerText = "100%";
-                    this.materialize();
-                }
-                break;
-        }
-    },
-
-    renderLivePreview(data) {
-    // 1. الوصول للوحة الرسم (الكانفاس)
-    const canvas = document.getElementById('matrixCanvas');
-    if (!canvas || (!data.d && data.t !== 'GENESIS')) return;
-
-    const ctx = canvas.getContext('2d');
-
-    // 2. تفعيل المترجم: تحويل النبضة القادمة إلى بكسلات فوراً
-    // نرسل له الـ ctx والـ data التي تحتوي على (النبضة، العداد، والحجم)
-    QUP_Translator.translate(ctx, data);
-  },
-
-
-    getAtomicByte(t, s) { 
-        return Math.floor(((Math.sin(t * 0.05 + s) + Math.cos(t * 0.02)) / 2 + 1) * 127.5); 
-    },
-
-    async materialize() {
-        // التحقق من اليقين الرياضي (Hash-Lock)
-        const hashBuffer = await crypto.subtle.digest('SHA-256', this.engine.buffer);
-        const finalHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    translate(ctx, pulse) {
+        const { d: raw, step, c: clock, w, h, seed, t } = pulse;
         
-        if (finalHash === this.engine.lock) {
-            console.log("✅ التجسيد المادي مكتمل.");
-            const blob = new Blob([this.engine.buffer]);
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = this.engine.name;
-            a.click();
+        if (t === 'GENESIS') {
+            ctx.canvas.width = w;
+            ctx.canvas.height = h;
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, w, h);
+            return;
         }
-        this.purge();
+
+        let currentClk = clock - this.countTotalEntities(raw);
+        let i = 0;
+        while (i < (raw?.length || 0)) {
+            if (raw[i] === "S") { 
+                let end = raw.indexOf(".", i);
+                let count = parseInt(raw.substring(i + 1, end));
+                for (let s = 0; s < count; s++) {
+                    this.renderEntity(ctx, currentClk, step, w, -1, 0, 0, seed);
+                    currentClk++;
+                }
+                i = end + 1;
+            } 
+            else if (raw[i] === "X") { 
+                const val = raw.charCodeAt(i + 1) - 0x4E00;
+                this.renderEntity(ctx, currentClk, step, w, val, val, val, seed);
+                currentClk++;
+                i += 2; 
+            } else i++;
+        }
     },
 
-    purge() { this.engine = { buffer: null, sid: null }; }
-};
+    renderEntity(ctx, clk, step, w, r, g, b, s) {
+        const x = (clk % w);
+        const y = Math.floor(clk / w);
+        let fR, fG, fB;
+        if (r === -1) {
+            const pred = this.getSpatioTemporalClock(clk, s);
+            fR = pred.r; fG = pred.g; fB = pred.b;
+        } else {
+            fR = r; fG = g; fB = b;
+        }
+        ctx.fillStyle = `rgb(${fR},${fG},${fB})`;
+        ctx.fillRect(x, y, (step === 1 ? 1 : step + 0.5), (step === 1 ? 1 : step + 0.5));
+    },
 
-QUP_Receiver.init();
+    countTotalEntities(p) {
+        let total = 0, i = 0;
+        while(i < (p?.length || 0)) {
+            if(p[i] === 'S') {
+                let end = p.indexOf('.', i);
+                total += parseInt(p.substring(i+1, end));
+                i = end + 1;
+            } else if(p[i] === 'X') {
+                total += 1; i += 2;
+            } else i++;
+        }
+        return total;
+    }
+};
