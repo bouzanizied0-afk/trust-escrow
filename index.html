@@ -121,7 +121,7 @@
         const db = getDatabase(app);
         
         // تصدير المتغيرات للوصول إليها من الملفات الخارجية
-        window.db = db;
+             window.db = db;
         window.mainCounter = document.getElementById('main-counter');
         window.chatBox = document.getElementById('chat-box');
 
@@ -135,48 +135,37 @@
             if(snap.val()) ledFb.style.boxShadow = "0 0 10px #2ecc71";
         });
 
-        // 2. استيراد المحرك والمستقبل وربط الأزرار
-                // 2. استيراد المحرك والمستقبل وربط الأزرار
-        try {
-            // --- [ إضافة كود المترجم هنا ] ---
-            import('./qup_pulse_interpreter.js').then(m => {
+        // 2. ربط النظام وتشغيل المصابيح عند التحميل
+        window.addEventListener('load', () => {
+            // فحص المترجم
+            if (window.QUP_Translator) {
                 const ledIntp = document.getElementById('led-interpreter');
                 if (ledIntp) {
                     ledIntp.style.background = "#2ecc71";
                     ledIntp.style.boxShadow = "0 0 10px #2ecc71";
                 }
-                window.QUP_Translator = m.QUP_Translator;
-            }).catch(() => {
-                const ledIntp = document.getElementById('led-interpreter');
-                if (ledIntp) ledIntp.style.background = "red";
-            });
-
-            // ربط المحرك (Core)
-            import('./qup_core.js').then(m => {
+            }
+            // فحص المحرك وربط زر البث
+            if (window.QUP_Core) {
                 ledCore.style.background = "#2ecc71";
                 ledCore.style.boxShadow = "0 0 10px #2ecc71";
-                window.QUP_Core = m.QUP_Core;
-
-                // تفعيل زر بث النبضة
                 document.getElementById('sendBtn').onclick = () => {
                     const file = document.getElementById('fileInput').files[0];
                     if (file) {
-                        window.chatBox.innerHTML += `<div>>> جاري بث: ${file.name}...</div>`;
+                        window.chatBox.innerHTML += `<div>>> جاري بث النبضة: ${file.name}...</div>`;
                         window.QUP_Core.transmit(file);
                     } else {
-                        alert("اختر ملفاً أولاً عبر زر (رفع ملف)");
+                        alert("القائد، اختر ملفاً أولاً!");
                     }
                 };
-            }).catch(() => ledCore.style.background = "red");
-
-            // ربط المستقبل (Receiver)
-            import('./qup_receiver_ultimate.js').then(m => {
+            }
+            // فحص المستقبل وتشغيله
+            if (window.QUP_Receiver) {
                 ledRcv.style.background = "#2ecc71";
                 ledRcv.style.boxShadow = "0 0 10px #2ecc71";
-                if(m.QUP_Receiver && m.QUP_Receiver.init) m.QUP_Receiver.init();
-            }).catch(() => ledRcv.style.background = "red");
-
-        } catch(e) { console.error("خطأ في تحميل الوحدات:", e); }
+                if(window.QUP_Receiver.init) window.QUP_Receiver.init();
+            }
+        });
 
         // 3. نظام الدردشة السحابي
         const chatRef = ref(db, 'QUP_CHAT');
@@ -189,11 +178,13 @@
         };
         onValue(chatRef, (snap) => {
             const data = snap.val();
-            if(data) window.chatBox.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${data.text}</div>`;
-            window.chatBox.scrollTop = window.chatBox.scrollHeight;
+            if(data) {
+                window.chatBox.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${data.text}</div>`;
+                window.chatBox.scrollTop = window.chatBox.scrollHeight;
+            }
         });
 
-        // 4. زر الحذف النهائي (حذف السحاب)
+        // 4. زر تطهير السحاب
         document.getElementById('clearBtn').onclick = async () => {
             if(confirm("هل أنت متأكد من حذف جميع بيانات البث والدردشة؟")) {
                 await remove(ref(db, 'QUP_UNIVERSAL_STREAM'));
@@ -203,7 +194,7 @@
             }
         };
 
-        // 5. معاينة الوسائط المحلية عند الاختيار
+        // 5. معاينة الملفات المحلية
         document.getElementById('fileInput').onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -215,9 +206,13 @@
                 } else {
                     video.style.display="none"; img.style.display="block"; img.src=url;
                 }
-                window.chatBox.innerHTML += `<div>>> ملف جاهز: ${file.name}</div>`;
+                window.chatBox.innerHTML += `<div>>> ملف جاهز في غرفة الانتظار: ${file.name}</div>`;
             }
         };
     </script>
+            
+    <script src="qup_pulse_interpreter.js"></script>
+    <script src="qup_core.js"></script>
+    <script src="qup_receiver_ultimate.js"></script>
 </body>
 </html>
