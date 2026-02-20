@@ -23,7 +23,7 @@ export const QUP_Core = {
         await set(streamRef, { t: 'TERMINATE', sid, lock: hashLock });
     },
 
-    async executeAtomicStream(data, step, sid, seed, w, h) {
+        async executeAtomicStream(data, step, sid, seed, w, h) {
         let packet = "", skipCount = 0;
         for (let i = 0; i < data.length; i += step) {
             const actual = data[i];
@@ -36,12 +36,14 @@ export const QUP_Core = {
                 packet += `X${String.fromCharCode(0x4E00 + actual)}`;
             }
 
-            if (packet.length > 800) {
+            // --- التعديل يبدأ هنا ---
+            if (packet.length > 200 || i % 1000 === 0) { 
                 const pulse = { d: packet, sid, step, t: 'DATA', c: i, w, h, seed };
                 await this.sync(pulse);
                 packet = "";
-                await new Promise(r => setTimeout(r, 10));
+                await new Promise(r => setTimeout(r, 5)); 
             }
+            // --- التعديل ينتهي هنا ---
         }
         if (packet || skipCount > 0) {
             if (skipCount > 0) packet += `S${skipCount}.`;
