@@ -1,97 +1,68 @@
-// --- [QUP-ULTIMATE: The Sovereign Engine] ---
-import { ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-const db = window.db;
-const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
-
-export const QUP_Core = {
+// --- [QUP-CORE: THE TRANSMITTER] ---
+window.QUP_Core = {
     threshold: 2,
     
     async transmit(file) {
-                const rawData = new Uint8Array(await file.arrayBuffer());
+        // الوصول لقاعدة البيانات من النافذة العامة
+        const db = window.db;
+        const { ref, set } = window.FirebaseRTDB; // سنعتمد على التصدير الذي سنضعه في index
+        const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
+
+        const rawData = new Uint8Array(await file.arrayBuffer());
         if(document.getElementById('digital-counter')) document.getElementById('digital-counter').innerText = "0000000000";
         
         const sid = Date.now();
         const seed = Math.random();
         const hashLock = await this.calculateHash(rawData);
         
-        // 1. نبضة التكوين (The Genesis Pulse)
+        // 1. نبضة التكوين
         await set(streamRef, {
             t: 'GENESIS', name: file.name, size: rawData.length, 
             seed, sid, lock: hashLock
         });
 
-        // --- الرقابة البصرية للمرسل فوراً ---
         const canvas = document.getElementById('matrixCanvas');
-        if (canvas) {
-            // إبلاغ المترجم بفتح إطار الصورة عند المرسل فوراً
-            QUP_Translator.translate(canvas.getContext('2d'), { t: 'GENESIS' });
-        }
-        // ---------------------------------
+        const ctx = canvas ? canvas.getContext('2d') : null;
 
-        // 2. نظام الطبقات الكامل (Layered Perception) - [8, 4, 2, 1]
+        // 2. نظام الطبقات
         const layers = [8, 4, 2, 1]; 
         for (let step of layers) {
-            await this.executeAtomicStream(rawData, step, sid, seed);
+            let packet = "";
+            for (let i = 0; i < rawData.length; i += step) {
+                const actual = rawData[i];
+                const predicted = this.getAtomicByte(i, seed);
+                
+                if (Math.abs(actual - predicted) > this.threshold) {
+                    packet += `${i.toString(36)}:${String.fromCharCode(0x4E00 + actual)}|`;
+                }
+
+                if (i % 400 === 0) {
+                    const percent = Math.floor((i / rawData.length) * 100);
+                    window.mainCounter.innerText = percent + "%";
+                    if (document.getElementById('digital-counter')) {
+                        document.getElementById('digital-counter').innerText = String(i).padStart(10, '0');
+                    }
+                }
+
+                if (packet.length > 1000) {
+                    const pulse = { d: packet, sid, step, t: 'DATA', c: i };
+                    if (ctx && window.QUP_Translator) window.QUP_Translator.translate(ctx, pulse);
+                    await set(streamRef, pulse);
+                    packet = "";
+                    await new Promise(r => setTimeout(r, 10)); 
+                }
+            }
+            if (packet) {
+                const lastPulse = { d: packet, sid, step, t: 'DATA', c: rawData.length };
+                if (ctx && window.QUP_Translator) window.QUP_Translator.translate(ctx, lastPulse);
+                await set(streamRef, lastPulse);
+            }
         }
 
-        // 3. نبضة اليقين الرياضي (TERMINATE)
+        // 3. النهاية
         await set(streamRef, { t: 'TERMINATE', sid, lock: hashLock });
     },
 
-    async executeAtomicStream(data, step, sid, seed) {
-        let packet = "";
-        for (let i = 0; i < data.length; i += step) {
-            const actual = data[i];
-            const predicted = this.getAtomicByte(i, seed);
-            
-            if (Math.abs(actual - predicted) > this.threshold) {
-                // استخدام Base36 للضغط العالي وتقليل استهلاك البيانات
-                packet += `${i.toString(36)}:${String.fromCharCode(0x4E00 + actual)}|`;
-            }
-
-            // تحديث العدادات بناءً على الحمل الحقيقي
-                        if (i % 400 === 0) {
-                // حساب النسبة المئوية
-                const percent = Math.floor((i / data.length) * 100);
-                
-                // 1. تحديث النسبة المئوية
-                window.mainCounter.innerText = percent + "%";
-
-                // 2. تحديث العداد الرقمي (الأصفار) بالملي
-                const digitalCounter = document.getElementById('digital-counter');
-                if (digitalCounter) {
-                    digitalCounter.innerText = String(i).padStart(10, '0');
-                }
-            }
-
-                                                if (packet.length > 1000) {
-                // 1. تجميع النبضة في متغير واحد لسهولة التعامل
-                const pulse = { d: packet, sid, step, t: 'DATA', c: i };
-
-                // 2. أمر الرسم: اجعل المرسل يرى ما يرسله الآن
-                const canvas = document.getElementById('matrixCanvas');
-                if (canvas) {
-                    QUP_Translator.translate(canvas.getContext('2d'), pulse);
-                }
-
-                // 3. الإرسال الفعلي لـ Firebase
-                await set(streamRef, pulse);
-
-                packet = "";
-                await new Promise(r => setTimeout(r, 20)); 
-                }
-        } 
-
-                if (packet) {
-            const lastPulse = { d: packet, sid, step, t: 'DATA', c: data.length };
-            const canvas = document.getElementById('matrixCanvas');
-            if (canvas) QUP_Translator.translate(canvas.getContext('2d'), lastPulse);
-            
-            await set(streamRef, lastPulse);
-        }
-        },
-        
     getAtomicByte(t, s) {
         return Math.floor(((Math.sin(t * 0.05 + s) + Math.cos(t * 0.02)) / 2 + 1) * 127.5); 
     },
@@ -101,5 +72,3 @@ export const QUP_Core = {
         return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 };
-
-document.getElementById('fileInput').onchange = (e) => QUP_Core.transmit(e.target.files[0]);
