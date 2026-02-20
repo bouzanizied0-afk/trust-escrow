@@ -1,4 +1,3 @@
-القي اخر نظرة
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -56,19 +55,16 @@
     <div id="led-interpreter" class="led"></div> <span>PULSE_INTERPRETER</span>
     </div>
     <div class="status-bar">
-    <div class="status-item">
-        <div id="led-interpreter" class="led"></div> <span>qup_pulse_interpreter.js</span>
+        <div class="status-item">
+            <div id="led-fb" class="led"></div> <span>FIREBASE</span>
+        </div>
+        <div class="status-item">
+            <div id="led-core" class="led"></div> <span>qup_core.js</span>
+        </div>
+        <div class="status-item">
+            <div id="led-rcv" class="led"></div> <span>qup_receiver.js</span>
+        </div>
     </div>
-    <div class="status-item">
-        <div id="led-fb" class="led"></div> <span>FIREBASE</span>
-    </div>
-    <div class="status-item">
-        <div id="led-core" class="led"></div> <span>qup_core.js</span>
-    </div>
-    <div class="status-item">
-        <div id="led-rcv" class="led"></div> <span>qup_receiver_ultimate.js</span>
-    </div>
-</div>
 
 <div id="main-counter">0%</div>
 
@@ -219,12 +215,6 @@
                 window.chatBox.innerHTML += `<div>>> ملف جاهز: ${file.name}</div>`;
             }
         };
-        
-            </script>
-            
-        <script src="qup_pulse_interpreter.js"></script>
-<script src="qup_core.js"></script>
-<script src="qup_receiver_ultimate.js"></script>
     </script>
 </body>
 </html>
