@@ -1,4 +1,5 @@
 // --- [QUP-ULTIMATE: The Radar Receiver] ---
+import { QUP_Translator } from './QUP_Pulse_Interpreter.js';
 import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 export const QUP_Receiver = {
@@ -32,7 +33,7 @@ export const QUP_Receiver = {
                     this.engine.buffer[i] = this.getAtomicByte(i, data.seed);
                 }
                 // استدعاء الرادار فوراً لمعاينة "الشبح"
-                this.renderLivePreview();
+                this.renderLivePreview(data);
                 break;
 
                         case 'DATA':
@@ -55,8 +56,9 @@ export const QUP_Receiver = {
                     this.engine.buffer[index] = valChar.charCodeAt(0) - 0x4E00;
                 });
                 
-                this.renderLivePreview();
+                 this.renderLivePreview(data);
                 break;
+
 
             case 'TERMINATE':
                 if (this.engine.sid === data.sid) {
@@ -68,13 +70,18 @@ export const QUP_Receiver = {
         }
     },
 
-    renderLivePreview() {
-        // إذا كان الملف صورة، نقوم بحقن البيانات في Canvas لحظياً
-        // هذا هو "الرادار" الذي يظهر بناء الملف نبضة بنبضة
-        if (window.drawToCanvas) {
-            window.drawToCanvas(this.engine.buffer);
-        }
-    },
+    renderLivePreview(data) {
+    // 1. الوصول للوحة الرسم (الكانفاس)
+    const canvas = document.getElementById('matrixCanvas');
+    if (!canvas || (!data.d && data.t !== 'GENESIS')) return;
+
+    const ctx = canvas.getContext('2d');
+
+    // 2. تفعيل المترجم: تحويل النبضة القادمة إلى بكسلات فوراً
+    // نرسل له الـ ctx والـ data التي تحتوي على (النبضة، العداد، والحجم)
+    QUP_Translator.translate(ctx, data);
+  },
+
 
     getAtomicByte(t, s) { 
         return Math.floor(((Math.sin(t * 0.05 + s) + Math.cos(t * 0.02)) / 2 + 1) * 127.5); 
