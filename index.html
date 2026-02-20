@@ -72,7 +72,7 @@
 
     <div class="container">
         <div class="display-unit">
-            <canvas id="radar-canvas"></canvas>
+            <canvas id="matrixCanvas"></canvas>
             <img id="tv-image">
             <video id="tv-video" controls autoplay loop></video>
         </div>
@@ -133,7 +133,21 @@
         });
 
         // 2. استيراد المحرك والمستقبل وربط الأزرار
+                // 2. استيراد المحرك والمستقبل وربط الأزرار
         try {
+            // --- [ إضافة كود المترجم هنا ] ---
+            import('./qup_pulse_interpreter.js').then(m => {
+                const ledIntp = document.getElementById('led-interpreter');
+                if (ledIntp) {
+                    ledIntp.style.background = "#2ecc71";
+                    ledIntp.style.boxShadow = "0 0 10px #2ecc71";
+                }
+                window.QUP_Translator = m.QUP_Translator;
+            }).catch(() => {
+                const ledIntp = document.getElementById('led-interpreter');
+                if (ledIntp) ledIntp.style.background = "red";
+            });
+
             // ربط المحرك (Core)
             import('./qup_core.js').then(m => {
                 ledCore.style.background = "#2ecc71";
