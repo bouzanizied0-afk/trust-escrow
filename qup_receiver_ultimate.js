@@ -1,7 +1,5 @@
 // --- [QUP-ULTIMATE: The Radar Receiver] ---
-import { QUP_Translator } from './QUP_Pulse_Interpreter.js';
 import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
 export const QUP_Receiver = {
     engine: { buffer: null, sid: null, lock: null, name: null, seed: null },
 
