@@ -7,72 +7,78 @@ export const QUP_Receiver = {
     init() {
         onValue(ref(window.db, 'QUP_UNIVERSAL_STREAM'), (snapshot) => {
             const data = snapshot.val();
-            if (data) this.processPulse(data);
+            if (!data) return;
+            
+            // تحديث العدادات من أي نبضة تحتوي على تقدم
+            if (data.progress !== undefined) {
+                if(document.getElementById('digital-counter')) 
+                    document.getElementById('digital-counter').innerText = String(data.progress).padStart(10, '0');
+                if(window.mainCounter && data.total)
+                    window.mainCounter.innerText = Math.floor((data.progress / data.total) * 100) + "%";
+            }
+
+            this.processPulse(data);
         });
     },
 
     processPulse(data) {
-        switch(data.t) {
-            case 'GENESIS':
-                this.engine = { 
-                    buffer: new Uint8Array(data.size), 
-                    sid: data.sid, lock: data.lock, name: data.name, seed: data.seed 
-                };
-                // بناء الحالة الصفرية (الشبح)
-                for (let i = 0; i < data.size; i++) {
-                    this.engine.buffer[i] = Math.floor(((Math.sin(i * 0.05 + data.seed) + Math.cos(i * 0.02)) / 2 + 1) * 127.5);
-                }
-                this.renderLive(data);
-                break;
-
-            case 'DATA':
-                if (this.engine.sid !== data.sid) return;
-                this.reconstructBuffer(data);
-                this.renderLive(data);
-                break;
-
-            case 'TERMINATE':
-                if (this.engine.sid === this.engine.sid) this.materialize();
-                break;
+        if (data.t === 'GENESIS' && this.engine.sid !== data.sid) {
+            this.engine = { 
+                buffer: new Uint8Array(data.size), 
+                sid: data.sid, lock: data.lock, w: data.w, h: data.h, seed: data.seed 
+            };
+            QUP_Translator.translate(document.getElementById('matrixCanvas').getContext('2d'), data);
+        } 
+        else if (data.t === 'DATA' && this.engine.sid === data.sid) {
+            this.reconstructBuffer(data);
+            QUP_Translator.translate(document.getElementById('matrixCanvas').getContext('2d'), data);
+        }
+        else if (data.t === 'TERMINATE' && this.engine.sid) {
+            this.materialize();
         }
     },
 
     reconstructBuffer(pulse) {
         const raw = pulse.d;
-        let currentIdx = pulse.c - QUP_Translator.countTotalEntities(raw);
+        const step = pulse.step;
+        // المؤشر المنطقي في مصفوفة الطبقة الحالية
+        let logicalIdx = pulse.c - QUP_Translator.countTotalEntities(raw);
         let i = 0;
         while (i < raw.length) {
+            // الإحداثي الحقيقي في الملف النهائي
+            let actualIdx = logicalIdx * step;
             if (raw[i] === 'S') {
                 let end = raw.indexOf('.', i);
                 let count = parseInt(raw.substring(i + 1, end));
                 for (let s = 0; s < count; s++) {
-                    // البكسل مطابق للتوقع، نتركه كما هو في الـ buffer
-                    currentIdx++;
+                    // المزامنة: نكتب القيمة المتوقعة في الـ buffer الحقيقي
+                    let aIdx = (logicalIdx + s) * step;
+                    if(aIdx < this.engine.buffer.length) {
+                        this.engine.buffer[aIdx] = Math.floor(((Math.sin(aIdx * 0.05 + pulse.seed) + Math.cos(aIdx * 0.02)) / 2 + 1) * 127.5);
+                    }
                 }
+                logicalIdx += count;
                 i = end + 1;
             } else if (raw[i] === 'X') {
-                this.engine.buffer[currentIdx] = raw.charCodeAt(i + 1) - 0x4E00;
-                currentIdx++;
+                if(actualIdx < this.engine.buffer.length) {
+                    this.engine.buffer[actualIdx] = raw.charCodeAt(i + 1) - 0x4E00;
+                }
+                logicalIdx++;
                 i += 2;
             } else i++;
         }
-    },
-
-    renderLive(data) {
-        const canvas = document.getElementById('matrixCanvas');
-        if (canvas) QUP_Translator.translate(canvas.getContext('2d'), data);
-        if (window.mainCounter && this.engine.buffer) 
-            window.mainCounter.innerText = Math.floor((data.c / this.engine.buffer.length) * 100) + "%";
     },
 
     async materialize() {
         const hashBuffer = await crypto.subtle.digest('SHA-256', this.engine.buffer);
         const finalHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
         if (finalHash === this.engine.lock) {
+            const blob = new Blob([this.engine.buffer]);
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(new Blob([this.engine.buffer]));
-            a.download = "QUP_" + this.engine.name;
+            a.href = URL.createObjectURL(blob);
+            a.download = "QUP_RENDERED.png";
             a.click();
+            this.engine.sid = null; // تنظيف الجلسة
         }
     }
 };
