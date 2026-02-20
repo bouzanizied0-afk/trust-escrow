@@ -1,3 +1,4 @@
+القي اخر نظرة
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -55,16 +56,19 @@
     <div id="led-interpreter" class="led"></div> <span>PULSE_INTERPRETER</span>
     </div>
     <div class="status-bar">
-        <div class="status-item">
-            <div id="led-fb" class="led"></div> <span>FIREBASE</span>
-        </div>
-        <div class="status-item">
-            <div id="led-core" class="led"></div> <span>qup_core.js</span>
-        </div>
-        <div class="status-item">
-            <div id="led-rcv" class="led"></div> <span>qup_receiver.js</span>
-        </div>
+    <div class="status-item">
+        <div id="led-interpreter" class="led"></div> <span>qup_pulse_interpreter.js</span>
     </div>
+    <div class="status-item">
+        <div id="led-fb" class="led"></div> <span>FIREBASE</span>
+    </div>
+    <div class="status-item">
+        <div id="led-core" class="led"></div> <span>qup_core.js</span>
+    </div>
+    <div class="status-item">
+        <div id="led-rcv" class="led"></div> <span>qup_receiver_ultimate.js</span>
+    </div>
+</div>
 
 <div id="main-counter">0%</div>
 
@@ -135,46 +139,24 @@
         // 2. استيراد المحرك والمستقبل وربط الأزرار
                 // 2. استيراد المحرك والمستقبل وربط الأزرار
         try {
-// فحص وجود الملفات وتشغيل الأنوار
-setTimeout(() => {
-    // 1. فحص المترجم
-    const ledIntp = document.getElementById('led-interpreter');
-    if (window.QUP_Translator) {
-        ledIntp.style.background = "#2ecc71";
-        ledIntp.style.boxShadow = "0 0 10px #2ecc71";
-    } else {
-        ledIntp.style.background = "red";
-    }
+            // --- [ إضافة كود المترجم هنا ] ---
+            import('./qup_pulse_interpreter.js').then(m => {
+                const ledIntp = document.getElementById('led-interpreter');
+                if (ledIntp) {
+                    ledIntp.style.background = "#2ecc71";
+                    ledIntp.style.boxShadow = "0 0 10px #2ecc71";
+                }
+                window.QUP_Translator = m.QUP_Translator;
+            }).catch(() => {
+                const ledIntp = document.getElementById('led-interpreter');
+                if (ledIntp) ledIntp.style.background = "red";
+            });
 
-    // 2. فحص المحرك (Core)
-    if (window.QUP_Core) {
-        ledCore.style.background = "#2ecc71";
-        ledCore.style.boxShadow = "0 0 10px #2ecc71";
-        
-        // ربط زر البث فور التأكد من وجود المحرك
-        document.getElementById('sendBtn').onclick = () => {
-            const file = document.getElementById('fileInput').files[0];
-            if (file) {
-                window.chatBox.innerHTML += `<div>>> جاري بث: ${file.name}...</div>`;
-                window.QUP_Core.transmit(file);
-            } else {
-                alert("اختر ملفاً أولاً");
-            }
-        };
-    } else {
-        ledCore.style.background = "red";
-    }
-
-    // 3. فحص المستقبل (Receiver)
-    if (window.QUP_Receiver) {
-        ledRcv.style.background = "#2ecc71";
-        ledRcv.style.boxShadow = "0 0 10px #2ecc71";
-        if(window.QUP_Receiver.init) window.QUP_Receiver.init();
-    } else {
-        ledRcv.style.background = "red";
-    }
-}, 500); // تأخير بسيط لنصف ثانية لضمان تحميل الملفات بالكامل
-
+            // ربط المحرك (Core)
+            import('./qup_core.js').then(m => {
+                ledCore.style.background = "#2ecc71";
+                ledCore.style.boxShadow = "0 0 10px #2ecc71";
+                window.QUP_Core = m.QUP_Core;
 
                 // تفعيل زر بث النبضة
                 document.getElementById('sendBtn').onclick = () => {
@@ -237,6 +219,12 @@ setTimeout(() => {
                 window.chatBox.innerHTML += `<div>>> ملف جاهز: ${file.name}</div>`;
             }
         };
+        
+            </script>
+            
+        <script src="qup_pulse_interpreter.js"></script>
+<script src="qup_core.js"></script>
+<script src="qup_receiver_ultimate.js"></script>
     </script>
 </body>
 </html>
