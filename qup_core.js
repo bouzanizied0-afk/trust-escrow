@@ -1,4 +1,5 @@
 // --- [QUP-ULTIMATE: The Sovereign Engine] ---
+import { QUP_Translator } from './QUP_Pulse_Interpreter.js';
 import { ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const db = window.db;
@@ -14,12 +15,20 @@ export const QUP_Core = {
         const sid = Date.now();
         const seed = Math.random();
         const hashLock = await this.calculateHash(rawData);
-
+        
         // 1. نبضة التكوين (The Genesis Pulse)
         await set(streamRef, {
             t: 'GENESIS', name: file.name, size: rawData.length, 
             seed, sid, lock: hashLock
         });
+
+        // --- الرقابة البصرية للمرسل فوراً ---
+        const canvas = document.getElementById('matrixCanvas');
+        if (canvas) {
+            // إبلاغ المترجم بفتح إطار الصورة عند المرسل فوراً
+            QUP_Translator.translate(canvas.getContext('2d'), { t: 'GENESIS' });
+        }
+        // ---------------------------------
 
         // 2. نظام الطبقات الكامل (Layered Perception) - [8, 4, 2, 1]
         const layers = [8, 4, 2, 1]; 
@@ -57,17 +66,34 @@ export const QUP_Core = {
                 }
             }
 
-                                    if (packet.length > 1000) {
-                await set(streamRef, { d: packet, sid, step, t: 'DATA', c: i });
+                                                if (packet.length > 1000) {
+                // 1. تجميع النبضة في متغير واحد لسهولة التعامل
+                const pulse = { d: packet, sid, step, t: 'DATA', c: i };
+
+                // 2. أمر الرسم: اجعل المرسل يرى ما يرسله الآن
+                const canvas = document.getElementById('matrixCanvas');
+                if (canvas) {
+                    QUP_Translator.translate(canvas.getContext('2d'), pulse);
+                }
+
+                // 3. الإرسال الفعلي لـ Firebase
+                await set(streamRef, pulse);
+
                 packet = "";
                 await new Promise(r => setTimeout(r, 20)); 
-            }
+                }
+        } 
+
+                if (packet) {
+            const lastPulse = { d: packet, sid, step, t: 'DATA', c: data.length };
+            const canvas = document.getElementById('matrixCanvas');
+            if (canvas) QUP_Translator.translate(canvas.getContext('2d'), lastPulse);
+            
+            await set(streamRef, lastPulse);
         }
-        if (packet) await set(streamRef, { d: packet, sid, step, t: 'DATA', c: data.length });
-    },
-
+        },
+        
     getAtomicByte(t, s) {
-
         return Math.floor(((Math.sin(t * 0.05 + s) + Math.cos(t * 0.02)) / 2 + 1) * 127.5); 
     },
 
