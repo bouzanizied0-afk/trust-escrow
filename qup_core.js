@@ -1,57 +1,77 @@
-// --- [QUP-CORE: THE SOVEREIGN TRANSMITTER] ---
+// --- [QUP-ULTIMATE: The Sovereign Engine] ---
+import { ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+const Shared_Logic = {
+    predict(t, s) {
+        return Math.floor(((Math.sin(t * 0.05 + s) + Math.cos(t * 0.02)) / 2 + 1) * 127.5);
+    }
+};
+
 export const QUP_Core = {
+    threshold: 2,
+    
     async transmit(file) {
-        const db = window.db;
-        const { ref, set } = window.FirebaseRTDB;
-        const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
-        
         const rawData = new Uint8Array(await file.arrayBuffer());
         const sid = Date.now();
         const seed = Math.random();
-
-        // استخراج الأبعاد (نحتاج إرسالها للمترجم)
-        // ملاحظة: لتبسيط العرض نفترض عرضاً قياسياً أو نستخرجه من الصورة
-        const w = 800; // يمكنك استخراج العرض الحقيقي من ملف الصورة
+        const hashLock = await this.calculateHash(rawData);
+        
+        // الحصول على أبعاد افتراضية للكانفاس بناءً على حجم البيانات (أو أبعاد ثابتة)
+        const w = 800; 
         const h = Math.ceil(rawData.length / w);
 
-        await set(streamRef, {
+        // 1. نبضة التكوين (GENESIS) مع الأبعاد والـ Seed
+        await set(ref(window.db, 'QUP_UNIVERSAL_STREAM'), {
             t: 'GENESIS', name: file.name, size: rawData.length, 
-            seed, sid, w, h, lock: await this.calculateHash(rawData)
+            seed, sid, lock: hashLock, w, h
         });
 
-        const layers = [8, 4, 2, 1]; 
-        for (let step of layers) {
-            let packet = "";
-            let currentIdx = 0;
-            
-            for (let i = 0; i < rawData.length; i += step) {
-                const actual = rawData[i];
-                const pred = this.getSpatioTemporalClock(i); // نفس معادلة المترجم
-                
-                // إذا كان اللون قريباً من التوقع نرسل S (تزامن)
-                if (Math.abs(actual - pred.g) < 10) { 
-                    let skipCount = 1;
-                    packet += `S${skipCount}.`;
-                } else {
-                    // إرسال X (تجسيد صريح)
-                    packet += `X${String.fromCharCode(0x4E00 + actual)}${String.fromCharCode(0x5E00 + actual)}${String.fromCharCode(0x6E00 + actual)}`;
-                }
+        await this.executeAtomicStream(rawData, sid, seed, w, h);
 
-                if (packet.length > 500) {
-                    await set(streamRef, { d: packet, sid, step, t: 'DATA', c: i, w, h });
-                    packet = "";
-                    await new Promise(r => setTimeout(r, 15));
-                }
-            }
-        }
-        await set(streamRef, { t: 'TERMINATE', sid });
+        // 3. إنهاء الجلسة (TERMINATE)
+        await set(ref(window.db, 'QUP_UNIVERSAL_STREAM'), { t: 'TERMINATE', sid, lock: hashLock });
     },
 
-    // توحيد المعادلة مع المترجم
-    getSpatioTemporalClock(tick) {
-        return {
-            g: Math.floor((Math.cos(tick * 0.03) + 1) * 127.5)
-        };
+    async executeAtomicStream(data, sid, seed, w, h) {
+        let packet = "";
+        let skipCount = 0;
+        const streamRef = ref(window.db, 'QUP_UNIVERSAL_STREAM');
+
+        for (let i = 0; i < data.length; i++) {
+            const actual = data[i];
+            const predicted = Shared_Logic.predict(i, seed);
+            
+            if (Math.abs(actual - predicted) <= this.threshold) {
+                skipCount++;
+            } else {
+                if (skipCount > 0) {
+                    packet += `S${skipCount}.`;
+                    skipCount = 0;
+                }
+                // بروتوكول X: تجسيد القيمة الحقيقية بترميز يونيكود مضغوط
+                packet += `X${String.fromCharCode(0x4E00 + actual)}`;
+            }
+
+            // إرسال النبضة عند وصولها لحجم معين أو نهاية البيانات
+            if (packet.length > 800 || i === data.length - 1) {
+                if (skipCount > 0) { packet += `S${skipCount}.`; skipCount = 0; }
+                
+                const pulse = { d: packet, sid, t: 'DATA', c: i + 1, w, h };
+                
+                // تحديث الواجهة المحلية فوراً (المرسل يرى ما يرسل)
+                const canvas = document.getElementById('matrixCanvas');
+                if (canvas) QUP_Translator.translate(canvas.getContext('2d'), pulse, seed);
+
+                await set(streamRef, pulse);
+                packet = "";
+                await new Promise(r => setTimeout(r, 10)); // موازنة الضغط
+            }
+            
+            // تحديث العداد الرقمي
+            if (i % 1000 === 0 && window.mainCounter) {
+                window.mainCounter.innerText = Math.floor((i / data.length) * 100) + "%";
+            }
+        }
     },
 
     async calculateHash(data) {
@@ -59,3 +79,5 @@ export const QUP_Core = {
         return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 };
+
+document.getElementById('fileInput').onchange = (e) => QUP_Core.transmit(e.target.files[0]);
