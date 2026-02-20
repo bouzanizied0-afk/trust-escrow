@@ -1,77 +1,100 @@
+حسنا اليك الاكواد الثلاث وقلي بظبط هل المشكلة في الترجمة
 // --- [QUP-ULTIMATE: The Sovereign Engine] ---
 import { ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-const Shared_Logic = {
-    predict(t, s) {
-        return Math.floor(((Math.sin(t * 0.05 + s) + Math.cos(t * 0.02)) / 2 + 1) * 127.5);
-    }
-};
+const db = window.db;
+const streamRef = ref(db, 'QUP_UNIVERSAL_STREAM');
 
 export const QUP_Core = {
     threshold: 2,
     
     async transmit(file) {
-        const rawData = new Uint8Array(await file.arrayBuffer());
+                const rawData = new Uint8Array(await file.arrayBuffer());
+        if(document.getElementById('digital-counter')) document.getElementById('digital-counter').innerText = "0000000000";
+        
         const sid = Date.now();
         const seed = Math.random();
         const hashLock = await this.calculateHash(rawData);
         
-        // الحصول على أبعاد افتراضية للكانفاس بناءً على حجم البيانات (أو أبعاد ثابتة)
-        const w = 800; 
-        const h = Math.ceil(rawData.length / w);
-
-        // 1. نبضة التكوين (GENESIS) مع الأبعاد والـ Seed
-        await set(ref(window.db, 'QUP_UNIVERSAL_STREAM'), {
+        // 1. نبضة التكوين (The Genesis Pulse)
+        await set(streamRef, {
             t: 'GENESIS', name: file.name, size: rawData.length, 
-            seed, sid, lock: hashLock, w, h
+            seed, sid, lock: hashLock
         });
 
-        await this.executeAtomicStream(rawData, sid, seed, w, h);
+        // --- الرقابة البصرية للمرسل فوراً ---
+        const canvas = document.getElementById('matrixCanvas');
+        if (canvas) {
+            // إبلاغ المترجم بفتح إطار الصورة عند المرسل فوراً
+            QUP_Translator.translate(canvas.getContext('2d'), { t: 'GENESIS' });
+        }
+        // ---------------------------------
 
-        // 3. إنهاء الجلسة (TERMINATE)
-        await set(ref(window.db, 'QUP_UNIVERSAL_STREAM'), { t: 'TERMINATE', sid, lock: hashLock });
+        // 2. نظام الطبقات الكامل (Layered Perception) - [8, 4, 2, 1]
+        const layers = [8, 4, 2, 1]; 
+        for (let step of layers) {
+            await this.executeAtomicStream(rawData, step, sid, seed);
+        }
+
+        // 3. نبضة اليقين الرياضي (TERMINATE)
+        await set(streamRef, { t: 'TERMINATE', sid, lock: hashLock });
     },
 
-    async executeAtomicStream(data, sid, seed, w, h) {
+    async executeAtomicStream(data, step, sid, seed) {
         let packet = "";
-        let skipCount = 0;
-        const streamRef = ref(window.db, 'QUP_UNIVERSAL_STREAM');
-
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i += step) {
             const actual = data[i];
-            const predicted = Shared_Logic.predict(i, seed);
+            const predicted = this.getAtomicByte(i, seed);
             
-            if (Math.abs(actual - predicted) <= this.threshold) {
-                skipCount++;
-            } else {
-                if (skipCount > 0) {
-                    packet += `S${skipCount}.`;
-                    skipCount = 0;
+            if (Math.abs(actual - predicted) > this.threshold) {
+                // استخدام Base36 للضغط العالي وتقليل استهلاك البيانات
+                packet += `${i.toString(36)}:${String.fromCharCode(0x4E00 + actual)}|`;
+            }
+
+            // تحديث العدادات بناءً على الحمل الحقيقي
+                        if (i % 400 === 0) {
+                // حساب النسبة المئوية
+                const percent = Math.floor((i / data.length) * 100);
+                
+                // 1. تحديث النسبة المئوية
+                window.mainCounter.innerText = percent + "%";
+
+                // 2. تحديث العداد الرقمي (الأصفار) بالملي
+                const digitalCounter = document.getElementById('digital-counter');
+                if (digitalCounter) {
+                    digitalCounter.innerText = String(i).padStart(10, '0');
                 }
-                // بروتوكول X: تجسيد القيمة الحقيقية بترميز يونيكود مضغوط
-                packet += `X${String.fromCharCode(0x4E00 + actual)}`;
             }
 
-            // إرسال النبضة عند وصولها لحجم معين أو نهاية البيانات
-            if (packet.length > 800 || i === data.length - 1) {
-                if (skipCount > 0) { packet += `S${skipCount}.`; skipCount = 0; }
-                
-                const pulse = { d: packet, sid, t: 'DATA', c: i + 1, w, h };
-                
-                // تحديث الواجهة المحلية فوراً (المرسل يرى ما يرسل)
+                                                if (packet.length > 1000) {
+                // 1. تجميع النبضة في متغير واحد لسهولة التعامل
+                const pulse = { d: packet, sid, step, t: 'DATA', c: i };
+
+                // 2. أمر الرسم: اجعل المرسل يرى ما يرسله الآن
                 const canvas = document.getElementById('matrixCanvas');
-                if (canvas) QUP_Translator.translate(canvas.getContext('2d'), pulse, seed);
+                if (canvas) {
+                    QUP_Translator.translate(canvas.getContext('2d'), pulse);
+                }
 
+                // 3. الإرسال الفعلي لـ Firebase
                 await set(streamRef, pulse);
+
                 packet = "";
-                await new Promise(r => setTimeout(r, 10)); // موازنة الضغط
-            }
+                await new Promise(r => setTimeout(r, 20)); 
+                }
+        } 
+
+                if (packet) {
+            const lastPulse = { d: packet, sid, step, t: 'DATA', c: data.length };
+            const canvas = document.getElementById('matrixCanvas');
+            if (canvas) QUP_Translator.translate(canvas.getContext('2d'), lastPulse);
             
-            // تحديث العداد الرقمي
-            if (i % 1000 === 0 && window.mainCounter) {
-                window.mainCounter.innerText = Math.floor((i / data.length) * 100) + "%";
-            }
+            await set(streamRef, lastPulse);
         }
+        },
+        
+    getAtomicByte(t, s) {
+        return Math.floor(((Math.sin(t * 0.05 + s) + Math.cos(t * 0.02)) / 2 + 1) * 127.5); 
     },
 
     async calculateHash(data) {
@@ -81,3 +104,15 @@ export const QUP_Core = {
 };
 
 document.getElementById('fileInput').onchange = (e) => QUP_Core.transmit(e.target.files[0]);
+
+
+
+
+
+
+
+
+
+
+
+
