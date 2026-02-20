@@ -1,5 +1,4 @@
 // --- [QUP-ULTIMATE: The Sovereign Engine] ---
-import { QUP_Translator } from './QUP_Pulse_Interpreter.js';
 import { ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const db = window.db;
